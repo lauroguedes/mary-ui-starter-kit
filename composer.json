@@ -15,6 +15,7 @@
         "livewire/flux": "^2.1.1",
         "livewire/livewire": "^3.6",
         "livewire/volt": "^1.7.0",
+        "owenvoke/blade-fontawesome": "^2.9",
         "robsontenorio/mary": "^2.0"
     },
     "require-dev": {
