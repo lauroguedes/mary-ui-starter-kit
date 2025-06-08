@@ -16,10 +16,12 @@ new class extends Component {
      */
     public function updatePassword(): void
     {
+        $passwordRules = app()->isProduction() ? ['required', 'string', 'confirmed', Password::defaults()] : ['required', 'string', 'confirmed'];
+
         try {
             $validated = $this->validate([
                 'current_password' => ['required', 'string', 'current_password'],
-                'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+                'password' => $passwordRules,
             ]);
         } catch (ValidationException $e) {
             $this->reset('current_password', 'password', 'password_confirmation');
@@ -41,32 +43,18 @@ new class extends Component {
     @include('partials.settings-heading')
 
     <x-settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
-        <form wire:submit="updatePassword" class="mt-6 space-y-6">
-            <flux:input
-                wire:model="current_password"
-                :label="__('Current password')"
-                type="password"
-                required
-                autocomplete="current-password"
-            />
-            <flux:input
-                wire:model="password"
-                :label="__('New password')"
-                type="password"
-                required
-                autocomplete="new-password"
-            />
-            <flux:input
-                wire:model="password_confirmation"
-                :label="__('Confirm Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-            />
+        <form wire:submit="updatePassword" class="space-y-6">
+            <x-mary-password wire:model="current_password" :label="__('Current password')" required right
+                autocomplete="current-password" />
+
+            <x-mary-password wire:model="password" :label="__('New Password')" required right autocomplete="new-password" />
+
+            <x-mary-password wire:model="password_confirmation" :label="__('Confirm password')" required right
+                autocomplete="new-password" />
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
+                    <x-mary-button type="submit" :label="__('Save')" class="btn-accent" />
                 </div>
 
                 <x-action-message class="me-3" on="password-updated">

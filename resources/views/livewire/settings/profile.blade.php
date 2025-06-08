@@ -29,14 +29,7 @@ new class extends Component {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
 
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique(User::class)->ignore($user->id)
-            ],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
         ]);
 
         $user->fill($validated);
@@ -47,7 +40,7 @@ new class extends Component {
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        $this->dispatch('profile-updated', user: $user);
     }
 
     /**
@@ -73,34 +66,28 @@ new class extends Component {
     @include('partials.settings-heading')
 
     <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
-        <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
+        <form wire:submit="updateProfileInformation" class="w-full space-y-6">
+            <x-mary-input :label="__('Name')" wire:model="name" required autofocus autocomplete="name" />
+            <x-mary-input :label="__('Email address')" wire:model="email" type="email" required autocomplete="email" />
 
-            <div>
-                <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
+            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
+                <div class="space-y-4">
+                    <x-mary-alert :title="__('Your email address is unverified.')" :description="__('Re-send the verification email.')" icon="o-exclamation-triangle"
+                        class="alert-info alert-soft">
+                        <x-slot:actions>
+                            <x-mary-button wire:click.prevent="resendVerificationNotification" :label="__('Re-send email')" />
+                        </x-slot:actions>
+                    </x-mary-alert>
 
-                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
-                    <div>
-                        <flux:text class="mt-4">
-                            {{ __('Your email address is unverified.') }}
-
-                            <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
-                                {{ __('Click here to re-send the verification email.') }}
-                            </flux:link>
-                        </flux:text>
-
-                        @if (session('status') === 'verification-link-sent')
-                            <flux:text class="mt-2 font-medium !dark:text-green-400 !text-green-600">
-                                {{ __('A new verification link has been sent to your email address.') }}
-                            </flux:text>
-                        @endif
-                    </div>
-                @endif
-            </div>
+                    @if (session('status') === 'verification-link-sent')
+                        <x-mary-alert :title="__('A new verification link has been sent to your email address.')" icon="s-check" class="alert-success alert-soft" />
+                    @endif
+                </div>
+            @endif
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
+                    <x-mary-button type="submit" :label="__('Save')" class="btn-accent" />
                 </div>
 
                 <x-action-message class="me-3" on="profile-updated">

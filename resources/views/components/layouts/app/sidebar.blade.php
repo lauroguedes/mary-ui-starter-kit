@@ -25,11 +25,12 @@
         {{-- SIDEBAR --}}
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100">
 
-            <div class="ml-5 pt-5">
+            <div class="flex justify-between items-center mx-3 mt-3">
                 <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse"
                     wire:navigate>
                     <x-app-logo />
                 </a>
+                <x-mary-theme-toggle />
             </div>
 
             {{-- MENU --}}

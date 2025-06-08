@@ -3,6 +3,7 @@
 use Livewire\Volt\Component;
 use App\Livewire\Actions\Logout;
 use App\Models\User;
+use Livewire\Attributes\On;
 
 new class extends Component {
     public User $user;
@@ -17,6 +18,12 @@ new class extends Component {
         $logout();
 
         $this->redirect('/', navigate: true);
+    }
+
+    #[On('profile-updated')]
+    public function onProfileUpdated(User $user): void
+    {
+        $this->user = $user;
     }
 }; ?>
 <div>
