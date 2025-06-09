@@ -25,7 +25,8 @@
         {{-- SIDEBAR --}}
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100">
 
-            <div class="flex justify-between items-center mx-3 mt-3">
+            {{-- BRAND --}}
+            <div class="flex justify-between items-center m-3">
                 <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse"
                     wire:navigate>
                     <x-app-logo />
@@ -33,18 +34,17 @@
                 <x-mary-theme-toggle />
             </div>
 
+            {{-- USER MENU --}}
+            <div class="mx-3">
+                <x-mary-menu-separator />
+                <livewire:settings.user-menu />
+                <x-mary-menu-separator />
+            </div>
+
             {{-- MENU --}}
             <x-mary-menu activate-by-route>
-
-                {{-- User --}}
-                <livewire:settings.user-menu />
-
                 <x-mary-menu-item title="Dashboard" icon="m-rectangle-group" :link="route('dashboard')" />
                 <x-mary-menu-item title="Users" icon="s-users" link="/users" />
-                {{-- <x-mary-menu-sub title="Settings" icon="o-cog-6-tooth">
-                    <x-mary-menu-item title="Wifi" icon="o-wifi" link="####" />
-                    <x-mary-menu-item title="Archives" icon="o-archive-box" link="####" />
-                </x-mary-menu-sub> --}}
             </x-mary-menu>
         </x-slot:sidebar>
 

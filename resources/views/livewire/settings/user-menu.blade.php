@@ -27,28 +27,26 @@ new class extends Component {
     }
 }; ?>
 <div>
-    <x-mary-menu-separator />
-
-    <x-mary-list-item :item="$user" value="name" sub-value="email" no-separator no-hover
-        class="-mx-2 !-my-2 rounded">
-        <x-slot:avatar>
-            <x-mary-avatar :placeholder="$user->initials()" class="!w-10" />
-        </x-slot:avatar>
-        <x-slot:actions>
-            <x-mary-dropdown>
-                <x-slot:trigger>
-                    <x-mary-button icon="m-cog-6-tooth" class="btn-circle" />
-                </x-slot:trigger>
-                <x-mary-menu-item :title="__('Profile')" icon="c-user" :link="route('settings.profile')" />
-                <x-mary-menu-item :title="__('Repository')" icon="fab.github" link="https://laravel.com/docs/starter-kits"
-                    external />
-                <x-mary-menu-item :title="__('Documentation')" icon="s-book-open" link="https://laravel.com/docs/starter-kits"
-                    external />
-                <x-mary-menu-item :title="__('Log out')" wire:click.stop="logout" spinner="logout" class="text-error"
-                    icon="o-power" />
-            </x-mary-dropdown>
-        </x-slot:actions>
-    </x-mary-list-item>
-
-    <x-mary-menu-separator />
+    <x-mary-dropdown right>
+        <x-slot:trigger class="cursor-pointer hover:opacity-80 transition-all">
+            <x-mary-avatar :placeholder="$user->initials()" class="!w-10">
+                <x-slot:title class="text-sm font-semibold max-w-[150px] truncate">
+                    {{ $user->name }}
+                </x-slot:title>
+                <x-slot:subtitle class="text-xs font-light max-w-[150px] truncate">
+                    {{ $user->email }}
+                </x-slot:subtitle>
+            </x-mary-avatar>
+        </x-slot:trigger>
+        <x-mary-menu-item :title="__('Profile')" icon="c-user" :link="route('settings.profile')" />
+        <x-mary-menu-item :title="__('Repository')" icon="fab.github" link="https://laravel.com/docs/starter-kits" external />
+        <x-mary-menu-item :title="__('Documentation')" icon="s-book-open" link="https://laravel.com/docs/starter-kits" external />
+        <x-mary-menu-item :title="__('Log out')" wire:click.stop="logout" spinner="logout" class="text-error"
+            icon="o-power" />
+    </x-mary-dropdown>
+    <style>
+        .dropdown {
+            width: 100%;
+        }
+    </style>
 </div>
