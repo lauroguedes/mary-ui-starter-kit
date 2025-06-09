@@ -13,10 +13,7 @@
             </a>
         </x-slot:brand>
         <x-slot:actions>
-            <x-mary-menu activate-by-route class="menu-horizontal space-x-2 !p-0">
-                <x-mary-menu-item title="Dashboard" icon="m-rectangle-group" :link="route('dashboard')" />
-                <x-mary-menu-item title="Users" icon="s-users" link="/users" />
-            </x-mary-menu>
+            <x-partials.menu class="menu-horizontal space-x-2 !p-0" />
             <livewire:settings.user-menu />
             <x-mary-theme-toggle />
         </x-slot:actions>
