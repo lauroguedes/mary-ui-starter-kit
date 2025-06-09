@@ -14,7 +14,7 @@
             </a>
         </x-slot:brand>
         <x-slot:actions>
-            <label for="main-drawer" class="lg:hidden mr-3">
+            <label for="main-drawer" class="lg:hidden">
                 <x-mary-icon name="o-bars-3" class="cursor-pointer" />
             </label>
         </x-slot:actions>
@@ -49,7 +49,6 @@
         <x-slot:content>
             {{ $slot }}
         </x-slot:content>
-
     </x-mary-main>
 
     {{-- Toast --}}
