@@ -123,4 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'appearance' => [
+        'app_layout' => env('APP_LAYOUT', 'sidebar'),
+        'login_layout' => env('LOGIN_LAYOUT', 'card'),
+    ],
 ];

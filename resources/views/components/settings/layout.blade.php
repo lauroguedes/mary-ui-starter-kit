@@ -3,7 +3,6 @@
         <x-mary-menu activate-by-route class="!w-64">
             <x-mary-menu-item :title="__('Profile')" icon="m-user" icon-classes="text-primary" :link="route('settings.profile')" />
             <x-mary-menu-item :title="__('Password')" icon="c-finger-print" icon-classes="text-primary" :link="route('settings.password')" />
-            <x-mary-menu-item :title="__('Appearance')" icon="m-swatch" icon-classes="text-primary" :link="route(name: 'settings.appearance')" />
         </x-mary-menu>
     </div>
 
