@@ -1,5 +1,7 @@
-<x-layouts.app.sidebar :title="$title ?? null">
-    <flux:main>
-        {{ $slot }}
-    </flux:main>
-</x-layouts.app.sidebar>
+@php
+    $layout = config('app.appearance.app_layout');
+@endphp
+
+<x-dynamic-component :component="'layouts.app.' . $layout" :title="$title ?? null">
+    {{ $slot }}
+</x-dynamic-component>
