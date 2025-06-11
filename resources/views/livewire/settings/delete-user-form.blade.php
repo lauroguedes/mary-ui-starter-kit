@@ -24,7 +24,7 @@ new class extends Component {
 }; ?>
 
 <section class="mt-10 space-y-6">
-    <x-partials.heading-title :heading="__('Delete account')" :subheading="__('Delete your account and all of its resources')" size="md" />
+    <x-partials.header-title :heading="__('Delete account')" :subheading="__('Delete your account and all of its resources')" size="md" />
 
     <x-mary-modal wire:model="confirmUserDeletion" :title="__('Are you sure you want to delete your account?')" :subtitle="__(
         'Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.',
