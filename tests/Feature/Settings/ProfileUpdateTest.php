@@ -51,7 +51,7 @@ test('user can delete their account', function () {
     $this->actingAs($user);
 
     $response = Volt::test('settings.delete-user-form')
-        ->set('password', 'password')
+        ->set('password', 'secret')
         ->call('deleteUser');
 
     $response

@@ -8,13 +8,13 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('password can be updated', function () {
     $user = User::factory()->create([
-        'password' => Hash::make('password'),
+        'password' => Hash::make('secret'),
     ]);
 
     $this->actingAs($user);
 
     $response = Volt::test('settings.password')
-        ->set('current_password', 'password')
+        ->set('current_password', 'secret')
         ->set('password', 'new-password')
         ->set('password_confirmation', 'new-password')
         ->call('updatePassword');
@@ -26,7 +26,7 @@ test('password can be updated', function () {
 
 test('correct password must be provided to update password', function () {
     $user = User::factory()->create([
-        'password' => Hash::make('password'),
+        'password' => Hash::make('secret'),
     ]);
 
     $this->actingAs($user);
