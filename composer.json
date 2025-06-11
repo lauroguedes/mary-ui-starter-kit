@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "lauroguedes/mary-ui-starter-kit",
     "type": "project",
-    "description": "The official Laravel starter kit for Livewire.",
+    "description": "The Mary UI starter kit for Livewire.",
     "keywords": [
         "laravel",
         "framework"
@@ -12,7 +12,6 @@
         "php": "^8.2",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "livewire/flux": "^2.1.1",
         "livewire/livewire": "^3.6",
         "livewire/volt": "^1.7.0",
         "owenvoke/blade-fontawesome": "^2.9",
