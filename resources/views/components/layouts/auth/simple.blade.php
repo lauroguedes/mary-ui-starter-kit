@@ -17,6 +17,7 @@
             <div class="flex flex-col gap-6">
                 {{ $slot }}
             </div>
+            <x-partials.footer-info />
         </div>
     </div>
 </body>

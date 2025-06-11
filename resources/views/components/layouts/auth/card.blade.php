@@ -21,6 +21,7 @@
                     <div class="px-10 py-8">{{ $slot }}</div>
                 </div>
             </div>
+            <x-partials.footer-info />
         </div>
     </div>
 </body>
