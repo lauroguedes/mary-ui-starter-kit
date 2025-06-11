@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -18,4 +20,4 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

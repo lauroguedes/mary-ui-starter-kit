@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     /**
      * Default component prefix.
@@ -13,7 +15,6 @@ return [
      *    prefix => 'mary-'
      *               <x-mary-button />
      *               <x-mary-card />
-     *
      */
     'prefix' => 'mary-',
 
@@ -40,6 +41,6 @@ return [
     'components' => [
         'spotlight' => [
             'class' => 'App\Support\Spotlight',
-        ]
-    ]
+        ],
+    ],
 ];
