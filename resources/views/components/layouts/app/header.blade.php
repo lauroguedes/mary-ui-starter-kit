@@ -54,8 +54,12 @@
             <x-partials.menu />
         </x-slot:sidebar>
 
-        <x-slot:content>
-            {{ $slot }}
+        {{-- The `$slot` goes here --}}
+        <x-slot:content class="flex flex-col min-h-screen">
+            <div class="flex-1 flex flex-col items-stretch gap-2">
+                {{ $slot }}
+            </div>
+            <x-partials.footer-info />
         </x-slot:content>
     </x-mary-main>
 </body>
