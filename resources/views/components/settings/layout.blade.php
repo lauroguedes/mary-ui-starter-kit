@@ -9,9 +9,7 @@
     <div class="divider divider-horizontal"></div>
 
     <div class="flex-1 self-stretch max-md:pt-6">
-        <h2 class="text-lg">{{ $heading ?? '' }}</h2>
-        <p class="text-sm text-base-content/70">{{ $subheading ?? '' }}</p>
-        <div class="divider"></div>
+        <x-partials.heading-title :heading="$heading" :subheading="$subheading" divider />
 
         <div class="mt-5 w-full max-w-lg">
             {{ $slot }}

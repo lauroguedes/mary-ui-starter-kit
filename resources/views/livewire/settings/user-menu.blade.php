@@ -39,7 +39,8 @@ new class extends Component {
             </x-mary-avatar>
         </x-slot:trigger>
         <x-mary-menu-item :title="__('Profile')" icon="c-user" :link="route('settings.profile')" />
-        <x-mary-menu-item :title="__('Repository')" icon="fab.github" link="https://laravel.com/docs/starter-kits" external />
+        <x-mary-menu-item :title="__('Repository')" icon="fab.github" link="https://github.com/lauroguedes/mary-ui-starter-kit"
+            external />
         <x-mary-menu-item :title="__('Documentation')" icon="s-book-open" link="https://laravel.com/docs/starter-kits" external />
         <x-mary-menu-item :title="__('Log out')" wire:click.stop="logout" spinner="logout" class="text-error"
             icon="o-power" />
