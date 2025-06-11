@@ -19,6 +19,10 @@
 * Because Laravel defaults does not match well the design of daisyUI.
 */
 
+.menu-title {
+    display: none;
+}
+
 .mary-table-pagination span[aria-current="page"] > span {
     @apply bg-primary text-base-100;
 }
