@@ -23,10 +23,23 @@
     display: none;
 }
 
-.mary-table-pagination span[aria-current="page"] > span {
-    @apply bg-primary text-base-100;
-}
+.mary-table-pagination {
+    button,
+    span {
+        @apply text-xs border-none;
+    }
 
-.mary-table-pagination button {
-    @apply cursor-pointer;
+    button {
+        @apply cursor-pointer;
+    }
+
+    span[aria-current="page"] > span {
+        @apply bg-primary text-primary-content;
+    }
+
+    button,
+    span[aria-current="page"] > span,
+    span[aria-disabled="true"] span {
+        @apply py-1 px-2;
+    }
 }

@@ -28,9 +28,12 @@ new class extends Component {
         ];
     }
 
-    public function delete($id): void
+    public function delete(User $user): void
     {
-        $this->warning("Will delete #$id", 'It is fake.', position: 'toast-bottom');
+        $user->delete();
+        $this->success(
+            __("User {$user->name} has been deleted."),
+        );
     }
 
     public function users(): LengthAwarePaginator
@@ -52,12 +55,13 @@ new class extends Component {
 
 <x-pages.layout :title="__('Users')">
     <x-slot:search>
-        <x-mary-input :placeholder="__('Search...')" wire:model.live.debounce="search" clearable
+        <x-mary-input class="input-sm" :placeholder="__('Search...')" wire:model.live.debounce="search" clearable
             icon="o-magnifying-glass" />
     </x-slot:search>
     <x-slot:actions>
-        <x-mary-button :label="__('Filters')" @click="$wire.drawer=true" responsive icon="o-funnel" />
-        <x-mary-button icon="o-plus" class="btn-primary" />
+        <x-mary-button class="btn-soft btn-sm" :label="__('Filters')" @click="$wire.drawer=true" responsive
+            icon="o-funnel" />
+        <x-mary-button icon="o-plus" :label="__('Create')" class="btn-primary btn-sm" responsive />
     </x-slot:actions>
 
     <x-mary-card shadow>
@@ -69,13 +73,13 @@ new class extends Component {
         </x-mary-table>
     </x-mary-card>
 
-    <x-mary-drawer wire:model="drawer" title="Filters" right separator with-close-button class="lg:w-1/3">
-        <x-mary-input placeholder="Search..." wire:model.live.debounce="search" icon="o-magnifying-glass"
+    <x-mary-drawer wire:model="drawer" :title="__('Filters')" right separator with-close-button class="lg:w-1/3">
+        <x-mary-input :placeholder="__('Search...')" wire:model.live.debounce="search" icon="o-magnifying-glass"
             @keydown.enter="$wire.drawer = false" />
 
         <x-slot:actions>
-            <x-mary-button label="Reset" icon="o-x-mark" wire:click="clear" spinner />
-            <x-mary-button label="Done" icon="o-check" class="btn-primary" @click="$wire.drawer = false" />
+            <x-mary-button :label="__('Reset')" icon="o-x-mark" wire:click="clear" spinner />
+            <x-mary-button :label="__('Done')" icon="o-check" class="btn-primary" @click="$wire.drawer = false" />
         </x-slot:actions>
     </x-mary-drawer>
 </x-pages.layout>

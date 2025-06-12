@@ -17,6 +17,6 @@ trait ClearsFilters
     {
         $this->reset();
         $this->resetPage();
-        $this->success(__('Filters cleared.'), position: 'toast-bottom');
+        $this->success(__('Filters cleared.'));
     }
 }

@@ -1,5 +1,5 @@
 <div>
-    <x-mary-header class="!mb-6" :title="$title ?? null" :subtitle="$subtitle ?? null" separator>
+    <x-mary-header class="!mb-6" :title="$title ?? null" :subtitle="$subtitle ?? null" separator progress-indicator>
         @isset($search)
             <x-slot:middle class="!justify-end">
                 {{ $search }}
