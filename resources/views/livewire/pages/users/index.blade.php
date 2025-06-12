@@ -65,7 +65,8 @@ new class extends Component {
     </x-slot:actions>
 
     <x-mary-card shadow>
-        <x-mary-table :headers="$headers" :rows="$users" :sort-by="$sortBy" with-pagination>
+        <x-mary-table :link="route('users.edit', ['user' => '[id]'])" :headers="$headers" :rows="$users"
+            :sort-by="$sortBy" with-pagination>
             @scope('actions', $user)
             <x-mary-button icon="o-trash" wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" spinner
                 class="btn-ghost btn-sm text-error" />
