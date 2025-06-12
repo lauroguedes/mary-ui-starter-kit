@@ -9,7 +9,8 @@
     <x-mary-nav sticky full-width>
         {{-- BRAND --}}
         <x-slot:brand>
-            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse"
+                wire:navigate>
                 <x-app-logo />
             </a>
         </x-slot:brand>
@@ -55,7 +56,7 @@
         </x-slot:sidebar>
 
         {{-- The `$slot` goes here --}}
-        <x-slot:content class="flex flex-col min-h-screen">
+        <x-slot:content class="flex flex-col min-h-screen container">
             <div class="flex-1 flex flex-col items-stretch gap-2">
                 {{ $slot }}
             </div>
