@@ -1,25 +1,23 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Collection;
 use Livewire\Volt\Component;
 use Mary\Traits\Toast;
+use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use App\Traits\ClearsFilters;
 
 new class extends Component {
     use Toast;
+    use WithPagination;
+    use ClearsFilters;
 
     public string $search = '';
 
     public bool $drawer = false;
 
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
-
-    public function clear(): void
-    {
-        $this->reset();
-        $this->success('Filters cleared.', position: 'toast-bottom');
-    }
 
     public function headers(): array
     {
@@ -35,12 +33,12 @@ new class extends Component {
         $this->warning("Will delete #$id", 'It is fake.', position: 'toast-bottom');
     }
 
-    public function users(): Collection
+    public function users(): LengthAwarePaginator
     {
         return User::query()
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
             ->orderBy(...array_values($this->sortBy))
-            ->get();
+            ->paginate(10);
     }
 
     public function with(): array
@@ -63,7 +61,7 @@ new class extends Component {
     </x-slot:actions>
 
     <x-mary-card shadow>
-        <x-mary-table :headers="$headers" :rows="$users" :sort-by="$sortBy">
+        <x-mary-table :headers="$headers" :rows="$users" :sort-by="$sortBy" with-pagination>
             @scope('actions', $user)
             <x-mary-button icon="o-trash" wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" spinner
                 class="btn-ghost btn-sm text-error" />
