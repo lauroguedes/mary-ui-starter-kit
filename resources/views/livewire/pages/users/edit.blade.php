@@ -4,9 +4,10 @@ use Livewire\Volt\Component;
 use App\Models\User;
 use Mary\Traits\Toast;
 use Livewire\Attributes\Rule;
+use Livewire\WithFileUploads;
 
 new class extends Component {
-    use Toast;
+    use Toast, WithFileUploads;
 
     public User $user;
 
@@ -15,6 +16,9 @@ new class extends Component {
 
     #[Rule('required|email|max:50')]
     public string $email = '';
+
+    #[Rule('nullable|image|max:1024')]
+    public $avatar = '';
 
     public function mount(): void
     {
@@ -27,6 +31,11 @@ new class extends Component {
 
         $this->user->update($data);
 
+        if ($this->avatar) {
+            $url = $this->avatar->store('users', 'public');
+            $this->user->update(['avatar' => "/storage/$url"]);
+        }
+
         $this->success('User updated with success.', redirectTo: route('users.index'));
     }
 
@@ -35,6 +44,10 @@ new class extends Component {
 <x-pages.layout :page-title="__('Update') . ' - ' . $user->name">
     <x-slot:content>
         <x-mary-form wire:submit="save">
+            <x-mary-file wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
+                <img src="{{ $user->avatar ?? '/empty-user.jpg' }}" class="h-36 rounded-lg" />
+            </x-mary-file>
+
             <x-mary-input :label="__('Name')" wire:model="name" />
             <x-mary-input :label="__('Email')" wire:model="email" />
 
@@ -46,3 +59,9 @@ new class extends Component {
         </x-mary-form>
     </x-slot:content>
 </x-pages.layout>
+
+@push('scripts')
+    {{-- Cropper.js --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+@endpush
