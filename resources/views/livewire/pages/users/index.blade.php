@@ -69,7 +69,7 @@ new class extends Component {
         <x-mary-table :link="route('users.edit', ['user' => '[id]'])" :headers="$headers" :rows="$users"
             :sort-by="$sortBy" with-pagination>
             @scope('cell_avatar', $user)
-            <x-mary-avatar image="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="!w-10" />
+            <x-mary-avatar image="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="!w-8" />
             @endscope
 
             @scope('actions', $user)
