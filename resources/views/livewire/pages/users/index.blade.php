@@ -53,7 +53,7 @@ new class extends Component {
     }
 }; ?>
 
-<x-pages.layout :title="__('Users')">
+<x-pages.layout :page-title="__('Users')">
     <x-slot:search>
         <x-mary-input class="input-sm" :placeholder="__('Search...')" wire:model.live.debounce="search" clearable
             icon="o-magnifying-glass" />
@@ -64,7 +64,7 @@ new class extends Component {
         <x-mary-button icon="o-plus" :label="__('Create')" class="btn-primary btn-sm" responsive />
     </x-slot:actions>
 
-    <x-mary-card shadow>
+    <x-slot:content>
         <x-mary-table :link="route('users.edit', ['user' => '[id]'])" :headers="$headers" :rows="$users"
             :sort-by="$sortBy" with-pagination>
             @scope('actions', $user)
@@ -72,7 +72,7 @@ new class extends Component {
                 class="btn-ghost btn-sm text-error" />
             @endscope
         </x-mary-table>
-    </x-mary-card>
+    </x-slot:content>
 
     <x-mary-drawer wire:model="drawer" :title="__('Filters')" right separator with-close-button class="lg:w-1/3">
         <x-mary-input :placeholder="__('Search...')" wire:model.live.debounce="search" icon="o-magnifying-glass"
