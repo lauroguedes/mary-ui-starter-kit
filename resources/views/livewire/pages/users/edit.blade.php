@@ -43,20 +43,25 @@ new class extends Component {
 
 <x-pages.layout :page-title="__('Update') . ' - ' . $user->name">
     <x-slot:content>
-        <x-mary-form wire:submit="save">
-            <x-mary-file wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
-                <img src="{{ $user->avatar ?? '/empty-user.jpg' }}" class="h-36 rounded-lg" />
-            </x-mary-file>
+        <div class="grid gap-5 lg:grid-cols-2">
+            <x-mary-form wire:submit="save">
+                <x-mary-file wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
+                    <img src="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="h-36 rounded-lg" />
+                </x-mary-file>
 
-            <x-mary-input :label="__('Name')" wire:model="name" />
-            <x-mary-input :label="__('Email')" wire:model="email" />
+                <x-mary-input :label="__('Name')" wire:model="name" />
+                <x-mary-input :label="__('Email')" wire:model="email" />
 
-            <x-slot:actions>
-                <x-mary-button :label="__('Cancel')" :link="route('users.index')" class="btn-soft" />
-                <x-mary-button :label="__('Save')" icon="o-paper-airplane" spinner="save" type="submit"
-                    class="btn-primary" />
-            </x-slot:actions>
-        </x-mary-form>
+                <x-slot:actions>
+                    <x-mary-button :label="__('Cancel')" :link="route('users.index')" class="btn-soft" />
+                    <x-mary-button :label="__('Save')" icon="o-paper-airplane" spinner="save" type="submit"
+                        class="btn-primary" />
+                </x-slot:actions>
+            </x-mary-form>
+            <div class="hidden lg:block place-self-center">
+                <img src="/images/user-action-page.svg" width="300" class="mx-auto" />
+            </div>
+        </div>
     </x-slot:content>
 </x-pages.layout>
 
