@@ -23,6 +23,7 @@ new class extends Component {
     {
         return [
             ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
+            ['key' => 'avatar', 'label' => 'Avatar', 'sortable' => false, 'class' => 'w-1'],
             ['key' => 'name', 'label' => 'Name'],
             ['key' => 'email', 'label' => 'Email', 'sortable' => false]
         ];
@@ -67,6 +68,10 @@ new class extends Component {
     <x-slot:content>
         <x-mary-table :link="route('users.edit', ['user' => '[id]'])" :headers="$headers" :rows="$users"
             :sort-by="$sortBy" with-pagination>
+            @scope('cell_avatar', $user)
+            <x-mary-avatar image="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="!w-10" />
+            @endscope
+
             @scope('actions', $user)
             <x-mary-button icon="o-trash" wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" spinner
                 class="btn-ghost btn-sm text-error" />
