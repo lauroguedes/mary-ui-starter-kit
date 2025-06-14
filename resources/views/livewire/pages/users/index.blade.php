@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Enums\UserStatus;
 use Livewire\Volt\Component;
 use Mary\Traits\Toast;
 use Livewire\WithPagination;
@@ -37,6 +38,11 @@ new class extends Component {
         );
     }
 
+    public function edit(User $user): void
+    {
+        $this->redirectRoute('users.edit', ['user' => $user->id], false, true);
+    }
+
     public function users(): LengthAwarePaginator
     {
         return User::query()
@@ -66,15 +72,29 @@ new class extends Component {
     </x-slot:actions>
 
     <x-slot:content>
-        <x-mary-table :link="route('users.edit', ['user' => '[id]'])" :headers="$headers" :rows="$users"
-            :sort-by="$sortBy" with-pagination>
+        <x-mary-table :headers="$headers" :rows="$users" :sort-by="$sortBy" with-pagination>
             @scope('cell_avatar', $user)
-            <x-mary-avatar image="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="!w-8" />
+            <div class="indicator tooltip" data-tip="{{ $user->status->label() }}">
+                <span @class([
+                    'indicator-item status',
+                    'status-success' => $user->status === UserStatus::ACTIVE,
+                    'status-warning' => $user->status === UserStatus::INACTIVE,
+                    'status-error' => $user->status === UserStatus::SUSPENDED,
+                ])></span>
+                <x-mary-avatar image="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="!w-8 !rounded-lg" />
+            </div>
             @endscope
 
             @scope('actions', $user)
-            <x-mary-button icon="o-trash" wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" spinner
-                class="btn-ghost btn-sm text-error" />
+            <x-mary-dropdown>
+                <x-slot:trigger>
+                    <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle" />
+                </x-slot:trigger>
+
+                <x-mary-menu-item :title="__('Edit')" icon="o-pencil" :link="route('users.edit', ['user' => $user->id])" />
+                <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
+                    wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" spinner />
+            </x-mary-dropdown>
             @endscope
         </x-mary-table>
     </x-slot:content>
