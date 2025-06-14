@@ -107,15 +107,17 @@ new class extends Component {
             @endscope
 
             @scope('actions', $user)
-            <x-mary-dropdown>
-                <x-slot:trigger>
-                    <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle" />
-                </x-slot:trigger>
+            @if($user->id !== auth()->id())
+                <x-mary-dropdown>
+                    <x-slot:trigger>
+                        <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle" />
+                    </x-slot:trigger>
 
-                <x-mary-menu-item :title="__('Edit')" icon="o-pencil" :link="route('users.edit', ['user' => $user->id])" />
-                <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
-                    @click="$dispatch('target-delete', { user: {{ $user->id }} })" spinner />
-            </x-mary-dropdown>
+                    <x-mary-menu-item :title="__('Edit')" icon="o-pencil" :link="route('users.edit', ['user' => $user->id])" />
+                    <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
+                        @click="$dispatch('target-delete', { user: {{ $user->id }} })" spinner />
+                </x-mary-dropdown>
+            @endif
             @endscope
         </x-mary-table>
     </x-slot:content>
