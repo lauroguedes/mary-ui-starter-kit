@@ -16,6 +16,8 @@ new class extends Component {
 
     public string $search = '';
 
+    public ?int $status = null;
+
     public bool $drawer = false;
 
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
@@ -31,6 +33,15 @@ new class extends Component {
             ['key' => 'avatar', 'label' => 'Avatar', 'sortable' => false, 'class' => 'w-1'],
             ['key' => 'name', 'label' => 'Name'],
             ['key' => 'email', 'label' => 'Email', 'sortable' => false]
+        ];
+    }
+
+    public function statusGroup(): array
+    {
+        return [
+            ['id' => UserStatus::ACTIVE, 'name' => UserStatus::ACTIVE->label()],
+            ['id' => UserStatus::INACTIVE, 'name' => UserStatus::INACTIVE->label()],
+            ['id' => UserStatus::SUSPENDED, 'name' => UserStatus::SUSPENDED->label()],
         ];
     }
 
@@ -54,6 +65,7 @@ new class extends Component {
     {
         return User::query()
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
+            ->when($this->status, fn(Builder $q) => $q->where('status', $this->status))
             ->orderBy(...array_values($this->sortBy))
             ->paginate(10);
     }
@@ -62,7 +74,8 @@ new class extends Component {
     {
         return [
             'users' => $this->users(),
-            'headers' => $this->headers()
+            'headers' => $this->headers(),
+            'statusGroup' => $this->statusGroup(),
         ];
     }
 }; ?>
@@ -107,11 +120,11 @@ new class extends Component {
     </x-slot:content>
 
     <x-mary-drawer wire:model="drawer" :title="__('Filters')" right separator with-close-button class="lg:w-1/3">
-        <x-mary-input :placeholder="__('Search...')" wire:model.live.debounce="search" icon="o-magnifying-glass"
-            @keydown.enter="$wire.drawer = false" />
+        <x-mary-group :label="__('Status')" wire:model.live="status" :options="$statusGroup"
+            class="[&:checked]:!btn-primary" />
 
         <x-slot:actions>
-            <x-mary-button :label="__('Reset')" icon="o-x-mark" wire:click="clear" spinner />
+            <x-mary-button :label="__('Reset')" icon="o-x-mark" wire:click="clear" spinner class="btn-soft" />
             <x-mary-button :label="__('Done')" icon="o-check" class="btn-primary" @click="$wire.drawer = false" />
         </x-slot:actions>
     </x-mary-drawer>

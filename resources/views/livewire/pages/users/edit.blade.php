@@ -87,7 +87,8 @@ new class extends Component {
 
                 <x-mary-input :label="__('Name')" wire:model="name" />
                 <x-mary-input :label="__('Email')" wire:model="email" />
-                <x-mary-group :label="__('Status')" wire:model="status" :options="$statusOptions" />
+                <x-mary-group :label="__('Status')" wire:model="status" :options="$statusOptions"
+                    class="[&:checked]:!btn-primary" />
 
                 <x-slot:actions>
                     <x-mary-button :label="__('Cancel')" :link="route('users.index')" class="btn-soft" />
