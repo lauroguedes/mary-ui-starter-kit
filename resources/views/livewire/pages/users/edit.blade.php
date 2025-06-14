@@ -3,40 +3,68 @@
 use Livewire\Volt\Component;
 use App\Models\User;
 use Mary\Traits\Toast;
-use Livewire\Attributes\Rule;
+use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
+use App\Enums\UserStatus;
 
 new class extends Component {
     use Toast, WithFileUploads;
 
     public User $user;
 
-    #[Rule('required|max:100')]
+    #[Validate('required|max:100')]
     public string $name = '';
 
-    #[Rule('required|email|max:50')]
+    #[Validate('required|email|max:50')]
     public string $email = '';
 
-    #[Rule('nullable|image|max:1024')]
-    public $avatar = '';
+    #[Validate('nullable')]
+    public mixed $avatar = null;
+
+    #[Validate('required|int')]
+    public int $status;
+
+    public array $statusOptions;
 
     public function mount(): void
     {
         $this->fill($this->user);
+
+        $this->statusOptions = [
+            ['id' => UserStatus::ACTIVE, 'name' => UserStatus::ACTIVE->label()],
+            ['id' => UserStatus::INACTIVE, 'name' => UserStatus::INACTIVE->label()],
+            ['id' => UserStatus::SUSPENDED, 'name' => UserStatus::SUSPENDED->label()],
+        ];
     }
 
     public function save(): void
     {
         $data = $this->validate();
 
+        $this->processUpload($data);
+
         $this->user->update($data);
 
-        if ($this->avatar) {
-            $url = $this->avatar->store('users', 'public');
-            $this->user->update(['avatar' => "/storage/$url"]);
+        $this->success('User updated with success.', redirectTo: route('users.index'));
+    }
+
+    private function processUpload(array &$data): void
+    {
+        if (!$this->avatar || !($this->avatar instanceof \Illuminate\Http\UploadedFile)) {
+            return;
         }
 
-        $this->success('User updated with success.', redirectTo: route('users.index'));
+        $this->validate([
+            'avatar' => 'image|max:1024'
+        ]);
+
+        if ($this->user->avatar) {
+            $path = str($this->user->avatar)->after('/storage/');
+            \Storage::disk('public')->delete($path);
+        }
+
+        $url = $this->avatar->store('users', 'public');
+        $data['avatar'] = "/storage/{$url}";
     }
 
 }; ?>
@@ -45,12 +73,21 @@ new class extends Component {
     <x-slot:content>
         <div class="grid gap-5 lg:grid-cols-2">
             <x-mary-form wire:submit="save">
-                <x-mary-file wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
-                    <img src="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="h-36 rounded-lg" />
-                </x-mary-file>
+                <div class="indicator">
+                    <span @class([
+                        'indicator-item status',
+                        'status-success' => $user->status === UserStatus::ACTIVE,
+                        'status-warning' => $user->status === UserStatus::INACTIVE,
+                        'status-error' => $user->status === UserStatus::SUSPENDED,
+                    ])></span>
+                    <x-mary-file wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
+                        <img src="{{ $user->avatar ?? '/images/empty-user.jpg' }}" class="h-36 rounded-lg" />
+                    </x-mary-file>
+                </div>
 
                 <x-mary-input :label="__('Name')" wire:model="name" />
                 <x-mary-input :label="__('Email')" wire:model="email" />
+                <x-mary-group :label="__('Status')" wire:model="status" :options="$statusOptions" />
 
                 <x-slot:actions>
                     <x-mary-button :label="__('Cancel')" :link="route('users.index')" class="btn-soft" />
