@@ -20,6 +20,10 @@ new class extends Component {
 
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
 
+    public bool $modal = false;
+
+    public mixed $targetDelete = null;
+
     public function headers(): array
     {
         return [
@@ -33,6 +37,9 @@ new class extends Component {
     public function delete(User $user): void
     {
         $user->delete();
+
+        $this->modal = false;
+
         $this->success(
             __("User {$user->name} has been deleted."),
         );
@@ -93,7 +100,7 @@ new class extends Component {
 
                 <x-mary-menu-item :title="__('Edit')" icon="o-pencil" :link="route('users.edit', ['user' => $user->id])" />
                 <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
-                    wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" spinner />
+                    @click="$dispatch('target-delete', { user: {{ $user->id }} })" spinner />
             </x-mary-dropdown>
             @endscope
         </x-mary-table>
@@ -108,4 +115,21 @@ new class extends Component {
             <x-mary-button :label="__('Done')" icon="o-check" class="btn-primary" @click="$wire.drawer = false" />
         </x-slot:actions>
     </x-mary-drawer>
+
+    <x-mary-modal wire:model="modal" :title="__('Delete')" :subtitle="__('Are you sure?')" class="backdrop-blur">
+        <x-slot:actions>
+            <x-mary-button :label="__('Yes')" class="btn-error" wire:click="delete($wire.targetDelete)"
+                spinner="delete" />
+            <x-mary-button :label="__('Cancel')" class="btn-soft" @click="$wire.modal = false" />
+        </x-slot:actions>
+    </x-mary-modal>
 </x-pages.layout>
+
+@script
+<script>
+    $wire.on('target-delete', (event) => {
+        $wire.modal = true;
+        $wire.targetDelete = event.user;
+    });
+</script>
+@endscript

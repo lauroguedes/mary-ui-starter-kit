@@ -45,7 +45,7 @@ new class extends Component {
 
         $this->user->update($data);
 
-        $this->success('User updated with success.', redirectTo: route('users.index'));
+        $this->success(__('User updated with success.'), redirectTo: route('users.index'));
     }
 
     private function processUpload(array &$data): void
