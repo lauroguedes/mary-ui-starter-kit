@@ -88,7 +88,8 @@ new class extends Component {
     <x-slot:actions>
         <x-mary-button class="btn-soft btn-sm" :label="__('Filters')" @click="$wire.drawer=true" responsive
             icon="o-funnel" />
-        <x-mary-button icon="o-plus" :label="__('Create')" class="btn-primary btn-sm" responsive />
+        <x-mary-button :link="route('users.create')" icon="o-plus" :label="__('Create')" class="btn-primary btn-sm"
+            responsive />
     </x-slot:actions>
 
     <x-slot:content>
