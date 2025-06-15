@@ -17,7 +17,14 @@ new class extends Component {
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        $user = Auth::user();
+
+        if ($user->avatar) {
+            $path = str($user->avatar)->after('/storage/');
+            \Storage::disk('public')->delete($path);
+        }
+
+        tap($user, $logout(...))->delete();
 
         $this->redirect('/', navigate: true);
     }
