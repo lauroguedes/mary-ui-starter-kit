@@ -3,6 +3,7 @@
 use Livewire\Volt\Component;
 use App\Models\User;
 use Mary\Traits\Toast;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 use App\Enums\UserStatus;
@@ -12,10 +13,9 @@ new class extends Component {
 
     public User $user;
 
-    #[Validate('required|max:100')]
+    #[Validate('required|max:255')]
     public string $name = '';
 
-    #[Validate('required|email|max:50')]
     public string $email = '';
 
     #[Validate('nullable')]
@@ -37,18 +37,32 @@ new class extends Component {
         ];
     }
 
+    protected function rules(): array
+    {
+        return [
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                Rule::unique(User::class)->ignore($this->user->id)
+            ]
+        ];
+    }
+
     public function save(): void
     {
-        $data = $this->validate();
+        $validated = $this->validate();
 
-        $this->processUpload($data);
+        $this->processUpload($validated);
 
-        $this->user->update($data);
+        $this->user->update($validated);
 
         $this->success(__('User updated with success.'), redirectTo: route('users.index'));
     }
 
-    private function processUpload(array &$data): void
+    private function processUpload(array &$validated): void
     {
         if (!$this->avatar || !($this->avatar instanceof \Illuminate\Http\UploadedFile)) {
             return;
@@ -64,7 +78,7 @@ new class extends Component {
         }
 
         $url = $this->avatar->store('users', 'public');
-        $data['avatar'] = "/storage/{$url}";
+        $validated['avatar'] = "/storage/{$url}";
     }
 
 }; ?>

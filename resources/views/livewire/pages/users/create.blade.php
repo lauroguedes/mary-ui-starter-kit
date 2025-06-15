@@ -14,7 +14,7 @@ new class extends Component {
     #[Validate('required|max:100')]
     public string $name = '';
 
-    #[Validate('required|email|max:50')]
+    #[Validate('required|email|max:50|unique:users')]
     public string $email = '';
 
     public string $password = '';

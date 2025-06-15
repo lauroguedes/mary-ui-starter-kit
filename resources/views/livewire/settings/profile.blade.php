@@ -12,7 +12,7 @@ new class extends Component {
 
     public User $user;
 
-    #[Validate('required|string|max:100')]
+    #[Validate('required|string|max:255')]
     public string $name = '';
 
     public string $email = '';
