@@ -30,11 +30,7 @@ new class extends Component {
     public function mount(): void
     {
         $this->status = UserStatus::ACTIVE->value;
-        $this->statusOptions = [
-            ['id' => UserStatus::ACTIVE, 'name' => UserStatus::ACTIVE->label()],
-            ['id' => UserStatus::INACTIVE, 'name' => UserStatus::INACTIVE->label()],
-            ['id' => UserStatus::SUSPENDED, 'name' => UserStatus::SUSPENDED->label()],
-        ];
+        $this->statusOptions = UserStatus::all();
     }
 
     public function save(): void

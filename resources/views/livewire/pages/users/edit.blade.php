@@ -30,11 +30,7 @@ new class extends Component {
     {
         $this->fill($this->user);
 
-        $this->statusOptions = [
-            ['id' => UserStatus::ACTIVE, 'name' => UserStatus::ACTIVE->label()],
-            ['id' => UserStatus::INACTIVE, 'name' => UserStatus::INACTIVE->label()],
-            ['id' => UserStatus::SUSPENDED, 'name' => UserStatus::SUSPENDED->label()],
-        ];
+        $this->statusOptions = UserStatus::all();
     }
 
     protected function rules(): array

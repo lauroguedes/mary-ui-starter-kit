@@ -20,6 +20,15 @@ enum UserStatus: int
         };
     }
 
+    public static function all(string $key = 'id', string $value = 'name'): array
+    {
+        return [
+            [$key => self::ACTIVE, $value => self::ACTIVE->label()],
+            [$key => self::INACTIVE, $value => self::INACTIVE->label()],
+            [$key => self::SUSPENDED, $value => self::SUSPENDED->label()],
+        ];
+    }
+
     public function label(): string
     {
         return match ($this) {

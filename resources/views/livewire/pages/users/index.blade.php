@@ -36,17 +36,13 @@ new class extends Component {
         ];
     }
 
-    public function statusGroup(): array
-    {
-        return [
-            ['id' => UserStatus::ACTIVE, 'name' => UserStatus::ACTIVE->label()],
-            ['id' => UserStatus::INACTIVE, 'name' => UserStatus::INACTIVE->label()],
-            ['id' => UserStatus::SUSPENDED, 'name' => UserStatus::SUSPENDED->label()],
-        ];
-    }
-
     public function delete(User $user): void
     {
+        if ($user->avatar) {
+            $path = str($user->avatar)->after('/storage/');
+            \Storage::disk('public')->delete($path);
+        }
+
         $user->delete();
 
         $this->modal = false;
@@ -75,7 +71,7 @@ new class extends Component {
         return [
             'users' => $this->users(),
             'headers' => $this->headers(),
-            'statusGroup' => $this->statusGroup(),
+            'statusGroup' => UserStatus::all(),
         ];
     }
 }; ?>
