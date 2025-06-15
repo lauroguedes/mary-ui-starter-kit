@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
 use App\Enums\UserStatus;
-use Livewire\Livewire;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Notification;
+use App\Models\User;
 use App\Notifications\UserCreated;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -21,7 +21,7 @@ beforeEach(function () {
 
 test('users create page loads successfully', function () {
     $response = $this->get(route('users.create'));
-    
+
     $response->assertStatus(200);
     $response->assertSee(__('Create User'));
 });
@@ -34,7 +34,7 @@ test('user can be created successfully', function () {
         ->call('save')
         ->assertHasNoErrors()
         ->assertRedirect(route('users.index'));
-        
+
     $this->assertDatabaseHas('users', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
@@ -48,9 +48,9 @@ test('user creation sends notification', function () {
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
         ->call('save');
-        
+
     $user = User::where('email', 'john@example.com')->first();
-    
+
     Notification::assertSentTo($user, UserCreated::class);
 });
 
@@ -72,7 +72,7 @@ test('user creation validates email format', function () {
 
 test('user creation validates email uniqueness', function () {
     $existingUser = User::factory()->create(['email' => 'existing@example.com']);
-    
+
     Livewire::test('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'existing@example.com')
@@ -101,7 +101,7 @@ test('user creation validates email length', function () {
 
 test('avatar can be uploaded during user creation', function () {
     $file = UploadedFile::fake()->image('avatar.jpg');
-    
+
     Livewire::test('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
@@ -109,16 +109,16 @@ test('avatar can be uploaded during user creation', function () {
         ->set('avatar', $file)
         ->call('save')
         ->assertHasNoErrors();
-        
+
     $user = User::where('email', 'john@example.com')->first();
-    
+
     expect($user->avatar)->toContain('/storage/users/');
     Storage::disk('public')->assertExists(str_replace('/storage/', '', $user->avatar));
 });
 
 test('avatar upload validates file type', function () {
     $file = UploadedFile::fake()->create('document.pdf', 100);
-    
+
     Livewire::test('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
@@ -130,11 +130,11 @@ test('avatar upload validates file type', function () {
 
 test('avatar upload validates file size', function () {
     $file = UploadedFile::fake()->image('avatar.jpg')->size(2048); // 2MB
-    
+
     Livewire::test('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
-        ->set('status', UserStatus::ACTIVE->value)  
+        ->set('status', UserStatus::ACTIVE->value)
         ->set('avatar', $file)
         ->call('save')
         ->assertHasErrors(['avatar' => 'max']);
@@ -142,13 +142,13 @@ test('avatar upload validates file size', function () {
 
 test('default status is active', function () {
     $component = Livewire::test('pages.users.create');
-    
+
     expect($component->get('status'))->toBe(UserStatus::ACTIVE->value);
 });
 
 test('status options are available', function () {
     $component = Livewire::test('pages.users.create');
-    
+
     expect($component->get('statusOptions'))->toBe(UserStatus::all());
 });
 
@@ -158,9 +158,9 @@ test('password is auto-generated and hashed', function () {
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
         ->call('save');
-        
+
     $user = User::where('email', 'john@example.com')->first();
-    
+
     expect($user->password)->not()->toBeEmpty();
     expect($user->password)->not()->toBe('password');
 });

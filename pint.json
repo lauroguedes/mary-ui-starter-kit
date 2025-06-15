@@ -4,6 +4,9 @@
         "tests/TestCase.php"
     ],
     "rules": {
+        "concat_space": {
+            "spacing": "one"
+        },
         "array_push": true,
         "backtick_to_shell_exec": true,
         "date_time_immutable": true,

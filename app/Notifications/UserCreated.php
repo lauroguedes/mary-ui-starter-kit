@@ -39,7 +39,7 @@ final class UserCreated extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Your Account Has Been Created')
             ->line("Hi {$notifiable->name}, an account has been created for you.")
-            ->line('Your temporary password is: **'.$this->pw.'**')
+            ->line('Your temporary password is: **' . $this->pw . '**')
             ->line('Please change your password after logging in for the first time.')
             ->action('Login', url('/login'))
             ->line('Thank you for joining us!');

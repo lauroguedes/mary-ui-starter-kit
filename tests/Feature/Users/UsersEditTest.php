@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
 use App\Enums\UserStatus;
-use Livewire\Livewire;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -23,7 +23,7 @@ beforeEach(function () {
 
 test('users edit page loads successfully', function () {
     $response = $this->get(route('users.edit', $this->targetUser));
-    
+
     $response->assertStatus(200);
     $response->assertSee(__('Update') . ' - ' . $this->targetUser->name);
 });
@@ -43,9 +43,9 @@ test('user can be updated successfully', function () {
         ->call('save')
         ->assertHasNoErrors()
         ->assertRedirect(route('users.index'));
-        
+
     $this->targetUser->refresh();
-    
+
     expect($this->targetUser->name)->toBe('Updated Name');
     expect($this->targetUser->email)->toBe('updated@example.com');
     expect($this->targetUser->status)->toBe(UserStatus::INACTIVE);
@@ -69,13 +69,13 @@ test('user update validates email format', function () {
 
 test('user update validates email uniqueness except for current user', function () {
     $anotherUser = User::factory()->create(['email' => 'another@example.com']);
-    
+
     // Should fail when trying to use another user's email
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('email', 'another@example.com')
         ->call('save')
         ->assertHasErrors(['email' => 'unique']);
-        
+
     // Should pass when keeping the same email
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('email', $this->targetUser->email)
@@ -99,14 +99,14 @@ test('user update validates email length', function () {
 
 test('avatar can be updated', function () {
     $file = UploadedFile::fake()->image('new-avatar.jpg');
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('avatar', $file)
         ->call('save')
         ->assertHasNoErrors();
-        
+
     $this->targetUser->refresh();
-    
+
     expect($this->targetUser->avatar)->toContain('/storage/users/');
     Storage::disk('public')->assertExists(str_replace('/storage/', '', $this->targetUser->avatar));
 });
@@ -116,17 +116,17 @@ test('old avatar is deleted when new one is uploaded', function () {
     $oldFile = UploadedFile::fake()->image('old-avatar.jpg');
     $oldPath = $oldFile->store('users', 'public');
     $this->targetUser->update(['avatar' => "/storage/{$oldPath}"]);
-    
+
     // Now upload a new avatar
     $newFile = UploadedFile::fake()->image('new-avatar.jpg');
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('avatar', $newFile)
         ->call('save');
-        
+
     // Old avatar should be deleted
     Storage::disk('public')->assertMissing($oldPath);
-    
+
     // New avatar should exist
     $this->targetUser->refresh();
     Storage::disk('public')->assertExists(str_replace('/storage/', '', $this->targetUser->avatar));
@@ -134,7 +134,7 @@ test('old avatar is deleted when new one is uploaded', function () {
 
 test('avatar upload validates file type', function () {
     $file = UploadedFile::fake()->create('document.pdf', 100);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('avatar', $file)
         ->call('save')
@@ -143,7 +143,7 @@ test('avatar upload validates file type', function () {
 
 test('avatar upload validates file size', function () {
     $file = UploadedFile::fake()->image('avatar.jpg')->size(2048); // 2MB
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('avatar', $file)
         ->call('save')
@@ -152,7 +152,7 @@ test('avatar upload validates file size', function () {
 
 test('status options are available', function () {
     $component = Livewire::test('pages.users.edit', ['user' => $this->targetUser]);
-    
+
     expect($component->get('statusOptions'))->toBe(UserStatus::all());
 });
 
@@ -160,11 +160,11 @@ test('user status is displayed correctly in indicator', function () {
     $activeUser = User::factory()->create(['status' => UserStatus::ACTIVE]);
     $inactiveUser = User::factory()->create(['status' => UserStatus::INACTIVE]);
     $suspendedUser = User::factory()->create(['status' => UserStatus::SUSPENDED]);
-    
+
     $activeResponse = $this->get(route('users.edit', $activeUser));
     $inactiveResponse = $this->get(route('users.edit', $inactiveUser));
     $suspendedResponse = $this->get(route('users.edit', $suspendedUser));
-    
+
     $activeResponse->assertSee('status-success');
     $inactiveResponse->assertSee('status-warning');
     $suspendedResponse->assertSee('status-error');
@@ -175,8 +175,8 @@ test('user can update status', function () {
         ->set('status', UserStatus::SUSPENDED->value)
         ->call('save')
         ->assertHasNoErrors();
-        
+
     $this->targetUser->refresh();
-    
+
     expect($this->targetUser->status)->toBe(UserStatus::SUSPENDED);
 });

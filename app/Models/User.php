@@ -50,7 +50,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             ->explode(' ')
             ->pipe(
                 fn ($parts) => Str::upper(
-                    Str::substr($parts->first(), 0, 1).
+                    Str::substr($parts->first(), 0, 1) .
                         Str::substr($parts->last(), 0, 1)
                 )
             );
