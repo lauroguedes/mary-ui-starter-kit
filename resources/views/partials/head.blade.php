@@ -10,3 +10,5 @@
 <meta name="description" content="{{ $metaDescription ?? config('app.description', 'Default description') }}">
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+@stack('scripts')
