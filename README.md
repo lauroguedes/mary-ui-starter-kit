@@ -72,8 +72,16 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 ```bash
 # Install via Laravel Installer
 laravel new my-app --using=lauroguedes/mary-ui-starter-kit
+
 # or Composer
 composer create-project lauroguedes/mary-ui-starter-kit my-app
+
+# (Optional) Generate fake data for testing
+php artisan db:seed
+
+# Default user
+user: test@user.com
+pw: secret
 ```
 
 Clone the repository manually:
