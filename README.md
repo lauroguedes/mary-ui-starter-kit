@@ -8,6 +8,9 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 [![Livewire](https://img.shields.io/badge/Livewire-3.x-purple?style=flat)](https://livewire.laravel.com)
 [![Mary UI](https://img.shields.io/badge/Mary_UI-2.x-blue?style=flat)](https://mary-ui.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
+--
+[![Packagist Version](https://img.shields.io/packagist/v/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 
 </div>
 
@@ -65,6 +68,37 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 ```bash
 # Install via Laravel Installer
 laravel new my-app --using=lauroguedes/mary-ui-starter-kit
+# or Composer
+composer create-project lauroguedes/mary-ui-starter-kit my-app
+```
+
+Clone the repository manually:
+```bash
+# Clone the repository
+git clone https://github.com/lauroguedes/mary-ui-starter-kit
+cd mary-ui-starter-kit
+
+# Install PHP dependencies
+composer install
+
+# Copy environment file and generate app key
+cp .env.example .env
+php artisan key:generate
+
+# Set up the database
+php artisan migrate --seed
+
+# Install frontend dependencies
+npm install
+# or if you use Yarn
+yarn
+
+# Run the development server
+php artisan serve
+# In a separate terminal
+npm run dev
+# or
+yarn dev
 ```
 
 ### Development Workflow
@@ -73,7 +107,7 @@ For an enhanced development experience with hot reloading:
 
 ```bash
 # Start all development services (server, queue, logs, vite)
-composer run dev
+composer dev
 ```
 
 Visit [http://localhost:8000](http://localhost:8000) to view your application.
@@ -149,7 +183,6 @@ We maintain high code quality standards:
 
 - **Documentation**: [Mary UI Docs](https://mary-ui.com)
 - **Issues**: [GitHub Issues](https://github.com/lauroguedes/mary-ui-starter-kit/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/lauroguedes/mary-ui-starter-kit/discussions)
 
 ## 📝 License
 
