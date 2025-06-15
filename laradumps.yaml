@@ -1,0 +1,53 @@
+app:
+  dispatcher: curl
+  primary_host: 127.0.0.1
+  secondary_host: host.docker.internal
+  port: 9191
+  workdir: /var/www/html/
+  project_path: /Users/lauroguedes/apps/mary-ui-starter-kit/
+  wsl_config: wsl+Ubuntu/
+config:
+  sleep: 0
+  macos_auto_launch: false
+observers:
+  auto_invoke_app: false
+  enabled_in_testing: false
+  dump: true
+  original_dump: true
+  queries: false
+  slow_queries: false
+  mail: true
+  logs: true
+  http: false
+  jobs: false
+  commands: false
+  scheduled_commands: false
+  gate: false
+  cache: false
+xdebug:
+  client_host: 0.0.0.0
+  client_port: 9003
+code_snippet:
+  above: 9
+  below: 3
+logs:
+  info: true
+  warning: true
+  emergency: true
+  alert: false
+  debug: true
+  error: true
+  critical: true
+  notice: true
+  vendor: true
+  deprecated_message: true
+slow_queries:
+  threshold_in_ms: 500
+queries:
+  only_duplicated: false
+  select: true
+  insert: true
+  update: true
+  delete: true
+extra:
+  context: false
