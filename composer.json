@@ -2,11 +2,35 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "lauroguedes/mary-ui-starter-kit",
     "type": "project",
-    "description": "The Mary UI starter kit for Livewire.",
+    "description": "A modern Laravel starter kit featuring Livewire Volt, Mary UI, and Tailwind CSS with complete authentication, user management, and comprehensive testing.",
     "keywords": [
         "laravel",
-        "framework"
+        "livewire",
+        "volt",
+        "mary-ui",
+        "tailwind",
+        "starter-kit",
+        "authentication",
+        "user-management",
+        "framework",
+        "php",
+        "pest-testing"
     ],
+    "homepage": "https://github.com/lauroguedes/mary-ui-starter-kit",
+    "readme": "README.md",
+    "authors": [
+        {
+            "name": "Lauro Guedes",
+            "email": "lauro@example.com",
+            "homepage": "https://github.com/lauroguedes",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/lauroguedes/mary-ui-starter-kit/issues",
+        "source": "https://github.com/lauroguedes/mary-ui-starter-kit",
+        "docs": "https://github.com/lauroguedes/mary-ui-starter-kit/blob/main/README.md"
+    },
     "license": "MIT",
     "require": {
         "php": "^8.2",
