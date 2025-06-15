@@ -12,6 +12,10 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 [![Packagist Version](https://img.shields.io/packagist/v/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 
+</br>
+
+![demo_screenshot](https://github.com/user-attachments/assets/6005b127-2d3f-4c7e-a4fc-2dfc257faafb)
+
 </div>
 
 ## ✨ Features
