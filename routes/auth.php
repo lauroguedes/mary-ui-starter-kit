@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -19,6 +20,13 @@ Route::middleware('guest')->group(function () {
     Volt::route('reset-password/{token}', 'auth.reset-password')
         ->name('password.reset');
 
+    // OAuth Routes
+    Route::get('/oauth/{driver}/redirect', [OAuthController::class, 'redirect'])
+        ->whereIn('driver', ['google'])
+        ->name('oauth.redirect');
+
+    Route::get('/oauth/{driver}/callback', [OAuthController::class, 'callback'])
+        ->whereIn('driver', ['google']);
 });
 
 Route::middleware('auth')->group(function () {
