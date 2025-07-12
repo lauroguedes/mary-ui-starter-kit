@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Services\Socialite\AbstractSocialProvider;
+
+final class SocialAuthController extends Controller
+{
+    public function redirect(AbstractSocialProvider $provider): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
+    {
+        return $provider->redirect();
+    }
+
+    public function callback(AbstractSocialProvider $provider): \Illuminate\Http\RedirectResponse
+    {
+        $provider->callback();
+
+        return redirect()->route('dashboard');
+    }
+}

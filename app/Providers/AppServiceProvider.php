@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Services\Socialite\GoogleProvider;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use InvalidArgumentException;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +16,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // $this->app->bind('google', fn () => new GoogleProvider());
     }
 
     /**
@@ -21,6 +24,11 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Route::bind('provider', function (string $value) {
+            return match ($value) {
+                'google' => new GoogleProvider(),
+                default => throw new InvalidArgumentException('Invalid provider'),
+            };
+        });
     }
 }
