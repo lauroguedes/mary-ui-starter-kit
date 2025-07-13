@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Enums\SocialiteProviders;
-use App\Services\Socialite\GoogleProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use InvalidArgumentException;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -25,8 +23,6 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Route::bind('provider', function (string $value) {
-            return SocialiteProviders::from($value)->make();
-        });
+        Route::bind('provider', fn (string $value) => SocialiteProviders::from($value)->make());
     }
 }

@@ -11,10 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 final class SocialAuthException extends Exception
 {
-    private readonly string $provider;
-
     public function __construct(
-        string $provider,
+        private readonly string $provider,
         string $message = '',
         int $code = 0,
         ?Exception $previous = null
@@ -24,8 +22,6 @@ final class SocialAuthException extends Exception
             $code,
             $previous
         );
-
-        $this->provider = $provider;
     }
 
     public function report(): bool
