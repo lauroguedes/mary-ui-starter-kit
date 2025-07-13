@@ -17,15 +17,15 @@ final class GoogleProvider extends AbstractSocialProvider
         $this->provider = SocialiteProviders::GOOGLE->value;
     }
 
-    protected function handleUser(ProviderUser $socialUser): void
+    public function handleUser(ProviderUser $socialUser): void
     {
         session(['auth_provider' => [
             'name' => $this->provider,
-            'avatar' => $socialUser->avatar,
+            'avatar' => $socialUser->getAvatar(),
         ]]);
 
         $account = SocialAccount::whereProviderName($this->provider)
-            ->whereProviderId($socialUser->id)
+            ->whereProviderId($socialUser->getId())
             ->first();
 
         if ($account) {
@@ -35,20 +35,20 @@ final class GoogleProvider extends AbstractSocialProvider
         }
 
         $user = User::updateOrCreate([
-            'email' => $socialUser->email,
+            'email' => $socialUser->getEmail(),
         ], [
-            'name' => $socialUser->name,
-            'email' => $socialUser->email,
+            'name' => $socialUser->getName(),
+            'email' => $socialUser->getEmail(),
         ]);
 
         if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
 
-        $account = $user->socialAccounts()->create([
+        $user->socialAccounts()->create([
             'provider_name' => $this->provider,
-            'provider_id' => $socialUser->id,
-            'avatar' => $socialUser->avatar,
+            'provider_id' => $socialUser->getId(),
+            'avatar' => $socialUser->getAvatar(),
         ]);
 
         Auth::login($user);

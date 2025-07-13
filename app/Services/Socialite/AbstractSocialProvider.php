@@ -11,7 +11,7 @@ abstract class AbstractSocialProvider
 {
     protected string $provider;
 
-    abstract protected function handleUser(ProviderUser $socialUser): void;
+    abstract public function handleUser(ProviderUser $socialUser): void;
 
     final public function redirect(): \Symfony\Component\HttpFoundation\RedirectResponse|\Illuminate\Http\RedirectResponse
     {
