@@ -19,6 +19,11 @@ final class GoogleProvider extends AbstractSocialProvider
 
     protected function handleUser(ProviderUser $socialUser): void
     {
+        session(['auth_provider' => [
+            'name' => $this->provider,
+            'avatar' => $socialUser->avatar,
+        ]]);
+
         $account = SocialAccount::whereProviderName($this->provider)
             ->whereProviderId($socialUser->id)
             ->first();
@@ -40,7 +45,7 @@ final class GoogleProvider extends AbstractSocialProvider
             $user->markEmailAsVerified();
         }
 
-        $user->socialAccounts()->create([
+        $account = $user->socialAccounts()->create([
             'provider_name' => $this->provider,
             'provider_id' => $socialUser->id,
             'avatar' => $socialUser->avatar,
