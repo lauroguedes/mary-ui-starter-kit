@@ -26,7 +26,7 @@ abstract class AbstractSocialProvider
         try {
             return Socialite::driver($this->provider)->redirect();
         } catch (Exception $e) {
-            $this->errorHandler(previous: $e);
+            $this->errorHandler(__('An error occurred while connecting to the social provider.'), $e);
         }
     }
 
@@ -45,9 +45,9 @@ abstract class AbstractSocialProvider
                 $this->errorHandler(__('You have denied the authorization request. Please try again if you want to continue.'), $e);
             }
 
-            $this->errorHandler(previous: $e);
+            $this->errorHandler(__('An error occurred while connecting to the social provider.'), $e);
         } catch (Exception $e) {
-            $this->errorHandler(previous: $e);
+            $this->errorHandler(__('An error occurred while connecting to the social provider.'), $e);
         }
     }
 
@@ -55,13 +55,13 @@ abstract class AbstractSocialProvider
      * @throws SocialAuthException
      */
     private function errorHandler(
-        string $message = 'An error occurred while connecting to the social provider.',
+        string $message,
         ?Throwable $previous
     ): void {
         throw new SocialAuthException(
             provider: $this->provider,
             message: $message,
-            code: $previous->getCode() ?? 500,
+            code: $previous->getCode() ?: 500,
             previous: $previous
         );
     }

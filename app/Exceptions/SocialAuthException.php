@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -29,15 +30,20 @@ final class SocialAuthException extends Exception
 
     public function report(): bool
     {
-        Log::warning(
+        Log::error(
             'Social authentication failed.',
-            ['message' => $this->getMessage(), 'provider' => $this->provider]
+            [
+                'message' => $this->getMessage(),
+                'provider' => $this->provider,
+                'code' => $this->getCode(),
+                'previous' => $this->getPrevious(),
+            ]
         );
 
         return false;
     }
 
-    public function render(Request $request): \Illuminate\Http\RedirectResponse
+    public function render(Request $request): RedirectResponse
     {
         return redirect()
             ->route('login')
