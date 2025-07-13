@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\SocialiteProviders;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
@@ -22,11 +23,11 @@ Route::middleware('guest')->group(function () {
 
     // Socialite OAuth Routes
     Route::get('/oauth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
-        ->whereIn('provider', ['google'])
+        ->whereIn('provider', SocialiteProviders::cases())
         ->name('oauth.redirect');
 
     Route::get('/oauth/{provider}/callback', [SocialAuthController::class, 'callback'])
-        ->whereIn('provider', ['google']);
+        ->whereIn('provider', SocialiteProviders::cases());
 });
 
 Route::middleware('auth')->group(function () {

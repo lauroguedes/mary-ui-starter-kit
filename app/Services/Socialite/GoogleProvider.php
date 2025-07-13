@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Socialite;
 
+use App\Enums\SocialiteProviders;
 use App\Models\SocialAccount;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,7 @@ final class GoogleProvider extends AbstractSocialProvider
 {
     public function __construct()
     {
-        $this->provider = 'google';
+        $this->provider = SocialiteProviders::GOOGLE->value;
     }
 
     protected function handleUser(ProviderUser $socialUser): void
