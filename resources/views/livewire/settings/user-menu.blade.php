@@ -29,7 +29,7 @@ new class extends Component {
 <div>
     <x-mary-dropdown right>
         <x-slot:trigger class="cursor-pointer hover:opacity-80 transition-all">
-            <x-mary-avatar :image="$user->avatar ?? '/images/empty-user.jpg'"
+            <x-mary-avatar :image="$user->avatar ?? session('auth_provider')['avatar'] ?? '/images/empty-user.jpg'"
                 class="!w-10 !text-base-content !bg-base-300 overflow-hidden">
                 <x-slot:title class="text-sm font-semibold max-w-[150px] truncate">
                     {{ $user->name }}
