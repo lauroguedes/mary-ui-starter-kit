@@ -36,14 +36,24 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 - **User status management** (Active, Inactive, Suspended)
 - **Advanced filtering and search** capabilities
 - **Avatar management** with automatic cleanup
+- **Google OAuth integration** for social login
+
+### 🔗 **OAuth Socialite Integration**
+- **Laravel Socialite** integration with extensible provider system
+- **Google OAuth** authentication out of the box
+- **Social account linking** to existing user accounts
+- **Automatic user creation** for new social logins
+- **Extensible architecture** for adding new OAuth providers
+- **Secure token handling** and user data synchronization
 
 ### 🏗️ **Architecture & Developer Experience**
 - **Laravel 12.x** with PHP 8.2+ support
 - **SQLite** database by default (easy local setup)
-- **Pest testing framework** with 77+ comprehensive tests
+- **Pest testing framework** with 80+ comprehensive tests
 - **Code quality tools**: Pint (formatting), Rector (refactoring)
 - **Debugging tools**: LaraDumps, Laravel Pail
 - **Development workflow** with Concurrently for multi-process dev server
+- **OAuth Socialite Integration** with extensible architecture for new oauth providers
 
 ### 🧪 **Testing Coverage**
 - **77 tests** with **218 assertions**
@@ -183,7 +193,6 @@ We maintain high code quality standards:
 
 ## 📋 Roadmap
 
-- [ ] **Google Auth Provider**
 - [ ] **Role-based permissions system**
 - [ ] **Advanced Log and Audit**
 - [ ] **Multi-tenant support**
