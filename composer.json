@@ -41,7 +41,8 @@
         "livewire/volt": "^1.7.0",
         "nunomaduro/essentials": "^0.1",
         "owenvoke/blade-fontawesome": "^2.9",
-        "robsontenorio/mary": "^2.0"
+        "robsontenorio/mary": "^2.0",
+        "spatie/laravel-permission": "^6.21"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
