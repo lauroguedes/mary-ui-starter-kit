@@ -32,13 +32,16 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Volt::route('verify-email', 'auth.verify-email')
+        ->can('user.login')
         ->name('verification.notice');
 
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
+        ->can('user.login')
         ->name('verification.verify');
 
     Volt::route('confirm-password', 'auth.confirm-password')
+        ->can('user.login')
         ->name('password.confirm');
 });
 

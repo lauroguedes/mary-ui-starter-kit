@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Enums\SocialiteProviders;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,5 +25,9 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::bind('provider', fn (string $value) => SocialiteProviders::from($value)->make());
+
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super-admin') ? true : null;
+        });
     }
 }

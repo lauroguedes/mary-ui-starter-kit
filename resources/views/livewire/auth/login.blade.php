@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Actions\Logout;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -24,7 +25,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     /**
      * Handle an incoming authentication request.
      */
-    public function login(): void
+    public function login(Logout $logout): void
     {
         $this->validate();
 
@@ -38,8 +39,24 @@ new #[Layout('components.layouts.auth')] class extends Component {
             ]);
         }
 
+        $authUser = auth()->user();
+
+        if ($authUser->cannot('user.login')) {
+            $logout();
+
+            throw ValidationException::withMessages([
+                'email' => __('User cannot log in.')
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
+
+        if ($authUser->cannot('dashboard.view')) {
+            $this->redirectIntended(default: route('settings.profile', absolute: false), navigate: true);
+
+            return;
+        }
 
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
