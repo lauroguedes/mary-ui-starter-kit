@@ -21,7 +21,7 @@ new class extends Component {
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        $this->authorize('user.delete');
+        $this->authorize('profile.delete');
 
         $user = Auth::user();
 
