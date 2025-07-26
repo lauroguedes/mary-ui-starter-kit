@@ -39,7 +39,9 @@ new class extends Component {
                 </x-slot:subtitle>
             </x-mary-avatar>
         </x-slot:trigger>
+        @can('profile.settings')
         <x-mary-menu-item :title="__('Settings')" icon="s-cog-6-tooth" :link="route('settings.profile')" />
+        @endcan
         <x-mary-menu-item :title="__('Repository')" icon="fab.github"
             link="https://github.com/lauroguedes/mary-ui-starter-kit" external />
         <x-mary-menu-item :title="__('Documentation')" icon="s-book-open" link="https://laravel.com/docs/starter-kits"

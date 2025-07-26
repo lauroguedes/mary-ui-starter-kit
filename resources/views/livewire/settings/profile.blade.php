@@ -1,15 +1,18 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
+use Mary\Traits\Toast;
 
 new class extends Component {
     use WithFileUploads;
+    use Toast;
 
     public User $user;
 
@@ -46,6 +49,8 @@ new class extends Component {
     public function updateProfileInformation(): void
     {
         $validated = $this->validate();
+
+        $this->authorize('profile.update');
 
         $this->processUpload($validated);
 
@@ -99,6 +104,15 @@ new class extends Component {
         $url = $this->avatar->store('users', 'public');
         $validated['avatar'] = "/storage/{$url}";
     }
+
+    public function exception(Throwable $e, $stopPropagation): void
+    {
+        if ($e instanceof AuthorizationException) {
+            $this->error($e->getMessage());
+
+            $stopPropagation();
+        }
+    }
 }; ?>
 
 <section class="w-full">
@@ -142,7 +156,9 @@ new class extends Component {
             </div>
         </form>
 
-        <livewire:settings.delete-user-form/>
+        @can('profile.delete')
+            <livewire:settings.delete-user-form/>
+        @endcan
     </x-settings.layout>
 </section>
 

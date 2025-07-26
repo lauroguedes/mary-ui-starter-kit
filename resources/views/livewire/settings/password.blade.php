@@ -1,12 +1,16 @@
 <?php
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Component;
+use Mary\Traits\Toast;
 
 new class extends Component {
+    use Toast;
+
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';
@@ -16,6 +20,8 @@ new class extends Component {
      */
     public function updatePassword(): void
     {
+        $this->authorize('profile.update');
+
         $passwordRules = app()->isProduction() ? ['required', 'string', 'confirmed', Password::defaults()] : ['required', 'string', 'confirmed'];
 
         try {
@@ -37,24 +43,35 @@ new class extends Component {
 
         $this->dispatch('password-updated');
     }
+
+    public function exception(Throwable $e, $stopPropagation): void
+    {
+        if ($e instanceof AuthorizationException) {
+            $this->error($e->getMessage());
+
+            $stopPropagation();
+        }
+    }
 }; ?>
 
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <x-settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
+    <x-settings.layout :heading="__('Update password')"
+                       :subheading="__('Ensure your account is using a long, random password to stay secure')">
         <form wire:submit="updatePassword" class="space-y-6">
             <x-mary-password wire:model="current_password" :label="__('Current password')" required right
-                autocomplete="current-password" />
+                             autocomplete="current-password"/>
 
-            <x-mary-password wire:model="password" :label="__('New Password')" required right autocomplete="new-password" />
+            <x-mary-password wire:model="password" :label="__('New Password')" required right
+                             autocomplete="new-password"/>
 
             <x-mary-password wire:model="password_confirmation" :label="__('Confirm password')" required right
-                autocomplete="new-password" />
+                             autocomplete="new-password"/>
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
-                    <x-mary-button type="submit" :label="__('Save')" class="btn-accent" />
+                    <x-mary-button type="submit" :label="__('Save')" class="btn-accent"/>
                 </div>
 
                 <x-action-message class="me-3" on="password-updated">
