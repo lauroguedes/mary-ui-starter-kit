@@ -39,20 +39,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
             ]);
         }
 
-        $authUser = auth()->user();
-
-        if ($authUser->cannot('user.login')) {
-            $logout();
-
-            throw ValidationException::withMessages([
-                'email' => __('User cannot log in.')
-            ]);
-        }
-
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        if ($authUser->cannot('dashboard.view')) {
+        if (auth()->user()->cannot('dashboard.view')) {
             $this->redirectIntended(default: route('settings.profile', absolute: false), navigate: true);
 
             return;

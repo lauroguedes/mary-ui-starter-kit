@@ -9,12 +9,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->can('dashboard.view')
-    ->name('dashboard');
+Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
+    Route::view('dashboard', 'dashboard')
+        ->can('dashboard.view')
+        ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile')
         ->can('profile.view');
 
