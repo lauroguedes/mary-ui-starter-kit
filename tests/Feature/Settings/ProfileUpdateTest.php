@@ -19,7 +19,7 @@ beforeEach(function () {
 test('profile page is displayed', function () {
     $user = User::factory()->create();
 
-    $user->givePermissionTo('profile.view');
+    $user->givePermissionTo(['profile.view', 'user.login']);
 
     $this->actingAs($user);
 

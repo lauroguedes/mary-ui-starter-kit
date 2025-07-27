@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Volt\Volt;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('confirm password screen can be rendered', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
     $user = User::factory()->create();
+    $user->givePermissionTo('user.login');
 
     $response = $this->actingAs($user)->get('/confirm-password');
 

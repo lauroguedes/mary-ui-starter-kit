@@ -11,7 +11,7 @@ config:
   macos_auto_launch: false
 observers:
   auto_invoke_app: false
-  enabled_in_testing: false
+  enabled_in_testing: true
   dump: true
   original_dump: true
   queries: true

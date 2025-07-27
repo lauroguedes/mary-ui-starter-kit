@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\UserStatus;
 use App\Models\User;
 use App\Notifications\UserCreated;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +14,9 @@ use Livewire\Livewire;
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
     $this->user = User::factory()->create();
+    $this->user->givePermissionTo(['user.create', 'user.login']);
     $this->actingAs($this->user);
     Storage::fake('public');
     Notification::fake();
@@ -161,6 +164,7 @@ test('password is auto-generated and hashed', function () {
 
     $user = User::where('email', 'john@example.com')->first();
 
-    expect($user->password)->not()->toBeEmpty();
-    expect($user->password)->not()->toBe('password');
+    expect($user->password)->not()->toBeEmpty()
+        ->and($user->password)->not()
+        ->toBe('password');
 });

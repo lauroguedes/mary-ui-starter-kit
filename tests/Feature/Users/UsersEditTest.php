@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\UserStatus;
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -11,7 +12,9 @@ use Livewire\Livewire;
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
     $this->user = User::factory()->create();
+    $this->user->givePermissionTo(['user.update', 'user.login']);
     $this->targetUser = User::factory()->create([
         'name' => 'Target User',
         'email' => 'target@example.com',
@@ -46,9 +49,11 @@ test('user can be updated successfully', function () {
 
     $this->targetUser->refresh();
 
-    expect($this->targetUser->name)->toBe('Updated Name');
-    expect($this->targetUser->email)->toBe('updated@example.com');
-    expect($this->targetUser->status)->toBe(UserStatus::INACTIVE);
+    expect($this->targetUser->name)->toBe('Updated Name')
+        ->and($this->targetUser->email)
+        ->toBe('updated@example.com')
+        ->and($this->targetUser->status)
+        ->toBe(UserStatus::INACTIVE);
 });
 
 test('user update validates required fields', function () {

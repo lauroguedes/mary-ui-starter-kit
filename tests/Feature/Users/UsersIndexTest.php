@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 use App\Enums\UserStatus;
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Livewire;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 beforeEach(function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
     $this->user = User::factory()->create();
+    $this->user->givePermissionTo(['user.list', 'user.login']);
     $this->actingAs($this->user);
 });
 
@@ -81,11 +84,9 @@ test('user cannot delete themselves', function () {
     $html = $component->html();
 
     // Look for the current user's row and verify no delete button
-    expect($html)->toContain($this->user->name);
-
-    // Check that other users do have delete buttons
-    expect($html)->toContain($otherUser->name);
-    expect($html)->toContain(__('Delete'));
+    expect($html)->toContain($this->user->name)
+        ->and($html)->toContain($otherUser->name)
+        ->and($html)->toContain(__('Delete'));
 });
 
 test('filters can be cleared', function () {
@@ -112,8 +113,9 @@ test('pagination works correctly', function () {
 
     // Should show 10 per page by default (plus the authenticated user = 11 total users, but paginated to 10)
     $users = $component->instance()->users();
-    expect($users->count())->toBe(10);
-    expect($users->total())->toBe(16); // 15 created + 1 authenticated user
+    expect($users->count())->toBe(10)
+        ->and($users->total())
+        ->toBe(16);
 });
 
 test('drawer opens and closes for filters', function () {
