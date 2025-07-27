@@ -50,7 +50,7 @@ new class extends Component {
 
     public function save(): void
     {
-        $this->authorize('user.updates');
+        $this->authorize('user.update');
 
         $validated = $this->validate();
 

@@ -12,7 +12,7 @@ uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(RolesAndPermissionsSeeder::class);
     $this->user = User::factory()->create();
-    $this->user->givePermissionTo(['user.list', 'user.login']);
+    $this->user->assignRole('user-manager', 'user');
     $this->actingAs($this->user);
 });
 

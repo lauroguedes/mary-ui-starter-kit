@@ -6,6 +6,7 @@ use App\Enums\UserStatus;
 use App\Models\User;
 use App\Notifications\UserCreated;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(RolesAndPermissionsSeeder::class);
     $this->user = User::factory()->create();
-    $this->user->givePermissionTo(['user.create', 'user.login']);
+    $this->user->assignRole('user-manager', 'user');
     $this->actingAs($this->user);
     Storage::fake('public');
     Notification::fake();
@@ -168,3 +169,14 @@ test('password is auto-generated and hashed', function () {
         ->and($user->password)->not()
         ->toBe('password');
 });
+
+test('user cannot be created because of insufficient permissions', function () {
+    $this->user->removeRole('user-manager');
+
+    Livewire::test('pages.users.create')
+        ->set('name', 'John Doe')
+        ->set('email', 'john@example.com')
+        ->set('status', UserStatus::ACTIVE->value)
+        ->call('save')
+        ->assertForbidden();
+})->skip('This test is not working because assertForbidden() is not working when using $stopPropagationOnFailure');
