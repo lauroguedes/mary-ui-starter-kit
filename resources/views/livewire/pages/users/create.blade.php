@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Livewire\Volt\Component;
 use App\Models\User;
 use Mary\Traits\Toast;
@@ -35,6 +36,8 @@ new class extends Component {
 
     public function save(): void
     {
+        $this->authorize('user.create');
+
         $data = $this->validate();
 
         $randomPassword = \Str::password(12);
@@ -59,29 +62,42 @@ new class extends Component {
         $data['avatar'] = "/storage/{$url}";
     }
 
+    public function exception(Throwable $e, $stopPropagation): void
+    {
+        if ($e instanceof AuthorizationException) {
+            $this->error($e->getMessage());
+
+            $stopPropagation();
+        }
+    }
+
 }; ?>
 
 <x-pages.layout :page-title="__('Create User')">
     <x-slot:content>
         <div class="grid gap-5 lg:grid-cols-2">
             <x-mary-form wire:submit="save">
+                @can('user.manage-avatar')
                 <x-mary-file wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
-                    <img src="/images/empty-user.jpg" class="h-36 rounded-lg" />
+                    <img src="/images/empty-user.jpg" class="h-36 rounded-lg"/>
                 </x-mary-file>
+                @endcan
 
-                <x-mary-input :label="__('Name')" wire:model="name" />
-                <x-mary-input :label="__('Email')" wire:model="email" />
+                <x-mary-input :label="__('Name')" wire:model="name"/>
+                <x-mary-input :label="__('Email')" wire:model="email"/>
+                @can('user.manage-status')
                 <x-mary-group :label="__('Status')" wire:model="status" :options="$statusOptions"
-                    class="[&:checked]:!btn-primary" />
+                              class="[&:checked]:!btn-primary"/>
+                @endcan
 
                 <x-slot:actions>
-                    <x-mary-button :label="__('Cancel')" :link="route('users.index')" class="btn-soft" />
+                    <x-mary-button :label="__('Cancel')" :link="route('users.index')" class="btn-soft"/>
                     <x-mary-button :label="__('Save')" icon="o-paper-airplane" spinner="save" type="submit"
-                        class="btn-primary" />
+                                   class="btn-primary"/>
                 </x-slot:actions>
             </x-mary-form>
             <div class="hidden lg:block place-self-center">
-                <img src="/images/user-action-page.svg" width="300" class="mx-auto" />
+                <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
             </div>
         </div>
     </x-slot:content>
@@ -90,5 +106,5 @@ new class extends Component {
 @push('scripts')
     {{-- Cropper.js --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"/>
 @endpush

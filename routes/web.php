@@ -29,10 +29,10 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
             ->can('user.list')
             ->name('index');
         Volt::route('/create', 'pages.users.create')
-            ->can('user.create')
+            ->can('user.view')
             ->name('create');
         Volt::route('/{user}/edit', 'pages.users.edit')
-            ->can('user.update')
+            ->can('user.view')
             ->name('edit');
         // Add more user routes here as needed
     });
