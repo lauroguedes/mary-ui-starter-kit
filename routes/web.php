@@ -36,6 +36,12 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
             ->name('edit');
         // Add more user routes here as needed
     });
+
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Volt::route('/', 'pages.roles.index')
+            ->can('role.list')
+            ->name('index');
+    });
 });
 
 require __DIR__ . '/auth.php';
