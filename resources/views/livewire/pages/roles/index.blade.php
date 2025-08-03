@@ -87,7 +87,7 @@ new class extends Component {
                            icon="o-funnel"/>
         @endcan
         @can('role.view')
-            <x-mary-button :link="route('users.create')" icon="o-plus" :label="__('Create')" class="btn-primary btn-sm"
+            <x-mary-button :link="route('roles.create')" icon="o-plus" :label="__('Create')" class="btn-primary btn-sm"
                            responsive/>
         @endcan
     </x-slot:actions>
@@ -137,7 +137,7 @@ new class extends Component {
 <script>
     $wire.on('target-delete', (event) => {
         $wire.modal = true;
-        $wire.targetDelete = event.user;
+        $wire.targetDelete = event.role;
     });
 </script>
 @endscript
