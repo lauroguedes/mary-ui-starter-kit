@@ -9,12 +9,14 @@ use Mary\Traits\Toast;
 use Livewire\Attributes\Validate;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Validation\Rule;
 
 new class extends Component {
     use Toast;
     use WithPagination;
 
-    #[Validate('required|max:100|unique:roles')]
+    public Role $role;
+
     public string $name = '';
 
     #[Validate('required|array')]
@@ -22,19 +24,40 @@ new class extends Component {
 
     public string $search = '';
 
+    public function mount(): void
+    {
+        $this->fill($this->role);
+
+        $this->permissionsGiven = $this->role
+            ->permissions()
+            ->pluck('id')
+            ->toArray();
+    }
+
+    protected function rules(): array
+    {
+        return [
+            'name' => [
+                'required',
+                'max:100',
+                Rule::unique('roles')->ignore($this->role),
+            ],
+        ];
+    }
+
     public function save(): void
     {
-        $this->authorize('role.create');
+        $this->authorize('role.update');
 
-        $data = $this->validate();
+        $validated = $this->validate();
 
-        $role = Role::create([
-            'name' => $data['name']
+        $this->role->update([
+            'name' => $validated['name']
         ]);
 
-        $role->givePermissionTo($data['permissionsGiven']);
+        $this->role->syncPermissions($validated['permissionsGiven']);
 
-        $this->success(__("Role {$role->name} created with success."), redirectTo: route('roles.index'));
+        $this->success(__("Role {$this->role->name} updated with success."), redirectTo: route('roles.index'));
     }
 
     public function permissions(): LengthAwarePaginator
@@ -72,7 +95,7 @@ new class extends Component {
 
 }; ?>
 
-<x-pages.layout :page-title="__('Create Role')">
+<x-pages.layout :page-title="__('Update Role')">
     <x-slot:content>
         <div class="grid gap-5 lg:grid-cols-2">
             <x-mary-form wire:submit="save">
@@ -88,24 +111,24 @@ new class extends Component {
                 <div class="m-3">
                     <x-partials.header-title :separator="true" :heading="__('Permissions')" />
                     @can('permission.search')
-                    <x-mary-input class="input-sm" :placeholder="__('Search...')" wire:model.live.debounce="search" clearable
-                                  icon="o-magnifying-glass"/>
+                        <x-mary-input class="input-sm" :placeholder="__('Search...')" wire:model.live.debounce="search" clearable
+                                      icon="o-magnifying-glass"/>
                     @endcan
                 </div>
                 @can('permission.assign')
-                <x-mary-table
-                    :headers="$headers"
-                    :rows="$permissions"
-                    wire:model="permissionsGiven"
-                    selectable
-                    with-pagination>
-                    @scope('cell_name', $permission)
-                    {{ str($permission->name)->replace('.', ' ')->headline() }}
-                    @endscope
-                    @scope('cell_permission', $permission)
-                    <x-mary-badge :value="$permission->name" class="badge-primary badge-soft " />
-                    @endscope
-                </x-mary-table>
+                    <x-mary-table
+                        :headers="$headers"
+                        :rows="$permissions"
+                        wire:model="permissionsGiven"
+                        selectable
+                        with-pagination>
+                        @scope('cell_name', $permission)
+                        {{ str($permission->name)->replace('.', ' ')->headline() }}
+                        @endscope
+                        @scope('cell_permission', $permission)
+                        <x-mary-badge :value="$permission->name" class="badge-primary badge-soft " />
+                        @endscope
+                    </x-mary-table>
                 @endcan
             </div>
         </div>

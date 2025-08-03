@@ -102,8 +102,8 @@ new class extends Component {
                         </x-slot:trigger>
 
                         @can('role.update')
-{{--                            <x-mary-menu-item :title="__('Edit')" icon="o-pencil"--}}
-{{--                                              :link="route('users.edit', ['role' => $role->id])"/>--}}
+                            <x-mary-menu-item :title="__('Edit')" icon="o-pencil"
+                                              :link="route('roles.edit', ['role' => $role->id])"/>
                         @endcan
                         @can('role.delete')
                             <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"

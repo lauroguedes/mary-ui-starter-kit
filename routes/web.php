@@ -44,9 +44,9 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
         Volt::route('/create', 'pages.roles.create')
             ->can('role.view')
             ->name('create');
-//        Volt::route('/{role}/edit', 'pages.roles.edit')
-//            ->can('role.view')
-//            ->name('edit');
+        Volt::route('/{role}/edit', 'pages.roles.edit')
+            ->can('role.view')
+            ->name('edit');
     });
 });
 
