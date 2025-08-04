@@ -48,6 +48,18 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
             ->can('role.view')
             ->name('edit');
     });
+
+    Route::prefix('permissions')->name('permissions.')->group(function () {
+        Volt::route('/', 'pages.permissions.index')
+            ->can('permission.list')
+            ->name('index');
+        Volt::route('/create', 'pages.permissions.create')
+            ->can('permission.view')
+            ->name('create');
+        Volt::route('/{permission}/edit', 'pages.permissions.edit')
+            ->can('permission.view')
+            ->name('edit');
+    });
 });
 
 require __DIR__ . '/auth.php';

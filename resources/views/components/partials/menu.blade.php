@@ -8,6 +8,10 @@
     @endcan
 
     @can('role.list')
-    <x-mary-menu-item title="Roles" icon="fas.shield-alt" :link="route('roles.index')" />
+    <x-mary-menu-item title="Roles" icon="fas.user-tag" :link="route('roles.index')" />
+    @endcan
+
+    @can('permission.list')
+    <x-mary-menu-item title="Permissions" icon="fas.user-shield" :link="route('permissions.index')" />
     @endcan
 </x-mary-menu>
