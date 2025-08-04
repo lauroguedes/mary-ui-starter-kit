@@ -37,6 +37,12 @@ new class extends Component {
     {
         $this->authorize('permission.delete');
 
+        throw_if(
+            $permission->users->isNotEmpty() || $permission->roles->isNotEmpty(),
+            AuthorizationException::class,
+            __('Before deleting the permission, remove the roles and users binding.')
+        );
+
         $permission->delete();
 
         $this->modal = false;
@@ -50,6 +56,7 @@ new class extends Component {
     {
         return Permission::query()
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
+            ->with(['roles', 'users'])
             ->orderBy(...array_values($this->sortBy))
             ->paginate(10);
     }
@@ -113,8 +120,10 @@ new class extends Component {
                                           :link="route('permissions.edit', ['permission' => $permission->id])"/>
                     @endcan
                     @can('permission.delete')
+                        @if ($permission->roles->isEmpty() && $permission->users->isEmpty())
                         <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
                                           @click="$dispatch('target-delete', { permission: {{ $permission->id }} })" spinner/>
+                        @endif
                     @endcan
                 </x-mary-dropdown>
             @endcan

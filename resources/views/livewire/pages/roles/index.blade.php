@@ -36,6 +36,12 @@ new class extends Component {
     {
         $this->authorize('role.delete');
 
+        throw_if(
+            $role->users->isNotEmpty(),
+            AuthorizationException::class,
+            __('Before deleting the role, remove the user binding.')
+        );
+
         $role->delete();
 
         $this->modal = false;
@@ -49,6 +55,7 @@ new class extends Component {
     {
         return Role::query()
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
+            ->with(['permissions', 'users'])
             ->orderBy(...array_values($this->sortBy))
             ->paginate(10);
     }
@@ -106,8 +113,10 @@ new class extends Component {
                                               :link="route('roles.edit', ['role' => $role->id])"/>
                         @endcan
                         @can('role.delete')
+                            @if ($role->users->isEmpty())
                             <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
                                               @click="$dispatch('target-delete', { role: {{ $role->id }} })" spinner/>
+                            @endif
                         @endcan
                     </x-mary-dropdown>
                 @endcan
