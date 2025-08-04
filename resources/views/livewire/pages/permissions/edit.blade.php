@@ -99,7 +99,19 @@ new class extends Component {
     <x-slot:content>
         <div class="grid gap-5 lg:grid-cols-2">
             <x-mary-form wire:submit="save">
-                <x-mary-input :label="__('Name')" wire:model="name" :hint="__('Use lowercase and dot notation. Ex: model.action')"/>
+                <x-mary-input
+                    :label="__('Name')"
+                    wire:model="name"
+                    :hint="__('Use lowercase and dot notation. Ex: model.action')"
+                    :disabled="$permission->users->isNotEmpty() || $permission->roles->isNotEmpty()"
+                />
+
+                @if ($permission->users->isNotEmpty() || $permission->roles->isNotEmpty())
+                <x-mary-alert
+                    :title="__('The name edition is disabled because the permission is binding.')"
+                    icon="o-exclamation-triangle"
+                    class="alert-warning alert-soft" />
+                @endif
 
                 <x-slot:actions>
                     <x-mary-button :label="__('Cancel')" :link="route('permissions.index')" class="btn-soft"/>
