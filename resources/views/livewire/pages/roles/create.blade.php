@@ -17,7 +17,7 @@ new class extends Component {
     #[Validate('required|max:100|unique:roles')]
     public string $name = '';
 
-    #[Validate('required|array')]
+    #[Validate('array')]
     public array $permissionsGiven = [];
 
     public string $search = '';

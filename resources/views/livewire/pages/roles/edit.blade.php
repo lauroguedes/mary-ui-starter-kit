@@ -19,7 +19,7 @@ new class extends Component {
 
     public string $name = '';
 
-    #[Validate('required|array')]
+    #[Validate('array')]
     public array $permissionsGiven = [];
 
     public string $search = '';
