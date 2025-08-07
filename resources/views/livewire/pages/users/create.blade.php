@@ -71,7 +71,9 @@ new class extends Component {
             AuthorizationException::class
         );
 
-        $user->assignRole($this->rolesGiven);
+        if ($this->rolesGiven) {
+            $user->assignRole($this->rolesGiven);
+        }
 
         $user->notify(new UserCreated($randomPassword));
 
@@ -148,6 +150,7 @@ new class extends Component {
                 </x-slot:actions>
             </x-mary-form>
             <div class="hidden lg:block place-self-center w-full">
+                @can('role.assign')
                 <div class="m-3">
                     <x-partials.header-title :separator="true" :heading="__('Roles')"/>
                     @can('role.search')
@@ -156,7 +159,6 @@ new class extends Component {
                                       icon="o-magnifying-glass"/>
                     @endcan
                 </div>
-                @can('role.assign')
                     <x-mary-table
                         :headers="$headersRole"
                         :rows="$roles"
@@ -164,6 +166,8 @@ new class extends Component {
                         wire:model="rolesGiven"
                         selectable
                         with-pagination/>
+                @else
+                    <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
                 @endcan
             </div>
         </div>

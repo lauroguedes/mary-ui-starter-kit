@@ -66,6 +66,13 @@ final class User extends Authenticatable implements MustVerifyEmail
             );
     }
 
+    protected static function booted(): void
+    {
+        self::created(function (User $user) {
+            $user->assignRole('user');
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      *
