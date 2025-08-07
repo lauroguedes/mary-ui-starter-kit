@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 use App\Enums\UserStatus;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 new class extends Component {
@@ -34,7 +35,12 @@ new class extends Component {
     #[Validate('array')]
     public array $rolesGiven = [];
 
+    #[Validate('array')]
+    public array $permissionsGiven = [];
+
     public string $searchRole = '';
+
+    public string $searchPermission = '';
 
     public array $statusOptions;
 
@@ -44,6 +50,11 @@ new class extends Component {
 
         $this->rolesGiven = $this->user
             ->roles()
+            ->pluck('id')
+            ->toArray();
+
+        $this->permissionsGiven = $this->user
+            ->permissions()
             ->pluck('id')
             ->toArray();
 
@@ -72,13 +83,20 @@ new class extends Component {
 
         $this->processUpload($validated);
 
-        $this->user->update(Arr::except($validated, 'rolesGiven'));
+        $this->user->update(Arr::except($validated, ['rolesGiven', 'permissionsGiven']));
 
         if (
             $this->rolesGiven
             && auth()->user()->can('role.assign')
         ) {
             $this->user->syncRoles($this->rolesGiven);
+        }
+
+        if (
+            $this->permissionsGiven
+            && auth()->user()->can('permission.assign')
+        ) {
+            $this->user->syncPermissions($this->permissionsGiven);
         }
 
         $this->success(__('User updated with success.'), redirectTo: route('users.index'));
@@ -120,7 +138,22 @@ new class extends Component {
             ->paginate(10);
     }
 
+    public function permissions(): LengthAwarePaginator
+    {
+        return Permission::query()
+            ->when($this->searchPermission, fn(Builder $q) => $q->where('name', 'like', "%$this->searchPermission%"))
+            ->paginate(10);
+    }
+
     public function headersRole(): array
+    {
+        return [
+            ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
+            ['key' => 'name', 'label' => 'Name'],
+        ];
+    }
+
+    public function headersPermission(): array
     {
         return [
             ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
@@ -130,10 +163,19 @@ new class extends Component {
 
     public function with(): array
     {
-        return [
+        $data = [
             'roles' => $this->roles(),
             'headersRole' => $this->headersRole(),
         ];
+
+        if (auth()->user()->hasRole('super-admin')) {
+            $data = array_merge($data, [
+                'permissions' => $this->permissions(),
+                'headersPermission' => $this->headersPermission(),
+            ]);
+        }
+
+        return $data;
     }
 
     public function exception(Throwable $e, $stopPropagation): void
@@ -179,27 +221,64 @@ new class extends Component {
                 </x-slot:actions>
             </x-mary-form>
             <div class="hidden lg:block place-self-center w-full">
-                @can('role.assign')
-                    <div class="m-3">
-                        <x-partials.header-title :separator="true" :heading="__('Roles')"/>
-                        @can('role.search')
-                            <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                          wire:model.live.debounce="searchRole" clearable
-                                          icon="o-magnifying-glass"/>
-                        @endcan
-                    </div>
-                    <x-mary-table
-                        :headers="$headersRole"
-                        :rows="$roles"
-                        :row-decoration="$this->rowDecoration"
-                        wire:model="rolesGiven"
-                        selectable
-                        with-pagination/>
+                @unlessrole('super-admin')
+                    @can('role.assign')
+                        <div class="m-3">
+                            <x-partials.header-title :separator="true" :heading="__('Roles')"/>
+                            @can('role.search')
+                                <x-mary-input class="input-sm" :placeholder="__('Search...')"
+                                              wire:model.live.debounce="searchRole" clearable
+                                              icon="o-magnifying-glass"/>
+                            @endcan
+                        </div>
+                        <x-mary-table
+                            :headers="$headersRole"
+                            :rows="$roles"
+                            :row-decoration="$this->rowDecoration"
+                            wire:model="rolesGiven"
+                            selectable
+                            with-pagination/>
+                    @else
+                        <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
+                    @endcan
                 @else
                     <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
-                @endcan
+                @endunlessrole
             </div>
         </div>
+        @role('super-admin')
+        <div class="flex gap-5 w-full">
+            <div class="w-full lg:w-1/2">
+                <div class="m-3">
+                    <x-partials.header-title :separator="true" :heading="__('Roles')"/>
+                        <x-mary-input class="input-sm" :placeholder="__('Search...')"
+                                      wire:model.live.debounce="searchRole" clearable
+                                      icon="o-magnifying-glass"/>
+                </div>
+                <x-mary-table
+                    :headers="$headersRole"
+                    :rows="$roles"
+                    :row-decoration="$this->rowDecoration"
+                    wire:model="rolesGiven"
+                    selectable
+                    with-pagination/>
+            </div>
+            <div class="w-full lg:w-1/2">
+                <div class="m-3">
+                    <x-partials.header-title :separator="true" :heading="__('Permissions')"/>
+                    <x-mary-input class="input-sm" :placeholder="__('Search...')"
+                                  wire:model.live.debounce="searchPermission" clearable
+                                  icon="o-magnifying-glass"/>
+                </div>
+                <x-mary-table
+                    :headers="$headersPermission"
+                    :rows="$permissions"
+                    wire:model="permissionsGiven"
+                    selectable
+                    with-pagination/>
+            </div>
+        </div>
+        @endrole
     </x-slot:content>
 </x-pages.layout>
 
