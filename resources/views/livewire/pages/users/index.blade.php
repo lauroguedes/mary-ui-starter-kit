@@ -104,7 +104,7 @@ new class extends Component {
             <x-mary-button class="btn-soft btn-sm" :label="__('Filters')" @click="$wire.drawer=true" responsive
                            icon="o-funnel"/>
         @endcan
-        @can('user.view')
+        @can('user.create')
             <x-mary-button :link="route('users.create')" icon="o-plus" :label="__('Create')" class="btn-primary btn-sm"
                            responsive/>
         @endcan
@@ -156,7 +156,7 @@ new class extends Component {
                 </x-mary-popover>
                 @endif
             @if($user->id !== auth()->id())
-                @can('user.view')
+                @canany(['user.update', 'user.delete'])
                     <x-mary-dropdown>
                         <x-slot:trigger>
                             <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle"/>
@@ -171,7 +171,7 @@ new class extends Component {
                                               @click="$dispatch('target-delete', { user: {{ $user->id }} })" spinner/>
                         @endcan
                     </x-mary-dropdown>
-                @endcan
+                @endcanany
             @endif
             </div>
             @endscope

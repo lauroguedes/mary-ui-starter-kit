@@ -28,7 +28,6 @@ final class RolesAndPermissionsSeeder extends Seeder
             'super-admin',
             'admin',
             'user-manager',
-            'stats-viewer',
             'permission-manager',
             'role-manager',
             'user',
@@ -43,10 +42,6 @@ final class RolesAndPermissionsSeeder extends Seeder
             'user-manager' => [
                 'user.create', 'user.update', 'user.delete', 'user.view', 'user.list',
                 'user.search', 'user.filter', 'user.sort', 'user.manage-status', 'user.manage-avatar',
-                'user.manage-roles',
-            ],
-            'stats-viewer' => [
-                'dashboard.view',
             ],
             'permission-manager' => [
                 'permission.view', 'permission.list', 'permission.create', 'permission.update', 'permission.delete',
@@ -58,6 +53,7 @@ final class RolesAndPermissionsSeeder extends Seeder
             ],
             'user' => [
                 'user.login',
+                'dashboard.view',
                 'profile.settings', 'profile.view', 'profile.password', 'profile.update', 'profile.delete',
             ],
         ];
@@ -70,7 +66,6 @@ final class RolesAndPermissionsSeeder extends Seeder
         // Insert permissions for each role and get their IDs
         $permissionIdsByRole = [
             'user-manager' => $insertPermissions('user-manager'),
-            'stats-viewer' => $insertPermissions('stats-viewer'),
             'permission-manager' => $insertPermissions('permission-manager'),
             'role-manager' => $insertPermissions('role-manager'),
             'user' => $insertPermissions('user'),
@@ -89,7 +84,14 @@ final class RolesAndPermissionsSeeder extends Seeder
                 );
         }
 
-        Role::whereName('admin')->first()->givePermissionTo(Permission::all());
+        $adminRole = Role::whereName('admin')->first();
+        $adminRole->givePermissionTo(Permission::all());
+        $adminRole->revokePermissionTo([
+            'permission.create',
+            'permission.update',
+            'permission.delete',
+        ]);
+
         Role::whereName('role-manager')->first()->givePermissionTo([
             'permission.view', 'permission.list',
         ]);

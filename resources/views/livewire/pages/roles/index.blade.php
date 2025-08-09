@@ -93,7 +93,7 @@ new class extends Component {
             <x-mary-button class="btn-soft btn-sm" :label="__('Filters')" @click="$wire.drawer=true" responsive
                            icon="o-funnel"/>
         @endcan
-        @can('role.view')
+        @can('role.create')
             <x-mary-button :link="route('roles.create')" icon="o-plus" :label="__('Create')" class="btn-primary btn-sm"
                            responsive/>
         @endcan
@@ -117,7 +117,7 @@ new class extends Component {
                         </x-slot:content>
                     </x-mary-popover>
                 @endif
-                @can('role.view')
+                @canany(['role.update', 'role.delete'])
                     <x-mary-dropdown>
                         <x-slot:trigger>
                             <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle"/>
@@ -134,7 +134,7 @@ new class extends Component {
                             @endif
                         @endcan
                     </x-mary-dropdown>
-                @endcan
+                @endcanany
             </div>
             @endscope
         </x-mary-table>

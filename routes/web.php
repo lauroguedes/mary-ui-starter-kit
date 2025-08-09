@@ -29,7 +29,7 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
             ->can('user.list')
             ->name('index');
         Volt::route('/create', 'pages.users.create')
-            ->can('user.view')
+            ->can('user.create')
             ->name('create');
         Volt::route('/{user}/edit', 'pages.users.edit')
             ->can('user.view')
@@ -42,7 +42,7 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
             ->can('role.list')
             ->name('index');
         Volt::route('/create', 'pages.roles.create')
-            ->can('role.view')
+            ->can('role.create')
             ->name('create');
         Volt::route('/{role}/edit', 'pages.roles.edit')
             ->can('role.view')
@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
             ->can('permission.list')
             ->name('index');
         Volt::route('/create', 'pages.permissions.create')
-            ->can('permission.view')
+            ->can('permission.create')
             ->name('create');
         Volt::route('/{permission}/edit', 'pages.permissions.edit')
             ->can('permission.view')
