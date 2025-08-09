@@ -95,7 +95,8 @@ new class extends Component {
                            icon="o-funnel"/>
         @endcan
         @can('permission.view')
-            <x-mary-button :link="route('permissions.create')" icon="o-plus" :label="__('Create')" class="btn-primary btn-sm"
+            <x-mary-button :link="route('permissions.create')" icon="o-plus" :label="__('Create')"
+                           class="btn-primary btn-sm"
                            responsive/>
         @endcan
     </x-slot:actions>
@@ -106,27 +107,44 @@ new class extends Component {
             {{ str($permission->name)->replace('.', ' ')->headline() }}
             @endscope
             @scope('cell_permission', $permission)
-            <x-mary-badge :value="$permission->name" class="badge-primary badge-soft " />
+            <x-mary-badge :value="$permission->name" class="badge-primary badge-soft "/>
             @endscope
             @scope('actions', $permission)
-            @can('permission.view')
-                <x-mary-dropdown>
-                    <x-slot:trigger>
-                        <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle"/>
-                    </x-slot:trigger>
+            <div class="inline-flex gap-2 items-center justify-end">
+                @if ($permission->roles->isNotEmpty())
+                    <x-mary-popover>
+                        <x-slot:trigger>
+                            <x-mary-button icon="fas.user-tag" class="btn-circle btn-ghost"/>
+                        </x-slot:trigger>
+                        <x-slot:content class="border border-warning max-w-80">
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($permission->roles as $role)
+                                    <x-mary-badge :value="$role->name" class="badge-primary badge-xs"/>
+                                @endforeach
+                            </div>
+                        </x-slot:content>
+                    </x-mary-popover>
+                @endif
+                @can('permission.view')
+                    <x-mary-dropdown>
+                        <x-slot:trigger>
+                            <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle"/>
+                        </x-slot:trigger>
 
-                    @can('permission.update')
-                        <x-mary-menu-item :title="__('Edit')" icon="o-pencil"
-                                          :link="route('permissions.edit', ['permission' => $permission->id])"/>
-                    @endcan
-                    @can('permission.delete')
-                        @if ($permission->roles->isEmpty() && $permission->users->isEmpty())
-                        <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
-                                          @click="$dispatch('target-delete', { permission: {{ $permission->id }} })" spinner/>
-                        @endif
-                    @endcan
-                </x-mary-dropdown>
-            @endcan
+                        @can('permission.update')
+                            <x-mary-menu-item :title="__('Edit')" icon="o-pencil"
+                                              :link="route('permissions.edit', ['permission' => $permission->id])"/>
+                        @endcan
+                        @can('permission.delete')
+                            @if ($permission->roles->isEmpty() && $permission->users->isEmpty())
+                                <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
+                                                  @click="$dispatch('target-delete', { permission: {{ $permission->id }} })"
+                                                  spinner/>
+                            @endif
+                        @endcan
+                    </x-mary-dropdown>
+                @endcan
+            </div>
             @endscope
         </x-mary-table>
     </x-slot:content>

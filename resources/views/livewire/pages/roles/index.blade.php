@@ -102,6 +102,21 @@ new class extends Component {
     <x-slot:content>
         <x-mary-table :headers="$headers" :rows="$roles" :sort-by="$sortBy" with-pagination>
             @scope('actions', $role)
+            <div class="inline-flex gap-2 items-center justify-end">
+                @if ($role->permissions->isNotEmpty())
+                    <x-mary-popover>
+                        <x-slot:trigger>
+                            <x-mary-button icon="fas.user-shield" class="btn-circle btn-ghost" />
+                        </x-slot:trigger>
+                        <x-slot:content class="border border-warning max-w-80">
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($role->permissions as $permission)
+                                    <x-mary-badge :value="$permission->name" class="badge-primary badge-xs" />
+                                @endforeach
+                            </div>
+                        </x-slot:content>
+                    </x-mary-popover>
+                @endif
                 @can('role.view')
                     <x-mary-dropdown>
                         <x-slot:trigger>
@@ -114,12 +129,13 @@ new class extends Component {
                         @endcan
                         @can('role.delete')
                             @if ($role->users->isEmpty())
-                            <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
-                                              @click="$dispatch('target-delete', { role: {{ $role->id }} })" spinner/>
+                                <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
+                                                  @click="$dispatch('target-delete', { role: {{ $role->id }} })" spinner/>
                             @endif
                         @endcan
                     </x-mary-dropdown>
                 @endcan
+            </div>
             @endscope
         </x-mary-table>
     </x-slot:content>

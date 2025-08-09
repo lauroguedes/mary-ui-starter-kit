@@ -85,17 +85,11 @@ new class extends Component {
 
         $this->user->update(Arr::except($validated, ['rolesGiven', 'permissionsGiven']));
 
-        if (
-            $this->rolesGiven
-            && auth()->user()->can('role.assign')
-        ) {
+        if (auth()->user()->can('role.assign')) {
             $this->user->syncRoles($this->rolesGiven);
         }
 
-        if (
-            $this->permissionsGiven
-            && auth()->user()->can('permission.assign')
-        ) {
+        if (auth()->user()->can('permission.assign')) {
             $this->user->syncPermissions($this->permissionsGiven);
         }
 
