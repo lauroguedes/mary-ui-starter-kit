@@ -19,8 +19,6 @@ beforeEach(function () {
 test('profile page is displayed', function () {
     $user = User::factory()->create();
 
-    $user->givePermissionTo(['profile.view', 'user.login']);
-
     $this->actingAs($user);
 
     $this->get('/settings/profile')->assertOk();
@@ -28,8 +26,6 @@ test('profile page is displayed', function () {
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
-
-    $user->givePermissionTo('profile.update');
 
     $this->actingAs($user);
 
@@ -50,8 +46,6 @@ test('profile information can be updated', function () {
 test('email verification status is unchanged when email address is unchanged', function () {
     $user = User::factory()->create();
 
-    $user->givePermissionTo('profile.update');
-
     $this->actingAs($user);
 
     $response = Volt::test('settings.profile')
@@ -66,8 +60,6 @@ test('email verification status is unchanged when email address is unchanged', f
 
 test('user can delete their account', function () {
     $user = User::factory()->create(['avatar' => null]);
-
-    $user->givePermissionTo('profile.delete');
 
     $this->actingAs($user);
 
@@ -86,8 +78,6 @@ test('user can delete their account', function () {
 test('correct password must be provided to delete account', function () {
     $user = User::factory()->create(['avatar' => null]);
 
-    $user->givePermissionTo('user.delete');
-
     $this->actingAs($user);
 
     $response = Volt::test('settings.delete-user-form')
@@ -101,8 +91,6 @@ test('correct password must be provided to delete account', function () {
 
 test('avatar can be updated in profile', function () {
     $user = User::factory()->create();
-
-    $user->givePermissionTo('profile.update');
 
     $this->actingAs($user);
 
@@ -124,8 +112,6 @@ test('avatar can be updated in profile', function () {
 
 test('old avatar is deleted when new avatar is uploaded', function () {
     $user = User::factory()->create();
-
-    $user->givePermissionTo('profile.update');
 
     $this->actingAs($user);
 
@@ -156,8 +142,6 @@ test('old avatar is deleted when new avatar is uploaded', function () {
 test('avatar upload validates file type in profile', function () {
     $user = User::factory()->create();
 
-    $user->givePermissionTo('profile.update');
-
     $this->actingAs($user);
 
     $file = UploadedFile::fake()->create('document.pdf', 100);
@@ -174,8 +158,6 @@ test('avatar upload validates file type in profile', function () {
 test('avatar upload validates file size in profile', function () {
     $user = User::factory()->create();
 
-    $user->givePermissionTo('profile.update');
-
     $this->actingAs($user);
 
     $file = UploadedFile::fake()->image('large-avatar.jpg')->size(2048); // 2MB
@@ -191,8 +173,6 @@ test('avatar upload validates file size in profile', function () {
 
 test('profile can be updated without uploading new avatar', function () {
     $user = User::factory()->create();
-
-    $user->givePermissionTo('profile.update');
 
     $this->actingAs($user);
 
@@ -213,8 +193,6 @@ test('profile can be updated without uploading new avatar', function () {
 
 test('avatar field is optional in profile update', function () {
     $user = User::factory()->create();
-
-    $user->givePermissionTo('profile.update');
 
     $this->actingAs($user);
 
@@ -237,8 +215,6 @@ test('existing avatar is cleared when avatar field is set to null', function () 
     // This test documents the current behavior where setting avatar to null clears existing avatar
     $user = User::factory()->create(['avatar' => '/storage/users/existing-avatar.jpg']);
 
-    $user->givePermissionTo('profile.update');
-
     $this->actingAs($user);
 
     $response = Volt::test('settings.profile')
@@ -258,8 +234,6 @@ test('existing avatar is cleared when avatar field is set to null', function () 
 
 test('user avatar is deleted from storage when account is deleted', function () {
     $user = User::factory()->create();
-
-    $user->givePermissionTo('profile.update', 'profile.delete');
 
     $this->actingAs($user);
 
@@ -296,8 +270,6 @@ test('user avatar is deleted from storage when account is deleted', function () 
 test('user without avatar can be deleted successfully', function () {
     $user = User::factory()->create(['avatar' => null]); // Explicitly set avatar to null
 
-    $user->givePermissionTo('profile.delete');
-
     $this->actingAs($user);
 
     $response = Volt::test('settings.delete-user-form')
@@ -313,8 +285,6 @@ test('user without avatar can be deleted successfully', function () {
 
 test('avatar deletion is skipped when user has no avatar during account deletion', function () {
     $user = User::factory()->create(['avatar' => null]);
-
-    $user->givePermissionTo('profile.delete');
 
     $this->actingAs($user);
 
@@ -332,6 +302,9 @@ test('avatar deletion is skipped when user has no avatar during account deletion
 
 test('users without profile update permission cannot update profile', function () {
     $user = User::factory()->create();
+
+    $role = $user->roles()->first();
+    $role->revokePermissionTo('profile.update');
 
     $this->actingAs($user);
 
@@ -351,9 +324,12 @@ test('users without user delete permission cannot delete their account', functio
         'password' => Hash::make('secret'),
     ]);
 
+    $role = $user->roles()->first();
+    $role->revokePermissionTo('profile.delete');
+
     $this->actingAs($user);
 
-    $response = Volt::test('settings.delete-user-form')
+    Volt::test('settings.delete-user-form')
         ->set('password', 'secret')
         ->call('deleteUser');
 

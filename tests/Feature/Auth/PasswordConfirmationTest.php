@@ -8,10 +8,12 @@ use Livewire\Volt\Volt;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-test('confirm password screen can be rendered', function () {
+beforeEach(function () {
     $this->seed(RolesAndPermissionsSeeder::class);
+});
+
+test('confirm password screen can be rendered', function () {
     $user = User::factory()->create();
-    $user->givePermissionTo('user.login');
 
     $response = $this->actingAs($user)->get('/confirm-password');
 

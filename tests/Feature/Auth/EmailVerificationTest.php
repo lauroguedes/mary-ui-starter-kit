@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\URL;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-test('email verification screen can be rendered', function () {
+beforeEach(function () {
     $this->seed(RolesAndPermissionsSeeder::class);
+});
+
+test('email verification screen can be rendered', function () {
     $user = User::factory()->unverified()->create();
-    $user->givePermissionTo('user.login');
 
     $response = $this->actingAs($user)->get('/verify-email');
 
@@ -21,9 +23,7 @@ test('email verification screen can be rendered', function () {
 });
 
 test('email can be verified', function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
     $user = User::factory()->unverified()->create();
-    $user->givePermissionTo(['user.login', 'dashboard.view']);
 
     Event::fake();
 

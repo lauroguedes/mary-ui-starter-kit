@@ -18,8 +18,6 @@ test('password can be updated', function () {
         'password' => Hash::make('secret'),
     ]);
 
-    $user->givePermissionTo('profile.update');
-
     $this->actingAs($user);
 
     $response = Volt::test('settings.password')
@@ -38,8 +36,6 @@ test('correct password must be provided to update password', function () {
         'password' => Hash::make('secret'),
     ]);
 
-    $user->givePermissionTo('profile.update');
-
     $this->actingAs($user);
 
     $response = Volt::test('settings.password')
@@ -56,9 +52,12 @@ test('users without profile update permission cannot update password', function 
         'password' => Hash::make('secret'),
     ]);
 
+    $role = $user->roles()->first();
+    $role->revokePermissionTo('profile.update');
+
     $this->actingAs($user);
 
-    $response = Volt::test('settings.password')
+    Volt::test('settings.password')
         ->set('current_password', 'secret')
         ->set('password', 'new-password')
         ->set('password_confirmation', 'new-password')

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
-use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Volt as LivewireVolt;
 
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -15,11 +14,10 @@ beforeEach(function () {
 
 test('login screen can be rendered')
     ->get('/login')
-    ->assertStatus(200);
+    ->assertSuccessful();
 
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
-    $user->givePermissionTo('user.login', 'dashboard.view');
 
     LivewireVolt::test('auth.login')
         ->set('email', $user->email)
@@ -33,7 +31,6 @@ test('users can authenticate using the login screen', function () {
 
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
-    $user->givePermissionTo('user.login');
 
     LivewireVolt::test('auth.login')
         ->set('email', $user->email)
@@ -46,7 +43,6 @@ test('users can not authenticate with invalid password', function () {
 
 test('users can logout', function () {
     $user = User::factory()->create();
-    $user->givePermissionTo('user.login');
 
     $this->actingAs($user)
         ->post('/logout')
@@ -57,6 +53,7 @@ test('users can logout', function () {
 
 test('users without login permission cannot authenticate', function () {
     $user = User::factory()->create();
+    $user->removeRole('user');
 
     LivewireVolt::test('auth.login')
         ->set('email', $user->email)
@@ -73,6 +70,7 @@ test('users without login permission cannot authenticate', function () {
 
 test('users without dashboard view permission are redirected to profile', function () {
     $user = User::factory()->create();
+    $user->removeRole('user');
     $user->givePermissionTo('user.login');
 
     LivewireVolt::test('auth.login')

@@ -41,6 +41,9 @@ new class extends Component {
     {
         $this->authorize('user.delete');
 
+        // Refresh the user to ensure all attributes are loaded
+        $user = $user->fresh();
+
         if ($user->avatar) {
             $path = str($user->avatar)->after('/storage/');
             \Storage::disk('public')->delete($path);
