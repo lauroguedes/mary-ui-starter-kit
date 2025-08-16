@@ -4,6 +4,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Volt\Component;
 use App\Models\User;
@@ -46,6 +47,10 @@ new class extends Component {
 
     public function mount(): void
     {
+        if (auth()->id() === $this->user->id) {
+            $this->redirectRoute('settings.profile');
+        }
+
         $this->fill($this->user);
 
         $this->rolesGiven = $this->user
@@ -77,7 +82,7 @@ new class extends Component {
 
     public function save(): void
     {
-        $this->authorize('user.update');
+        $this->authorize('update', $this->user);
 
         $validated = $this->validate();
 
@@ -202,9 +207,9 @@ new class extends Component {
                 @endcan
 
                 <x-mary-input :label="__('Name')" wire:model="name"/>
-                <x-mary-input :label="__('Email')" wire:model="email"/>
+                <x-mary-input :disabled="auth()->user()->cannot('manageStatus', $user)" :label="__('Email')" wire:model="email"/>
                 @can('user.manage-status')
-                    <x-mary-group :label="__('Status')" wire:model="status" :options="$statusOptions"
+                    <x-mary-group :disabled="auth()->user()->cannot('manageStatus', $user)" :label="__('Status')" wire:model="status" :options="$statusOptions"
                                   class="[&:checked]:!btn-primary"/>
                 @endcan
 
@@ -216,28 +221,28 @@ new class extends Component {
             </x-mary-form>
             <div class="hidden lg:block place-self-center w-full">
                 @unlessrole('super-admin')
-                    @can('role.assign')
-                        <div class="m-3">
-                            <x-partials.header-title :separator="true" :heading="__('Roles')"/>
-                            @can('role.search')
-                                <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                              wire:model.live.debounce="searchRole" clearable
-                                              icon="o-magnifying-glass"/>
-                            @endcan
-                        </div>
-                        <x-mary-table
-                            :headers="$headersRole"
-                            :rows="$roles"
-                            :row-decoration="$this->rowDecoration"
-                            wire:model="rolesGiven"
-                            selectable
-                            with-pagination/>
-                    @else
-                        <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
-                    @endcan
+                @can('assignRole', $user)
+                    <div class="m-3">
+                        <x-partials.header-title :separator="true" :heading="__('Roles')"/>
+                        @can('role.search')
+                            <x-mary-input class="input-sm" :placeholder="__('Search...')"
+                                          wire:model.live.debounce="searchRole" clearable
+                                          icon="o-magnifying-glass"/>
+                        @endcan
+                    </div>
+                    <x-mary-table
+                        :headers="$headersRole"
+                        :rows="$roles"
+                        :row-decoration="$this->rowDecoration"
+                        wire:model="rolesGiven"
+                        selectable
+                        with-pagination/>
                 @else
                     <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
-                @endunlessrole
+                @endcan
+                @else
+                    <img src="/images/user-action-page.svg" width="300" class="mx-auto"/>
+                    @endunlessrole
             </div>
         </div>
         @role('super-admin')
@@ -245,9 +250,9 @@ new class extends Component {
             <div class="w-full lg:w-1/2">
                 <div class="m-3">
                     <x-partials.header-title :separator="true" :heading="__('Roles')"/>
-                        <x-mary-input class="input-sm" :placeholder="__('Search...')"
-                                      wire:model.live.debounce="searchRole" clearable
-                                      icon="o-magnifying-glass"/>
+                    <x-mary-input class="input-sm" :placeholder="__('Search...')"
+                                  wire:model.live.debounce="searchRole" clearable
+                                  icon="o-magnifying-glass"/>
                 </div>
                 <x-mary-table
                     :headers="$headersRole"

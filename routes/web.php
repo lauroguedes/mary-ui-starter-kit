@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -26,15 +27,14 @@ Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
 
     Route::prefix('users')->name('users.')->group(function () {
         Volt::route('/', 'pages.users.index')
-            ->can('user.list')
+            ->can('viewAny', User::class)
             ->name('index');
         Volt::route('/create', 'pages.users.create')
-            ->can('user.create')
+            ->can('create', User::class)
             ->name('create');
         Volt::route('/{user}/edit', 'pages.users.edit')
-            ->can('user.view')
+            ->can('view', 'user')
             ->name('edit');
-        // Add more user routes here as needed
     });
 
     Route::prefix('roles')->name('roles.')->group(function () {

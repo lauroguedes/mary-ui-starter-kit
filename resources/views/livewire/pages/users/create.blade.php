@@ -55,7 +55,7 @@ new class extends Component {
 
     public function save(): void
     {
-        $this->authorize('user.create');
+        $this->authorize('create', User::class);
 
         $data = $this->validate();
 

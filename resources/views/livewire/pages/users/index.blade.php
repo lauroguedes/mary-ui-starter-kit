@@ -39,12 +39,7 @@ new class extends Component {
 
     public function delete(User $user): void
     {
-        $this->authorize('user.delete');
-
-        throw_if($user->id === auth()->id(), AuthorizationException::class);
-
-        // Refresh the user to ensure all attributes are loaded
-        //$user = $user->fresh();
+        $this->authorize('delete', $user);
 
         if ($user->avatar) {
             $path = str($user->avatar)->after('/storage/');
@@ -62,12 +57,13 @@ new class extends Component {
 
     public function edit(User $user): void
     {
-        $this->redirectRoute('users.edit', ['user' => $user->id], false, true);
+        $this->redirectRoute('users.edit', ['user' => $user], false, true);
     }
 
     public function users(): LengthAwarePaginator
     {
         return User::query()
+            ->hideSuperAdmin()
             ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%$this->search%"))
             ->when($this->status, fn(Builder $q) => $q->where('status', $this->status))
             ->with(['roles', 'permissions'])
@@ -160,8 +156,7 @@ new class extends Component {
                     </x-slot:content>
                 </x-mary-popover>
                 @endif
-            @if($user->id !== auth()->id())
-                @canany(['user.update', 'user.delete'])
+                @can('view', $user)
                     <x-mary-dropdown>
                         <x-slot:trigger>
                             <x-mary-button icon="o-ellipsis-horizontal" class="btn-circle"/>
@@ -171,13 +166,12 @@ new class extends Component {
                             <x-mary-menu-item :title="__('Edit')" icon="o-pencil"
                                               :link="route('users.edit', ['user' => $user->id])"/>
                         @endcan
-                        @can('user.delete')
+                        @can('delete', $user)
                             <x-mary-menu-item :title="__('Delete')" icon="o-trash" class="text-error"
                                               @click="$dispatch('target-delete', { user: {{ $user->id }} })" spinner/>
                         @endcan
                     </x-mary-dropdown>
                 @endcanany
-            @endif
             </div>
             @endscope
         </x-mary-table>

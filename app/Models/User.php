@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Enums\UserStatus;
+use App\Policies\UserPolicy;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,6 +20,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @method static updateOrCreate(array $array, array $array1)
  */
+#[UsePolicy(UserPolicy::class)]
 final class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -71,6 +74,15 @@ final class User extends Authenticatable implements MustVerifyEmail
         self::created(function (User $user) {
             $user->assignRole('user');
         });
+    }
+
+    #[Scope]
+    protected function hideSuperAdmin(Builder $query): void
+    {
+        $query->when(
+            ! auth()->user()?->hasRole('super-admin'),
+            fn ($q) => $q->whereDoesntHave('roles', fn ($r) => $r->where('name', 'super-admin'))
+        );
     }
 
     /**

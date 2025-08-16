@@ -22,7 +22,7 @@ observers:
   jobs: false
   commands: false
   scheduled_commands: false
-  gate: false
+  gate: true
   cache: false
 xdebug:
   client_host: 0.0.0.0
