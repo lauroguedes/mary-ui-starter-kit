@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 use App\Enums\UserStatus;
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
     $this->user = User::factory()->create();
     $this->user->assignRole('user-manager', 'user');
     $this->targetUser = User::factory()->create([

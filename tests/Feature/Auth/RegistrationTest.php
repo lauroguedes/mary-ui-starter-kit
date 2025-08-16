@@ -2,14 +2,7 @@
 
 declare(strict_types=1);
 
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Volt\Volt;
-
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
-beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
-});
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');

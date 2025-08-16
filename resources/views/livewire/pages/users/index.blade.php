@@ -41,8 +41,10 @@ new class extends Component {
     {
         $this->authorize('user.delete');
 
+        throw_if($user->id === auth()->id(), AuthorizationException::class);
+
         // Refresh the user to ensure all attributes are loaded
-        $user = $user->fresh();
+        //$user = $user->fresh();
 
         if ($user->avatar) {
             $path = str($user->avatar)->after('/storage/');

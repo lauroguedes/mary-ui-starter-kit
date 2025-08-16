@@ -3,15 +3,11 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
     $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);

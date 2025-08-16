@@ -4,22 +4,14 @@ declare(strict_types=1);
 
 use App\Enums\UserStatus;
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
-beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
-});
 
 // Role Assignment Authorization Tests
 test('user without role.assign permission cannot assign roles during creation', function () {
     $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
-    // user-manager role doesn't have role.assign permission by default
     $this->actingAs($userManagerUser);
 
     $testRole = Role::create(['name' => 'test-role']);
@@ -134,7 +126,6 @@ test('user with permission.assign permission can assign permissions during edit'
 // User Operation Authorization Tests
 test('user without user.create permission cannot access create page', function () {
     $regularUser = User::factory()->create();
-    $regularUser->assignRole('user');
     $this->actingAs($regularUser);
 
     $this->get(route('users.create'))
@@ -143,7 +134,6 @@ test('user without user.create permission cannot access create page', function (
 
 test('user without user.update permission cannot access edit page', function () {
     $regularUser = User::factory()->create();
-    $regularUser->assignRole('user');
     $this->actingAs($regularUser);
 
     $targetUser = User::factory()->create();
@@ -154,7 +144,6 @@ test('user without user.update permission cannot access edit page', function () 
 
 test('user without user.list permission cannot access index page', function () {
     $regularUser = User::factory()->create();
-    $regularUser->assignRole('user');
     $this->actingAs($regularUser);
 
     $this->get(route('users.index'))
@@ -163,7 +152,6 @@ test('user without user.list permission cannot access index page', function () {
 
 test('user without user.delete permission cannot delete users', function () {
     $regularUser = User::factory()->create();
-    $regularUser->assignRole('user');
     $this->actingAs($regularUser);
 
     $targetUser = User::factory()->create();
@@ -235,7 +223,7 @@ test('authorization is checked on each save operation', function () {
         ->set('status', UserStatus::ACTIVE->value);
 
     // Remove the permission during the session
-    $userManagerUser->revokePermissionTo('user.create');
+    $userManagerUser->removeRole('user-manager');
 
     // The save should fail due to authorization, user should not be created
     $component->call('save');
@@ -264,8 +252,8 @@ test('mixed permission scenarios work correctly', function () {
         ->assertRedirect(route('users.index'));
 
     $targetUser->refresh();
-    // Role should be assigned (has role.assign)
-    expect($targetUser->hasRole($testRole))->toBeTrue();
-    // Permission should NOT be assigned (lacks permission.assign)
-    expect($targetUser->hasPermissionTo($testPermission))->toBeFalse();
+    expect($targetUser->hasRole($testRole))
+        ->toBeTrue()
+        ->and($targetUser->hasPermissionTo($testPermission))
+        ->toBeFalse();
 });

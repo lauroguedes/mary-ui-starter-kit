@@ -3,14 +3,11 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
-
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
     $this->adminUser = User::factory()->create(['email' => 'admin@admin.com']);
     $this->adminUser->assignRole('admin');
     $this->actingAs($this->adminUser);
@@ -19,7 +16,7 @@ beforeEach(function () {
 
 test('permissions can be assigned during user edit', function () {
     $testPermission = Permission::create(['name' => 'test.permission']);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('name', $this->targetUser->name)
         ->set('email', $this->targetUser->email)
@@ -35,7 +32,7 @@ test('permissions can be assigned during user edit', function () {
 test('multiple permissions can be assigned during user edit', function () {
     $permission1 = Permission::create(['name' => 'test.permission1']);
     $permission2 = Permission::create(['name' => 'test.permission2']);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('permissionsGiven', [$permission1->id, $permission2->id])
         ->call('save')
@@ -50,7 +47,7 @@ test('multiple permissions can be assigned during user edit', function () {
 test('permissions can be removed during user edit', function () {
     $testPermission = Permission::create(['name' => 'test.permission']);
     $this->targetUser->givePermissionTo($testPermission);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('permissionsGiven', []) // Remove all permissions
         ->call('save')
@@ -64,9 +61,9 @@ test('permissions can be removed during user edit', function () {
 test('permissions can be synchronized during user edit', function () {
     $oldPermission = Permission::create(['name' => 'old.permission']);
     $newPermission = Permission::create(['name' => 'new.permission']);
-    
+
     $this->targetUser->givePermissionTo($oldPermission);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('permissionsGiven', [$newPermission->id])
         ->call('save')
@@ -81,7 +78,7 @@ test('permissions can be synchronized during user edit', function () {
 test('existing permissions are preselected in user edit', function () {
     $permission1 = Permission::create(['name' => 'permission.1']);
     $permission2 = Permission::create(['name' => 'permission.2']);
-    
+
     $this->targetUser->givePermissionTo([$permission1, $permission2]);
 
     $component = Livewire::test('pages.users.edit', ['user' => $this->targetUser]);
@@ -91,9 +88,11 @@ test('existing permissions are preselected in user edit', function () {
         ->and($component->get('permissionsGiven'))->toHaveCount(2);
 });
 
-test('permissions can be searched in user edit', function () {
+test('permissions can be searched in user edit - only super-admin', function () {
     $userPermission = Permission::create(['name' => 'user.manage']);
     $rolePermission = Permission::create(['name' => 'role.manage']);
+
+    $this->adminUser->assignRole('super-admin');
 
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('searchPermission', 'user')
@@ -102,7 +101,7 @@ test('permissions can be searched in user edit', function () {
 });
 
 test('permissions pagination works in user edit', function () {
-    collect(range(1, 15))->each(fn($i) => Permission::create(['name' => "test.permission.{$i}"]));
+    collect(range(1, 15))->each(fn ($i) => Permission::create(['name' => "test.permission.{$i}"]));
 
     $component = Livewire::test('pages.users.edit', ['user' => $this->targetUser]);
 
@@ -114,7 +113,7 @@ test('permissions pagination works in user edit', function () {
 
 test('invalid permission ids are handled gracefully during permission assignment', function () {
     $validPermission = Permission::create(['name' => 'valid.permission']);
-    
+
     // Test only with valid permission ID
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('permissionsGiven', [$validPermission->id])
@@ -127,24 +126,20 @@ test('invalid permission ids are handled gracefully during permission assignment
 });
 
 test('user with both roles and permissions shows correct assignments', function () {
-    $testRole = Spatie\Permission\Models\Role::create(['name' => 'test-role']);
+    $testRole = Role::create(['name' => 'test-role']);
     $rolePermission = Permission::create(['name' => 'role.permission']);
     $directPermission = Permission::create(['name' => 'direct.permission']);
-    
+
     $testRole->givePermissionTo($rolePermission);
     $this->targetUser->assignRole($testRole);
     $this->targetUser->givePermissionTo($directPermission);
 
     $component = Livewire::test('pages.users.edit', ['user' => $this->targetUser]);
 
-    // Should show role assignment
-    expect($component->get('rolesGiven'))->toContain($testRole->id);
-    
-    // Should show direct permission assignment
-    expect($component->get('permissionsGiven'))->toContain($directPermission->id);
-    
-    // Should not show role-based permissions in direct permissions
-    expect($component->get('permissionsGiven'))->not()->toContain($rolePermission->id);
+    expect($component->get('rolesGiven'))->toContain($testRole->id)
+        ->and($component->get('permissionsGiven'))->toContain($directPermission->id)
+        ->and($component->get('permissionsGiven'))->not()->toContain($rolePermission->id);
+
 });
 
 test('permissions headers are correctly defined', function () {
@@ -161,16 +156,15 @@ test('user permissions are updated only when user has permission.assign capabili
     $limitedUser = User::factory()->create(['email' => 'limited@admin.com']);
     $limitedUser->assignRole('user-manager'); // Has user permissions but not permission.assign
     $this->actingAs($limitedUser);
-    
+
     $testPermission = Permission::create(['name' => 'test.permission']);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('permissionsGiven', [$testPermission->id])
         ->call('save')
         ->assertRedirect(route('users.index'));
 
     $this->targetUser->refresh();
-    // Permission should NOT be assigned because limited user lacks permission.assign
     expect($this->targetUser->hasPermissionTo($testPermission))->toBeFalse();
 });
 
@@ -178,9 +172,9 @@ test('permissions can be assigned by super-admin', function () {
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     $testPermission = Permission::create(['name' => 'test.permission']);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('permissionsGiven', [$testPermission->id])
         ->call('save')
@@ -191,14 +185,14 @@ test('permissions can be assigned by super-admin', function () {
 });
 
 test('mixed role and permission changes work together', function () {
-    $oldRole = Spatie\Permission\Models\Role::create(['name' => 'old-role']);
-    $newRole = Spatie\Permission\Models\Role::create(['name' => 'new-role']);
+    $oldRole = Role::create(['name' => 'old-role']);
+    $newRole = Role::create(['name' => 'new-role']);
     $oldPermission = Permission::create(['name' => 'old.permission']);
     $newPermission = Permission::create(['name' => 'new.permission']);
-    
+
     $this->targetUser->assignRole($oldRole);
     $this->targetUser->givePermissionTo($oldPermission);
-    
+
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('rolesGiven', [$newRole->id])
         ->set('permissionsGiven', [$newPermission->id])

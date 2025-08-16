@@ -4,23 +4,14 @@ declare(strict_types=1);
 
 use App\Enums\UserStatus;
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
-
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
-beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
-});
 
 test('non-super-admin cannot assign super-admin role during user creation', function () {
     $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
-    
-    $superAdminRole = Role::where('name', 'super-admin')->first();
-    
+
     // Admin user should not even see super-admin role in role options
     $component = Livewire::test('pages.users.create');
     $roles = $component->instance()->roles();
@@ -32,9 +23,9 @@ test('super-admin can assign super-admin role during user creation', function ()
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     $superAdminRole = Role::where('name', 'super-admin')->first();
-    
+
     Livewire::test('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
@@ -51,9 +42,9 @@ test('non-super-admin cannot assign super-admin role during user edit', function
     $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
-    
+
     $targetUser = User::factory()->create();
-    
+
     // Admin user should not even see super-admin role in role options
     $component = Livewire::test('pages.users.edit', ['user' => $targetUser]);
     $roles = $component->instance()->roles();
@@ -65,10 +56,10 @@ test('super-admin can assign super-admin role during user edit', function () {
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     $targetUser = User::factory()->create();
     $superAdminRole = Role::where('name', 'super-admin')->first();
-    
+
     Livewire::test('pages.users.edit', ['user' => $targetUser])
         ->set('rolesGiven', [$superAdminRole->id])
         ->call('save')
@@ -82,16 +73,16 @@ test('non-super-admin cannot remove super-admin role from existing super-admin u
     $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
-    
+
     $existingSuperAdmin = User::factory()->create();
     $existingSuperAdmin->assignRole('super-admin');
-    
+
     // Admin user should not see super-admin role, so they can't modify it
     $component = Livewire::test('pages.users.edit', ['user' => $existingSuperAdmin]);
     $roles = $component->instance()->roles();
     $roleNames = $roles->pluck('name')->toArray();
     expect($roleNames)->not()->toContain('super-admin');
-    
+
     // Admin cannot change roles of super-admin user
     $component->set('rolesGiven', []) // Try to remove all roles
         ->call('save')
@@ -106,10 +97,10 @@ test('super-admin can remove super-admin role from another super-admin user', fu
     $superAdminUser = User::factory()->create(['email' => 'superadmin1@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     $anotherSuperAdmin = User::factory()->create();
     $anotherSuperAdmin->assignRole('super-admin');
-    
+
     Livewire::test('pages.users.edit', ['user' => $anotherSuperAdmin])
         ->set('rolesGiven', []) // Remove all roles
         ->call('save')
@@ -123,16 +114,16 @@ test('super-admin role appears with warning decoration in user creation', functi
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     $component = Livewire::test('pages.users.create');
-    
+
     $rowDecoration = $component->instance()->rowDecoration();
     expect($rowDecoration)->toHaveKey('bg-warning/20');
-    
+
     // Test that the decoration function works correctly
     $superAdminRole = Role::where('name', 'super-admin')->first();
     $normalRole = Role::create(['name' => 'normal-role']);
-    
+
     $decorationFunction = $rowDecoration['bg-warning/20'];
     expect($decorationFunction($superAdminRole))->toBeTrue()
         ->and($decorationFunction($normalRole))->toBeFalse();
@@ -142,18 +133,18 @@ test('super-admin role appears with warning decoration in user edit', function (
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     $targetUser = User::factory()->create();
-    
+
     $component = Livewire::test('pages.users.edit', ['user' => $targetUser]);
-    
+
     $rowDecoration = $component->instance()->rowDecoration();
     expect($rowDecoration)->toHaveKey('bg-warning/20');
-    
+
     // Test that the decoration function works correctly
     $superAdminRole = Role::where('name', 'super-admin')->first();
     $normalRole = Role::create(['name' => 'normal-role']);
-    
+
     $decorationFunction = $rowDecoration['bg-warning/20'];
     expect($decorationFunction($superAdminRole))->toBeTrue()
         ->and($decorationFunction($normalRole))->toBeFalse();
@@ -163,10 +154,10 @@ test('unauthorized users cannot delete super-admin users', function () {
     $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
-    
+
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
-    
+
     // Test that admin user cannot delete super-admin
     Livewire::test('pages.users.index')
         ->call('delete', $superAdminUser);
@@ -181,10 +172,10 @@ test('super-admin can delete other super-admin users', function () {
     $superAdminUser1 = User::factory()->create(['email' => 'superadmin1@admin.com']);
     $superAdminUser1->assignRole('super-admin');
     $this->actingAs($superAdminUser1);
-    
+
     $superAdminUser2 = User::factory()->create(['email' => 'superadmin2@admin.com']);
     $superAdminUser2->assignRole('super-admin');
-    
+
     Livewire::test('pages.users.index')
         ->call('delete', $superAdminUser2);
 
@@ -197,7 +188,7 @@ test('super-admin user cannot delete themselves', function () {
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     Livewire::test('pages.users.index')
         ->call('delete', $superAdminUser);
 
@@ -211,11 +202,11 @@ test('gate before allows super-admin full access to user operations', function (
     $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
-    
+
     // Super-admin should be able to access all user pages
     $this->get(route('users.index'))->assertSuccessful();
     $this->get(route('users.create'))->assertSuccessful();
-    
+
     $targetUser = User::factory()->create();
     $this->get(route('users.edit', $targetUser))->assertSuccessful();
 });
@@ -224,11 +215,11 @@ test('regular users respect normal authorization for user operations', function 
     $regularUser = User::factory()->create(['email' => 'regular@user.com']);
     $regularUser->assignRole('user');
     $this->actingAs($regularUser);
-    
+
     // Regular user should be forbidden from user management pages
     $this->get(route('users.index'))->assertForbidden();
     $this->get(route('users.create'))->assertForbidden();
-    
+
     $targetUser = User::factory()->create();
     $this->get(route('users.edit', $targetUser))->assertForbidden();
 });
