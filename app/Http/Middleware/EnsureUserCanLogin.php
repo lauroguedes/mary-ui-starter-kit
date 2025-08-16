@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserStatus;
 use App\Livewire\Actions\Logout;
 use Closure;
 use Illuminate\Http\Request;
@@ -25,7 +26,10 @@ final readonly class EnsureUserCanLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->cannot('user.login')) {
+        if (
+            $request->user()->status === UserStatus::SUSPENDED
+            || $request->user()->cannot('user.login')
+        ) {
             ($this->logout)();
 
             throw ValidationException::withMessages([
