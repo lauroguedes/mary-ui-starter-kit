@@ -28,7 +28,7 @@ final class DatabaseSeeder extends Seeder
             'user',
         ])->pluck('name');
 
-        $roles->each(function ($role) {
+        $roles->each(function (string $role): void {
             $user = User::factory()->create([
                 'name' => str($role)->replace('-', ' ')->ucfirst(),
                 'email' => $role . '@user.com',
@@ -41,7 +41,7 @@ final class DatabaseSeeder extends Seeder
         User::whereEmail('user-manager@user.com')->first()->assignRole('user');
 
         // Create 50 default users with only the "user" role
-        User::factory(50)->create()->each(function ($user) {
+        User::factory(50)->create()->each(function ($user): void {
             $user->assignRole('user');
         });
     }

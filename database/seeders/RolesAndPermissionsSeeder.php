@@ -77,7 +77,7 @@ final class RolesAndPermissionsSeeder extends Seeder
 
             DB::table('role_has_permissions')
                 ->insert(
-                    collect($permissionIds)->map(fn ($id) => [
+                    collect($permissionIds)->map(fn ($id): array => [
                         'role_id' => $role->id,
                         'permission_id' => $id,
                     ])->toArray()

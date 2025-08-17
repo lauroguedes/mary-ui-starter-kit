@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\UserStatus;
 use App\Models\User;
 
 describe('EnsureUserCanLogin Middleware', function () {

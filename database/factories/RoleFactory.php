@@ -10,7 +10,6 @@ use Spatie\Permission\Models\Role;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Spatie\Permission\Models\Role>
  */
-
 final class RoleFactory extends Factory
 {
     protected $model = Role::class;
