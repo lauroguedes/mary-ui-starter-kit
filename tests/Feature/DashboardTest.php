@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 test('guests are redirected to the login page', function () {
-    $response = $this->get('/dashboard');
-    $response->assertRedirect('/login');
+    $this->get('/dashboard')->assertRedirect('/login');
 });
 
 test('authenticated users can visit the dashboard', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
+    $user->givePermissionTo(['user.login', 'dashboard.view']);
     $this->actingAs($user);
 
-    $response = $this->get('/dashboard');
-    $response->assertStatus(200);
+    $this->get('/dashboard')->assertSuccessful();
 });

@@ -11,7 +11,7 @@
         <x-mary-card class="indicator" :title="$title" :subtitle="$message" shadow separator>
             {{ $slot }}
             <x-mary-badge :value="$code" class="badge-error badge-xl indicator-item" />
-            <x-mary-button :label="__('Go home')" :link="route('home')" icon="o-home" class="btn-primary mt-2" />
+            <x-mary-button :label="__('Go home')" :link="url()->previous()" icon="o-home" class="btn-primary mt-2"/>
         </x-mary-card>
     </div>
 </body>

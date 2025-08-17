@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Socialite;
 
 use App\Exceptions\SocialAuthException;
+use App\Models\User;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use Laravel\Socialite\Contracts\User as ProviderUser;
@@ -49,6 +50,11 @@ abstract class AbstractSocialProvider
         } catch (Exception $e) {
             $this->errorHandler(__('An error occurred while connecting to the social provider.'), $e);
         }
+    }
+
+    protected function login(User $user): void
+    {
+        auth()->login($user);
     }
 
     /**

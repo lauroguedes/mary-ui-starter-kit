@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Enums\UserStatus;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @method static updateOrCreate(array $array, array $array1)
@@ -20,7 +21,7 @@ use Illuminate\Support\Str;
 final class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -65,6 +66,13 @@ final class User extends Authenticatable implements MustVerifyEmail
             );
     }
 
+    protected static function booted(): void
+    {
+        self::created(function (User $user): void {
+            $user->assignRole('user');
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -77,5 +85,14 @@ final class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'status' => UserStatus::class,
         ];
+    }
+
+    #[Scope]
+    protected function hideSuperAdmin(Builder $query): void
+    {
+        $query->when(
+            ! auth()->user()?->hasRole('super-admin'),
+            fn ($q) => $q->whereDoesntHave('roles', fn ($r) => $r->where('name', 'super-admin'))
+        );
     }
 }

@@ -6,10 +6,9 @@ use App\Enums\UserStatus;
 use App\Models\User;
 use Livewire\Livewire;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->active()->create();
+    $this->user->assignRole('user-manager', 'user');
     $this->actingAs($this->user);
 });
 
@@ -59,7 +58,7 @@ test('users can be sorted by columns', function () {
 });
 
 test('user can be deleted successfully', function () {
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
 
     Livewire::test('pages.users.index')
         ->call('delete', $targetUser)
@@ -73,7 +72,7 @@ test('user can be deleted successfully', function () {
 
 test('user cannot delete themselves', function () {
     // Create another user so we can see the delete button for them
-    $otherUser = User::factory()->create();
+    $otherUser = User::factory()->active()->create();
 
     $component = Livewire::test('pages.users.index');
 
@@ -81,11 +80,9 @@ test('user cannot delete themselves', function () {
     $html = $component->html();
 
     // Look for the current user's row and verify no delete button
-    expect($html)->toContain($this->user->name);
-
-    // Check that other users do have delete buttons
-    expect($html)->toContain($otherUser->name);
-    expect($html)->toContain(__('Delete'));
+    expect($html)->toContain($this->user->name)
+        ->and($html)->toContain($otherUser->name)
+        ->and($html)->toContain(__('Delete'));
 });
 
 test('filters can be cleared', function () {
@@ -98,7 +95,7 @@ test('filters can be cleared', function () {
 });
 
 test('edit redirects to user edit page', function () {
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
 
     Livewire::test('pages.users.index')
         ->call('edit', $targetUser)
@@ -112,8 +109,9 @@ test('pagination works correctly', function () {
 
     // Should show 10 per page by default (plus the authenticated user = 11 total users, but paginated to 10)
     $users = $component->instance()->users();
-    expect($users->count())->toBe(10);
-    expect($users->total())->toBe(16); // 15 created + 1 authenticated user
+    expect($users->count())->toBe(10)
+        ->and($users->total())
+        ->toBe(16);
 });
 
 test('drawer opens and closes for filters', function () {

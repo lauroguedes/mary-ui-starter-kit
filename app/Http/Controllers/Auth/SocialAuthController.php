@@ -25,6 +25,10 @@ final class SocialAuthController extends Controller
     {
         $provider->callback();
 
+        if (auth()->user()->cannot('dashboard.view')) {
+            return redirect()->route('settings.profile');
+        }
+
         return redirect()->route('dashboard');
     }
 }

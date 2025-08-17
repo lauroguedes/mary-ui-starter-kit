@@ -10,10 +10,9 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->active()->create();
+    $this->user->assignRole('user-manager', 'user');
     $this->actingAs($this->user);
     Storage::fake('public');
     Notification::fake();
@@ -161,6 +160,18 @@ test('password is auto-generated and hashed', function () {
 
     $user = User::where('email', 'john@example.com')->first();
 
-    expect($user->password)->not()->toBeEmpty();
-    expect($user->password)->not()->toBe('password');
+    expect($user->password)->not()->toBeEmpty()
+        ->and($user->password)->not()
+        ->toBe('password');
 });
+
+test('user cannot be created because of insufficient permissions', function () {
+    $this->user->removeRole('user-manager');
+
+    Livewire::test('pages.users.create')
+        ->set('name', 'John Doe')
+        ->set('email', 'john@example.com')
+        ->set('status', UserStatus::ACTIVE->value)
+        ->call('save')
+        ->assertForbidden();
+})->skip('This test is not working because assertForbidden() is not working when using $stopPropagationOnFailure');

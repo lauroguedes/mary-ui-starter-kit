@@ -13,7 +13,14 @@ declare(strict_types=1);
 |
 */
 
-uses(Tests\TestCase::class)->in('Feature');
+use Database\Seeders\RolesAndPermissionsSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+pest()->extend(Tests\TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        $this->seed(RolesAndPermissionsSeeder::class);
+    })->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

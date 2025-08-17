@@ -7,7 +7,6 @@ namespace App\Services\Socialite;
 use App\Enums\SocialiteProviders;
 use App\Models\SocialAccount;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Contracts\User as ProviderUser;
 
 final class GoogleProvider extends AbstractSocialProvider
@@ -29,7 +28,7 @@ final class GoogleProvider extends AbstractSocialProvider
             ->first();
 
         if ($account) {
-            Auth::login($account->user);
+            $this->login($account->user);
 
             return;
         }
@@ -51,6 +50,8 @@ final class GoogleProvider extends AbstractSocialProvider
             'avatar' => $socialUser->getAvatar(),
         ]);
 
-        Auth::login($user);
+        $user->assignRole('user');
+
+        $this->login($user);
     }
 }

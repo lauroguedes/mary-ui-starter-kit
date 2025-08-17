@@ -6,8 +6,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Volt\Volt;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 test('password can be updated', function () {
     $user = User::factory()->create([
         'password' => Hash::make('secret'),
@@ -40,4 +38,25 @@ test('correct password must be provided to update password', function () {
         ->call('updatePassword');
 
     $response->assertHasErrors(['current_password']);
+});
+
+test('users without profile update permission cannot update password', function () {
+    $user = User::factory()->create([
+        'password' => Hash::make('secret'),
+    ]);
+
+    $role = $user->roles()->first();
+    $role->revokePermissionTo('profile.update');
+
+    $this->actingAs($user);
+
+    Volt::test('settings.password')
+        ->set('current_password', 'secret')
+        ->set('password', 'new-password')
+        ->set('password_confirmation', 'new-password')
+        ->call('updatePassword');
+
+    // Verify password was not updated
+    expect(Hash::check('secret', $user->refresh()->password))->toBeTrue()
+        ->and(Hash::check('new-password', $user->password))->toBeFalse();
 });

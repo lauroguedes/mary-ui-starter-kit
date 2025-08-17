@@ -8,14 +8,12 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->targetUser = User::factory()->create([
+    $this->user = User::factory()->active()->create();
+    $this->user->assignRole('user-manager', 'user');
+    $this->targetUser = User::factory()->active()->create([
         'name' => 'Target User',
         'email' => 'target@example.com',
-        'status' => UserStatus::ACTIVE,
     ]);
     $this->actingAs($this->user);
     Storage::fake('public');
@@ -46,9 +44,11 @@ test('user can be updated successfully', function () {
 
     $this->targetUser->refresh();
 
-    expect($this->targetUser->name)->toBe('Updated Name');
-    expect($this->targetUser->email)->toBe('updated@example.com');
-    expect($this->targetUser->status)->toBe(UserStatus::INACTIVE);
+    expect($this->targetUser->name)->toBe('Updated Name')
+        ->and($this->targetUser->email)
+        ->toBe('updated@example.com')
+        ->and($this->targetUser->status)
+        ->toBe(UserStatus::INACTIVE);
 });
 
 test('user update validates required fields', function () {
@@ -180,3 +180,14 @@ test('user can update status', function () {
 
     expect($this->targetUser->status)->toBe(UserStatus::SUSPENDED);
 });
+
+test('user cannot be updated because of insufficient permissions', function () {
+    $this->user->removeRole('user-manager');
+
+    Livewire::test('pages.users.edit')
+        ->set('name', 'John Doe')
+        ->set('email', 'john@example.com')
+        ->set('status', UserStatus::ACTIVE->value)
+        ->call('save')
+        ->assertForbidden();
+})->skip('This test is not working because assertForbidden() is not working when using $stopPropagationOnFailure');

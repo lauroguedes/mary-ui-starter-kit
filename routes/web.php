@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -9,21 +10,55 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::middleware(['auth', 'verified', 'can-login'])->group(function () {
+    Route::view('dashboard', 'dashboard')
+        ->can('dashboard.view')
+        ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+    Route::redirect('settings', 'settings/profile')
+        ->can('profile.view');
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
+    Volt::route('settings/profile', 'settings.profile')
+        ->can('profile.view')
+        ->name('settings.profile');
+    Volt::route('settings/password', 'settings.password')
+        ->can('profile.password')
+        ->name('settings.password');
 
     Route::prefix('users')->name('users.')->group(function () {
-        Volt::route('/', 'pages.users.index')->name('index');
-        Volt::route('/create', 'pages.users.create')->name('create');
-        Volt::route('/{user}/edit', 'pages.users.edit')->name('edit');
-        // Add more user routes here as needed
+        Volt::route('/', 'pages.users.index')
+            ->can('viewAny', User::class)
+            ->name('index');
+        Volt::route('/create', 'pages.users.create')
+            ->can('create', User::class)
+            ->name('create');
+        Volt::route('/{user}/edit', 'pages.users.edit')
+            ->can('view', 'user')
+            ->name('edit');
+    });
+
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Volt::route('/', 'pages.roles.index')
+            ->can('role.list')
+            ->name('index');
+        Volt::route('/create', 'pages.roles.create')
+            ->can('role.create')
+            ->name('create');
+        Volt::route('/{role}/edit', 'pages.roles.edit')
+            ->can('role.view')
+            ->name('edit');
+    });
+
+    Route::prefix('permissions')->name('permissions.')->group(function () {
+        Volt::route('/', 'pages.permissions.index')
+            ->can('permission.list')
+            ->name('index');
+        Volt::route('/create', 'pages.permissions.create')
+            ->can('permission.create')
+            ->name('create');
+        Volt::route('/{permission}/edit', 'pages.permissions.edit')
+            ->can('permission.view')
+            ->name('edit');
     });
 });
 
