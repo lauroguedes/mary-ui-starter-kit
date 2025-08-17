@@ -37,6 +37,9 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 - **Advanced filtering and search** capabilities
 - **Avatar management** with automatic cleanup
 - **Google OAuth integration** for social login
+- **Roles & Permissions system** powered by Spatie Laravel Permission
+- **Role-based access control** with granular permission management
+- **User role assignment** and permission checking middleware
 
 ### 🔗 **OAuth Socialite Integration**
 - **Laravel Socialite** integration with extensible provider system
@@ -56,9 +59,9 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 - **OAuth Socialite Integration** with extensible architecture for new oauth providers
 
 ### 🧪 **Testing Coverage**
-- **77 tests** with **218 assertions**
 - Complete test coverage for authentication flows
 - User management CRUD operations testing
+- Roles and Permissions management CRUD operations testing
 - File upload and avatar management testing
 - Form validation and error handling
 - Database cleanup and file storage testing
@@ -193,7 +196,7 @@ We maintain high code quality standards:
 
 ## 📋 Roadmap
 
-- [ ] **Role-based permissions system**
+- [x] **Role-based permissions system** ✅
 - [ ] **Advanced Log and Audit**
 - [ ] **Multi-tenant support**
 - [ ] **Advanced notification system**
