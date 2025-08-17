@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
+    $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
 });
@@ -63,7 +63,7 @@ test('role can be deleted successfully when no users assigned', function () {
 
 test('role cannot be deleted when users are assigned', function () {
     $testRole = Role::create(['name' => 'assigned-role']);
-    $testUser = User::factory()->create();
+    $testUser = User::factory()->active()->create();
     $testUser->assignRole($testRole);
 
     // The super-admin bypasses authorization but the business logic should still prevent deletion
@@ -115,7 +115,7 @@ test('role permissions are displayed in popover', function () {
 });
 
 test('unauthorized user cannot access roles index', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
 
     $this->actingAs($regularUser)
@@ -124,7 +124,7 @@ test('unauthorized user cannot access roles index', function () {
 });
 
 test('user with role.list permission can access roles index', function () {
-    $roleManagerUser = User::factory()->create(['email' => 'rolemanager@admin.com']);
+    $roleManagerUser = User::factory()->active()->create(['email' => 'rolemanager@admin.com']);
     $roleManagerUser->assignRole('role-manager');
 
     $this->actingAs($roleManagerUser)
@@ -136,7 +136,7 @@ test('delete button only shows for roles without users', function () {
     $roleWithUsers = Role::create(['name' => 'role-with-users']);
     $roleWithoutUsers = Role::create(['name' => 'role-without-users']);
 
-    $testUser = User::factory()->create();
+    $testUser = User::factory()->active()->create();
     $testUser->assignRole($roleWithUsers);
 
     $component = Livewire::test('pages.roles.index');
@@ -147,7 +147,7 @@ test('delete button only shows for roles without users', function () {
 });
 
 test('only authorized users can see create button', function () {
-    $roleManagerUser = User::factory()->create(['email' => 'rolemanager@admin.com']);
+    $roleManagerUser = User::factory()->active()->create(['email' => 'rolemanager@admin.com']);
     $roleManagerUser->assignRole('role-manager');
 
     $this->actingAs($roleManagerUser)

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use App\Enums\SocialiteProviders;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 beforeEach(function () {
     $this->provider = SocialiteProviders::GOOGLE;
 });

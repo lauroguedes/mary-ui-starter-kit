@@ -10,7 +10,7 @@ use Spatie\Permission\Models\Role;
 
 // Role Assignment Authorization Tests
 test('user without role.assign permission cannot assign roles during creation', function () {
-    $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
+    $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
     $this->actingAs($userManagerUser);
 
@@ -30,7 +30,7 @@ test('user without role.assign permission cannot assign roles during creation', 
 });
 
 test('user with role.assign permission can assign roles during creation', function () {
-    $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
+    $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
     $userManagerUser->givePermissionTo('role.assign');
     $this->actingAs($userManagerUser);
@@ -50,12 +50,12 @@ test('user with role.assign permission can assign roles during creation', functi
 });
 
 test('user without role.assign permission cannot modify roles during edit', function () {
-    $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
+    $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
     $userManagerUser->revokePermissionTo('role.assign'); // Remove role assignment permission
     $this->actingAs($userManagerUser);
 
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
     $testRole = Role::create(['name' => 'test-role']);
 
     Livewire::test('pages.users.edit', ['user' => $targetUser])
@@ -69,12 +69,12 @@ test('user without role.assign permission cannot modify roles during edit', func
 });
 
 test('user with role.assign permission can modify roles during edit', function () {
-    $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
+    $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
     $userManagerUser->givePermissionTo('role.assign');
     $this->actingAs($userManagerUser);
 
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
     $testRole = Role::create(['name' => 'test-role']);
 
     Livewire::test('pages.users.edit', ['user' => $targetUser])
@@ -88,12 +88,12 @@ test('user with role.assign permission can modify roles during edit', function (
 
 // Permission Assignment Authorization Tests
 test('user without permission.assign permission cannot assign permissions during edit', function () {
-    $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
+    $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
     // user-manager role doesn't have permission.assign by default
     $this->actingAs($userManagerUser);
 
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
     $testPermission = Permission::create(['name' => 'test.permission']);
 
     Livewire::test('pages.users.edit', ['user' => $targetUser])
@@ -107,11 +107,11 @@ test('user without permission.assign permission cannot assign permissions during
 });
 
 test('user with permission.assign permission can assign permissions during edit', function () {
-    $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
 
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
     $testPermission = Permission::create(['name' => 'test.permission']);
 
     Livewire::test('pages.users.edit', ['user' => $targetUser])
@@ -125,7 +125,7 @@ test('user with permission.assign permission can assign permissions during edit'
 
 // User Operation Authorization Tests
 test('user without user.create permission cannot access create page', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $this->actingAs($regularUser);
 
     $this->get(route('users.create'))
@@ -133,17 +133,17 @@ test('user without user.create permission cannot access create page', function (
 });
 
 test('user without user.update permission cannot access edit page', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $this->actingAs($regularUser);
 
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
 
     $this->get(route('users.edit', $targetUser))
         ->assertForbidden();
 });
 
 test('user without user.list permission cannot access index page', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $this->actingAs($regularUser);
 
     $this->get(route('users.index'))
@@ -151,10 +151,10 @@ test('user without user.list permission cannot access index page', function () {
 });
 
 test('user without user.delete permission cannot delete users', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $this->actingAs($regularUser);
 
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
 
     Livewire::test('pages.users.index')
         ->call('delete', $targetUser);
@@ -167,7 +167,7 @@ test('user without user.delete permission cannot delete users', function () {
 
 // Self-Operation Tests
 test('user cannot delete themselves from user index', function () {
-    $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com', 'avatar' => null]);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
 
@@ -180,20 +180,21 @@ test('user cannot delete themselves from user index', function () {
     ]);
 });
 
-test('user can edit themselves if they have proper permissions', function () {
-    $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
+test('user is redirected to profile when trying to edit themselves', function () {
+    $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
     $this->actingAs($userManagerUser);
 
+    // User should be redirected to their profile settings when trying to edit themselves
     $this->get(route('users.edit', $userManagerUser))
-        ->assertSuccessful();
+        ->assertRedirect(route('settings.profile'));
 });
 
 test('users with different permission levels see different role options', function () {
-    $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
+    $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
 
-    $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
 
     // Admin user should not see super-admin role
@@ -212,7 +213,7 @@ test('users with different permission levels see different role options', functi
 });
 
 test('authorization is checked on each save operation', function () {
-    $userManagerUser = User::factory()->create(['email' => 'usermanager@admin.com']);
+    $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
     $this->actingAs($userManagerUser);
 
@@ -235,13 +236,13 @@ test('authorization is checked on each save operation', function () {
 });
 
 test('mixed permission scenarios work correctly', function () {
-    $mixedUser = User::factory()->create(['email' => 'mixed@admin.com']);
+    $mixedUser = User::factory()->active()->create(['email' => 'mixed@admin.com']);
     $mixedUser->assignRole('user-manager'); // Has user permissions
     $mixedUser->givePermissionTo('role.assign'); // Add role assignment permission
     // But doesn't have permission.assign
     $this->actingAs($mixedUser);
 
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
     $testRole = Role::create(['name' => 'test-role']);
     $testPermission = Permission::create(['name' => 'test.permission']);
 

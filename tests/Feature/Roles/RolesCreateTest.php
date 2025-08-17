@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
+    $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
 });
@@ -98,7 +98,7 @@ test('permissions pagination works correctly', function () {
 });
 
 test('unauthorized user cannot access roles create page', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
 
     $this->actingAs($regularUser)
@@ -107,7 +107,7 @@ test('unauthorized user cannot access roles create page', function () {
 });
 
 test('user with role.create permission can access create page', function () {
-    $roleManagerUser = User::factory()->create(['email' => 'rolemanager@admin.com']);
+    $roleManagerUser = User::factory()->active()->create(['email' => 'rolemanager@admin.com']);
     $roleManagerUser->assignRole('role-manager');
 
     $this->actingAs($roleManagerUser)

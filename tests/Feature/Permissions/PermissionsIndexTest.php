@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
 });
@@ -81,7 +81,7 @@ test('permission cannot be deleted when assigned to roles', function () {
 
 test('permission cannot be deleted when assigned to users', function () {
     $testPermission = Permission::create(['name' => 'user.assigned.permission']);
-    $testUser = User::factory()->create();
+    $testUser = User::factory()->active()->create();
     $testUser->givePermissionTo($testPermission);
 
     // The super-admin bypasses authorization but the business logic should still prevent deletion
@@ -121,7 +121,7 @@ test('drawer opens and closes for filters', function () {
 });
 
 test('unauthorized user cannot access permissions index', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
 
     $this->actingAs($regularUser)
@@ -130,7 +130,7 @@ test('unauthorized user cannot access permissions index', function () {
 });
 
 test('user with permission.list permission can access permissions index', function () {
-    $permissionManagerUser = User::factory()->create(['email' => 'permissionmanager@admin.com']);
+    $permissionManagerUser = User::factory()->active()->create(['email' => 'permissionmanager@admin.com']);
     $permissionManagerUser->assignRole('permission-manager');
 
     $this->actingAs($permissionManagerUser)
@@ -139,7 +139,7 @@ test('user with permission.list permission can access permissions index', functi
 });
 
 test('only authorized users can see create button', function () {
-    $permissionManagerUser = User::factory()->create(['email' => 'permissionmanager@admin.com']);
+    $permissionManagerUser = User::factory()->active()->create(['email' => 'permissionmanager@admin.com']);
     $permissionManagerUser->assignRole('permission-manager');
 
     $this->actingAs($permissionManagerUser)

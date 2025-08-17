@@ -41,6 +41,12 @@ new class extends Component {
     {
         $this->authorize('delete', $user);
 
+        if (auth()->id() === $user->id) {
+            $this->redirectRoute('settings.profile');
+
+            return;
+        }
+
         if ($user->avatar) {
             $path = str($user->avatar)->after('/storage/');
             \Storage::disk('public')->delete($path);

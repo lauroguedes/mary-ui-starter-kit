@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->active()->create();
     $this->user->assignRole('user-manager', 'user');
     $this->actingAs($this->user);
     Storage::fake('public');

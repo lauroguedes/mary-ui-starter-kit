@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    $adminUser = User::factory()->create(['email' => 'admin@admin.com']);
+    $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
     $this->testRole = Role::create(['name' => 'edit-test-role']);
@@ -137,7 +137,7 @@ test('permissions can be searched during edit', function () {
 });
 
 test('unauthorized user cannot access roles edit page', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
 
     $this->actingAs($regularUser)

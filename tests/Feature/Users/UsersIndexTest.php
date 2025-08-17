@@ -7,7 +7,7 @@ use App\Models\User;
 use Livewire\Livewire;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->active()->create();
     $this->user->assignRole('user-manager', 'user');
     $this->actingAs($this->user);
 });
@@ -58,7 +58,7 @@ test('users can be sorted by columns', function () {
 });
 
 test('user can be deleted successfully', function () {
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
 
     Livewire::test('pages.users.index')
         ->call('delete', $targetUser)
@@ -72,7 +72,7 @@ test('user can be deleted successfully', function () {
 
 test('user cannot delete themselves', function () {
     // Create another user so we can see the delete button for them
-    $otherUser = User::factory()->create();
+    $otherUser = User::factory()->active()->create();
 
     $component = Livewire::test('pages.users.index');
 
@@ -95,7 +95,7 @@ test('filters can be cleared', function () {
 });
 
 test('edit redirects to user edit page', function () {
-    $targetUser = User::factory()->create();
+    $targetUser = User::factory()->active()->create();
 
     Livewire::test('pages.users.index')
         ->call('edit', $targetUser)

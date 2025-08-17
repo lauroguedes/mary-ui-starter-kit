@@ -13,7 +13,7 @@ beforeEach(function () {
 });
 
 test('profile page is displayed', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -21,7 +21,7 @@ test('profile page is displayed', function () {
 });
 
 test('profile information can be updated', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -40,7 +40,7 @@ test('profile information can be updated', function () {
 });
 
 test('email verification status is unchanged when email address is unchanged', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -55,7 +55,7 @@ test('email verification status is unchanged when email address is unchanged', f
 });
 
 test('user can delete their account', function () {
-    $user = User::factory()->create(['avatar' => null]);
+    $user = User::factory()->active()->create(['avatar' => null]);
 
     $this->actingAs($user);
 
@@ -72,7 +72,7 @@ test('user can delete their account', function () {
 });
 
 test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create(['avatar' => null]);
+    $user = User::factory()->active()->create(['avatar' => null]);
 
     $this->actingAs($user);
 
@@ -86,7 +86,7 @@ test('correct password must be provided to delete account', function () {
 });
 
 test('avatar can be updated in profile', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -107,7 +107,7 @@ test('avatar can be updated in profile', function () {
 });
 
 test('old avatar is deleted when new avatar is uploaded', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -136,7 +136,7 @@ test('old avatar is deleted when new avatar is uploaded', function () {
 });
 
 test('avatar upload validates file type in profile', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -152,7 +152,7 @@ test('avatar upload validates file type in profile', function () {
 });
 
 test('avatar upload validates file size in profile', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -168,7 +168,7 @@ test('avatar upload validates file size in profile', function () {
 });
 
 test('profile can be updated without uploading new avatar', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -188,7 +188,7 @@ test('profile can be updated without uploading new avatar', function () {
 });
 
 test('avatar field is optional in profile update', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -209,7 +209,7 @@ test('avatar field is optional in profile update', function () {
 
 test('existing avatar is cleared when avatar field is set to null', function () {
     // This test documents the current behavior where setting avatar to null clears existing avatar
-    $user = User::factory()->create(['avatar' => '/storage/users/existing-avatar.jpg']);
+    $user = User::factory()->active()->create(['avatar' => '/storage/users/existing-avatar.jpg']);
 
     $this->actingAs($user);
 
@@ -229,7 +229,7 @@ test('existing avatar is cleared when avatar field is set to null', function () 
 });
 
 test('user avatar is deleted from storage when account is deleted', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $this->actingAs($user);
 
@@ -264,7 +264,7 @@ test('user avatar is deleted from storage when account is deleted', function () 
 });
 
 test('user without avatar can be deleted successfully', function () {
-    $user = User::factory()->create(['avatar' => null]); // Explicitly set avatar to null
+    $user = User::factory()->active()->create(['avatar' => null]); // Explicitly set avatar to null
 
     $this->actingAs($user);
 
@@ -280,7 +280,7 @@ test('user without avatar can be deleted successfully', function () {
 });
 
 test('avatar deletion is skipped when user has no avatar during account deletion', function () {
-    $user = User::factory()->create(['avatar' => null]);
+    $user = User::factory()->active()->create(['avatar' => null]);
 
     $this->actingAs($user);
 
@@ -297,7 +297,7 @@ test('avatar deletion is skipped when user has no avatar during account deletion
 });
 
 test('users without profile update permission cannot update profile', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->active()->create();
 
     $role = $user->roles()->first();
     $role->revokePermissionTo('profile.update');
@@ -316,7 +316,7 @@ test('users without profile update permission cannot update profile', function (
 });
 
 test('users without user delete permission cannot delete their account', function () {
-    $user = User::factory()->create([
+    $user = User::factory()->active()->create([
         'password' => Hash::make('secret'),
     ]);
 

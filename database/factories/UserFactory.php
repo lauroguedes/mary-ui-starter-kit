@@ -26,6 +26,7 @@ final class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'avatar' => null,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'status' => fake()->randomElement(\App\Enums\UserStatus::cases())->value,
@@ -38,10 +39,40 @@ final class UserFactory extends Factory
     /**
      * Indicate that the model's email address should be unverified.
      */
-    public function unverified(): static
+    public function unverified(): self
     {
         return $this->state(fn (array $attributes): array => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is active.
+     */
+    public function active(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => \App\Enums\UserStatus::ACTIVE,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is inactive.
+     */
+    public function inactive(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => \App\Enums\UserStatus::INACTIVE,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is suspended.
+     */
+    public function suspended(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => \App\Enums\UserStatus::SUSPENDED,
         ]);
     }
 }

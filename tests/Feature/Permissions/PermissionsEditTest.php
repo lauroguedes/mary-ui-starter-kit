@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    $superAdminUser = User::factory()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
     $this->testPermission = Permission::create(['name' => 'edit.test.permission']);
@@ -145,7 +145,7 @@ test('roles can be searched during edit', function () {
 });
 
 test('unauthorized user cannot access permissions edit page', function () {
-    $regularUser = User::factory()->create();
+    $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
 
     $this->actingAs($regularUser)
@@ -154,7 +154,7 @@ test('unauthorized user cannot access permissions edit page', function () {
 });
 
 test('user with permission.update permission can access edit page', function () {
-    $permissionManagerUser = User::factory()->create(['email' => 'permissionmanager@admin.com']);
+    $permissionManagerUser = User::factory()->active()->create(['email' => 'permissionmanager@admin.com']);
     $permissionManagerUser->assignRole('permission-manager');
 
     $this->actingAs($permissionManagerUser)
@@ -207,7 +207,7 @@ test('multiple roles can be added and removed', function () {
 });
 
 test('permission name is disabled when assigned to users', function () {
-    $testUser = User::factory()->create();
+    $testUser = User::factory()->active()->create();
     $testUser->givePermissionTo($this->testPermission);
 
     $response = $this->get(route('permissions.edit', $this->testPermission));
