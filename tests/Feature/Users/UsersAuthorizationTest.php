@@ -8,7 +8,21 @@ use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-// Role Assignment Authorization Tests
+/**
+ * User Authorization Tests
+ *
+ * This test file consolidates all authorization-related tests including:
+ * - Role assignment authorization
+ * - Permission assignment authorization
+ * - User CRUD operation authorization
+ * - Self-operation restrictions
+ * - Super-admin security rules
+ */
+
+// ============================================================================
+// ROLE ASSIGNMENT AUTHORIZATION
+// ============================================================================
+
 test('user without role.assign permission cannot assign roles during creation', function () {
     $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
@@ -23,7 +37,6 @@ test('user without role.assign permission cannot assign roles during creation', 
         ->set('rolesGiven', [$testRole->id])
         ->call('save');
 
-    // User should be created but role should NOT be assigned due to lack of permission
     $user = User::where('email', 'john@example.com')->first();
     expect($user)->not()->toBeNull()
         ->and($user->hasRole($testRole))->toBeFalse();
@@ -52,7 +65,7 @@ test('user with role.assign permission can assign roles during creation', functi
 test('user without role.assign permission cannot modify roles during edit', function () {
     $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
-    $userManagerUser->revokePermissionTo('role.assign'); // Remove role assignment permission
+    $userManagerUser->revokePermissionTo('role.assign');
     $this->actingAs($userManagerUser);
 
     $targetUser = User::factory()->active()->create();
@@ -64,7 +77,6 @@ test('user without role.assign permission cannot modify roles during edit', func
         ->assertRedirect(route('users.index'));
 
     $targetUser->refresh();
-    // Role should NOT be assigned
     expect($targetUser->hasRole($testRole))->toBeFalse();
 });
 
@@ -86,11 +98,13 @@ test('user with role.assign permission can modify roles during edit', function (
     expect($targetUser->hasRole($testRole))->toBeTrue();
 });
 
-// Permission Assignment Authorization Tests
+// ============================================================================
+// PERMISSION ASSIGNMENT AUTHORIZATION
+// ============================================================================
+
 test('user without permission.assign permission cannot assign permissions during edit', function () {
     $userManagerUser = User::factory()->active()->create(['email' => 'usermanager@admin.com']);
     $userManagerUser->assignRole('user-manager');
-    // user-manager role doesn't have permission.assign by default
     $this->actingAs($userManagerUser);
 
     $targetUser = User::factory()->active()->create();
@@ -102,7 +116,6 @@ test('user without permission.assign permission cannot assign permissions during
         ->assertRedirect(route('users.index'));
 
     $targetUser->refresh();
-    // Permission should NOT be assigned
     expect($targetUser->hasPermissionTo($testPermission))->toBeFalse();
 });
 
@@ -123,7 +136,10 @@ test('user with permission.assign permission can assign permissions during edit'
     expect($targetUser->hasPermissionTo($testPermission))->toBeTrue();
 });
 
-// User Operation Authorization Tests
+// ============================================================================
+// USER OPERATION AUTHORIZATION
+// ============================================================================
+
 test('user without user.create permission cannot access create page', function () {
     $regularUser = User::factory()->active()->create();
     $this->actingAs($regularUser);
@@ -159,13 +175,15 @@ test('user without user.delete permission cannot delete users', function () {
     Livewire::test('pages.users.index')
         ->call('delete', $targetUser);
 
-    // User should still exist since delete was not authorized
     $this->assertDatabaseHas('users', [
         'id' => $targetUser->id,
     ]);
 });
 
-// Self-Operation Tests
+// ============================================================================
+// SELF-OPERATION RESTRICTIONS
+// ============================================================================
+
 test('user cannot delete themselves from user index', function () {
     $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com', 'avatar' => null]);
     $superAdminUser->assignRole('super-admin');
@@ -174,7 +192,6 @@ test('user cannot delete themselves from user index', function () {
     Livewire::test('pages.users.index')
         ->call('delete', $superAdminUser);
 
-    // User should still exist
     $this->assertDatabaseHas('users', [
         'id' => $superAdminUser->id,
     ]);
@@ -185,10 +202,13 @@ test('user is redirected to profile when trying to edit themselves', function ()
     $userManagerUser->assignRole('user-manager');
     $this->actingAs($userManagerUser);
 
-    // User should be redirected to their profile settings when trying to edit themselves
     $this->get(route('users.edit', $userManagerUser))
         ->assertRedirect(route('settings.profile'));
 });
+
+// ============================================================================
+// ROLE VISIBILITY & PERMISSION LEVELS
+// ============================================================================
 
 test('users with different permission levels see different role options', function () {
     $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
@@ -197,14 +217,12 @@ test('users with different permission levels see different role options', functi
     $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
 
-    // Admin user should not see super-admin role
     $this->actingAs($adminUser);
     $adminComponent = Livewire::test('pages.users.create');
     $adminRoles = $adminComponent->instance()->roles();
     $adminRoleNames = $adminRoles->pluck('name')->toArray();
     expect($adminRoleNames)->not()->toContain('super-admin');
 
-    // Super-admin user should see super-admin role
     $this->actingAs($superAdminUser);
     $superAdminComponent = Livewire::test('pages.users.create');
     $superAdminRoles = $superAdminComponent->instance()->roles();
@@ -217,19 +235,15 @@ test('authorization is checked on each save operation', function () {
     $userManagerUser->assignRole('user-manager');
     $this->actingAs($userManagerUser);
 
-    // Start the component
     $component = Livewire::test('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value);
 
-    // Remove the permission during the session
     $userManagerUser->removeRole('user-manager');
 
-    // The save should fail due to authorization, user should not be created
     $component->call('save');
 
-    // User should not be created due to missing permission
     $this->assertDatabaseMissing('users', [
         'email' => 'john@example.com',
     ]);
@@ -237,9 +251,8 @@ test('authorization is checked on each save operation', function () {
 
 test('mixed permission scenarios work correctly', function () {
     $mixedUser = User::factory()->active()->create(['email' => 'mixed@admin.com']);
-    $mixedUser->assignRole('user-manager'); // Has user permissions
-    $mixedUser->givePermissionTo('role.assign'); // Add role assignment permission
-    // But doesn't have permission.assign
+    $mixedUser->assignRole('user-manager');
+    $mixedUser->givePermissionTo('role.assign');
     $this->actingAs($mixedUser);
 
     $targetUser = User::factory()->active()->create();
@@ -257,4 +270,138 @@ test('mixed permission scenarios work correctly', function () {
         ->toBeTrue()
         ->and($targetUser->hasPermissionTo($testPermission))
         ->toBeFalse();
+});
+
+// ============================================================================
+// SUPER-ADMIN SECURITY
+// ============================================================================
+
+test('non-super-admin cannot assign super-admin role during user creation', function () {
+    $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
+    $adminUser->assignRole('admin');
+    $this->actingAs($adminUser);
+
+    $component = Livewire::test('pages.users.create');
+    $roles = $component->instance()->roles();
+    $roleNames = $roles->pluck('name')->toArray();
+    expect($roleNames)->not()->toContain('super-admin');
+});
+
+test('super-admin can assign super-admin role during user creation', function () {
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser->assignRole('super-admin');
+    $this->actingAs($superAdminUser);
+
+    $superAdminRole = Role::where('name', 'super-admin')->first();
+
+    Livewire::test('pages.users.create')
+        ->set('name', 'John Doe')
+        ->set('email', 'john@example.com')
+        ->set('status', UserStatus::ACTIVE->value)
+        ->set('rolesGiven', [$superAdminRole->id])
+        ->call('save')
+        ->assertRedirect(route('users.index'));
+
+    $user = User::where('email', 'john@example.com')->first();
+    expect($user->hasRole('super-admin'))->toBeTrue();
+});
+
+test('non-super-admin cannot assign super-admin role during user edit', function () {
+    $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
+    $adminUser->assignRole('admin');
+    $this->actingAs($adminUser);
+
+    $targetUser = User::factory()->active()->create();
+
+    $component = Livewire::test('pages.users.edit', ['user' => $targetUser]);
+    $roles = $component->instance()->roles();
+    $roleNames = $roles->pluck('name')->toArray();
+    expect($roleNames)->not()->toContain('super-admin');
+});
+
+test('super-admin can assign super-admin role during user edit', function () {
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser->assignRole('super-admin');
+    $this->actingAs($superAdminUser);
+
+    $targetUser = User::factory()->active()->create();
+    $superAdminRole = Role::where('name', 'super-admin')->first();
+
+    Livewire::test('pages.users.edit', ['user' => $targetUser])
+        ->set('rolesGiven', [$superAdminRole->id])
+        ->call('save')
+        ->assertRedirect(route('users.index'));
+
+    $targetUser->refresh();
+    expect($targetUser->hasRole('super-admin'))->toBeTrue();
+});
+
+test('unauthorized users cannot delete super-admin users', function () {
+    $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
+    $adminUser->assignRole('admin');
+    $this->actingAs($adminUser);
+
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser->assignRole('super-admin');
+
+    Livewire::test('pages.users.index')
+        ->call('delete', $superAdminUser);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'superadmin@admin.com',
+    ]);
+});
+
+test('super-admin can delete other super-admin users', function () {
+    $superAdminUser1 = User::factory()->active()->create(['email' => 'superadmin1@admin.com']);
+    $superAdminUser1->assignRole('super-admin');
+    $this->actingAs($superAdminUser1);
+
+    $superAdminUser2 = User::factory()->active()->create(['email' => 'superadmin2@admin.com']);
+    $superAdminUser2->assignRole('super-admin');
+
+    Livewire::test('pages.users.index')
+        ->call('delete', $superAdminUser2);
+
+    $this->assertDatabaseMissing('users', [
+        'id' => $superAdminUser2->id,
+    ]);
+});
+
+test('super-admin users trying to delete themselves are redirected to profile', function () {
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser->assignRole('super-admin');
+    $this->actingAs($superAdminUser);
+
+    Livewire::test('pages.users.index')
+        ->call('delete', $superAdminUser)
+        ->assertRedirectToRoute('settings.profile');
+
+    $this->assertDatabaseHas('users', [
+        'id' => $superAdminUser->id,
+    ]);
+});
+
+test('super-admin has full access to user operations', function () {
+    $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
+    $superAdminUser->assignRole('super-admin');
+    $this->actingAs($superAdminUser);
+
+    $this->get(route('users.index'))->assertSuccessful();
+    $this->get(route('users.create'))->assertSuccessful();
+
+    $targetUser = User::factory()->active()->create();
+    $this->get(route('users.edit', $targetUser))->assertSuccessful();
+});
+
+test('regular users respect normal authorization for user operations', function () {
+    $regularUser = User::factory()->active()->create(['email' => 'regular@user.com']);
+    $regularUser->assignRole('user');
+    $this->actingAs($regularUser);
+
+    $this->get(route('users.index'))->assertForbidden();
+    $this->get(route('users.create'))->assertForbidden();
+
+    $targetUser = User::factory()->active()->create();
+    $this->get(route('users.edit', $targetUser))->assertForbidden();
 });

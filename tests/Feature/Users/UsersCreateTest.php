@@ -21,7 +21,7 @@ beforeEach(function () {
 test('users create page loads successfully', function () {
     $response = $this->get(route('users.create'));
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
     $response->assertSee(__('Create User'));
 });
 
@@ -53,12 +53,11 @@ test('user creation sends notification', function () {
     Notification::assertSentTo($user, UserCreated::class);
 });
 
-test('user creation validates required fields', function () {
+test('user creation validates required fields', function (string $field, string $rule) {
     Livewire::test('pages.users.create')
         ->call('save')
-        ->assertHasErrors(['name' => 'required'])
-        ->assertHasErrors(['email' => 'required']);
-});
+        ->assertHasErrors([$field => $rule]);
+})->with('required_fields');
 
 test('user creation validates email format', function () {
     Livewire::test('pages.users.create')
@@ -70,7 +69,7 @@ test('user creation validates email format', function () {
 });
 
 test('user creation validates email uniqueness', function () {
-    $existingUser = User::factory()->create(['email' => 'existing@example.com']);
+    User::factory()->create(['email' => 'existing@example.com']);
 
     Livewire::test('pages.users.create')
         ->set('name', 'John Doe')
@@ -80,23 +79,21 @@ test('user creation validates email uniqueness', function () {
         ->assertHasErrors(['email' => 'unique']);
 });
 
-test('user creation validates name length', function () {
-    Livewire::test('pages.users.create')
-        ->set('name', str_repeat('a', 101))
-        ->set('email', 'john@example.com')
-        ->set('status', UserStatus::ACTIVE->value)
-        ->call('save')
-        ->assertHasErrors(['name' => 'max']);
-});
+test('user creation validates max length', function (string $field, int $maxLength) {
+    $value = $field === 'email'
+        ? str_repeat('a', $maxLength - 10) . '@example.com'
+        : str_repeat('a', $maxLength + 1);
 
-test('user creation validates email length', function () {
     Livewire::test('pages.users.create')
-        ->set('name', 'John Doe')
-        ->set('email', str_repeat('a', 50) . '@example.com')
+        ->set('name', $field === 'name' ? $value : 'John Doe')
+        ->set('email', $field === 'email' ? $value : 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
         ->call('save')
-        ->assertHasErrors(['email' => 'max']);
-});
+        ->assertHasErrors([$field => 'max']);
+})->with([
+    'name exceeds 100 chars' => ['name', 100],
+    'email exceeds 255 chars' => ['email', 255],
+]);
 
 test('avatar can be uploaded during user creation', function () {
     $file = UploadedFile::fake()->image('avatar.jpg');
@@ -164,14 +161,3 @@ test('password is auto-generated and hashed', function () {
         ->and($user->password)->not()
         ->toBe('password');
 });
-
-test('user cannot be created because of insufficient permissions', function () {
-    $this->user->removeRole('user-manager');
-
-    Livewire::test('pages.users.create')
-        ->set('name', 'John Doe')
-        ->set('email', 'john@example.com')
-        ->set('status', UserStatus::ACTIVE->value)
-        ->call('save')
-        ->assertForbidden();
-})->skip('This test is not working because assertForbidden() is not working when using $stopPropagationOnFailure');

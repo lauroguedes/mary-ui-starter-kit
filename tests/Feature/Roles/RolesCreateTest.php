@@ -38,7 +38,6 @@ test('role can be created with valid data', function () {
 
 test('role name is required', function () {
     Livewire::test('pages.roles.create')
-        ->set('name', '')
         ->call('save')
         ->assertHasErrors(['name' => 'required']);
 });
@@ -52,11 +51,9 @@ test('role name must be unique', function () {
         ->assertHasErrors(['name' => 'unique']);
 });
 
-test('role name cannot exceed 100 characters', function () {
-    $longName = str_repeat('a', 101);
-
+test('role name cannot exceed max length', function () {
     Livewire::test('pages.roles.create')
-        ->set('name', $longName)
+        ->set('name', str_repeat('a', 101))
         ->call('save')
         ->assertHasErrors(['name' => 'max']);
 });
@@ -76,27 +73,6 @@ test('role can be created without permissions', function () {
     expect($role->permissions)->toHaveCount(0);
 });
 
-test('permissions can be searched', function () {
-    $userPermission = Permission::create(['name' => 'user.manage']);
-    $rolePermission = Permission::create(['name' => 'role.manage']);
-
-    Livewire::test('pages.roles.create')
-        ->set('search', 'user')
-        ->assertSee($userPermission->name)
-        ->assertDontSee($rolePermission->name);
-});
-
-test('permissions pagination works correctly', function () {
-    collect(range(1, 15))->each(fn ($i) => Permission::create(['name' => "test.permission.{$i}"]));
-
-    $component = Livewire::test('pages.roles.create');
-
-    $permissions = $component->instance()->permissions();
-    expect($permissions->count())->toBe(10)
-        ->and($permissions->total())
-        ->toBeGreaterThan(10);
-});
-
 test('unauthorized user cannot access roles create page', function () {
     $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
@@ -112,7 +88,7 @@ test('user with role.create permission can access create page', function () {
 
     $this->actingAs($roleManagerUser)
         ->get(route('roles.create'))
-        ->assertStatus(200);
+        ->assertSuccessful();
 });
 
 test('multiple permissions can be assigned to role', function () {

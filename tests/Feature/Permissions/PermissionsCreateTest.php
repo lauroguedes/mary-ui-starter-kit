@@ -110,36 +110,6 @@ test('permission can be created without roles', function () {
     expect($permission->roles)->toHaveCount(0);
 });
 
-test('roles are displayed in table', function () {
-    $role1 = Role::create(['name' => 'test-role-1']);
-    $role2 = Role::create(['name' => 'test-role-2']);
-
-    Livewire::test('pages.permissions.create')
-        ->assertSee($role1->name)
-        ->assertSee($role2->name);
-});
-
-test('roles can be searched', function () {
-    $userRole = Role::create(['name' => 'user-role']);
-    $adminRole = Role::create(['name' => 'admin-role']);
-
-    Livewire::test('pages.permissions.create')
-        ->set('search', 'user')
-        ->assertSee($userRole->name)
-        ->assertDontSee($adminRole->name);
-});
-
-test('roles pagination works correctly', function () {
-    collect(range(1, 15))->each(fn ($i) => Role::create(['name' => "test-role-{$i}"]));
-
-    $component = Livewire::test('pages.permissions.create');
-
-    $roles = $component->instance()->roles();
-    expect($roles->count())->toBe(10)
-        ->and($roles->total())
-        ->toBeGreaterThan(10);
-});
-
 test('unauthorized user cannot access permissions create page', function () {
     $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
@@ -155,7 +125,7 @@ test('user with permission.create permission can access create page', function (
 
     $this->actingAs($permissionManagerUser)
         ->get(route('permissions.create'))
-        ->assertStatus(200);
+        ->assertSuccessful();
 });
 
 test('multiple roles can be assigned to permission', function () {

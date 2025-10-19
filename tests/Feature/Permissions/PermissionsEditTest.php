@@ -159,7 +159,7 @@ test('user with permission.update permission can access edit page', function () 
 
     $this->actingAs($permissionManagerUser)
         ->get(route('permissions.edit', $this->testPermission))
-        ->assertStatus(200);
+        ->assertSuccessful();
 });
 
 test('permission update shows success message', function () {

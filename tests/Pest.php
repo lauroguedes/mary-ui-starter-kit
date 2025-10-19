@@ -13,13 +13,13 @@ declare(strict_types=1);
 |
 */
 
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\WithRolesAndPermissions;
 
 pest()->extend(Tests\TestCase::class)
-    ->use(RefreshDatabase::class)
+    ->use(RefreshDatabase::class, WithRolesAndPermissions::class)
     ->beforeEach(function () {
-        $this->seed(RolesAndPermissionsSeeder::class);
+        $this->setUpRolesAndPermissions();
     })->in('Feature');
 
 /*
@@ -33,10 +33,6 @@ pest()->extend(Tests\TestCase::class)
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -47,8 +43,3 @@ expect()->extend('toBeOne', function () {
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
-
-function something()
-{
-    // ..
-}

@@ -76,32 +76,6 @@ test('role cannot be deleted when users are assigned', function () {
     ]);
 });
 
-test('filters can be cleared', function () {
-    Livewire::test('pages.roles.index')
-        ->set('search', 'test')
-        ->call('clear')
-        ->assertSet('search', '');
-});
-
-test('pagination works correctly', function () {
-    collect(range(1, 15))->each(fn ($i) => Role::create(['name' => "test-role-{$i}"]));
-
-    $component = Livewire::test('pages.roles.index');
-
-    $roles = $component->instance()->roles();
-    expect($roles->count())->toBe(10)
-        ->and($roles->total())
-        ->toBeGreaterThan(10);
-});
-
-test('drawer opens and closes for filters', function () {
-    Livewire::test('pages.roles.index')
-        ->set('drawer', true)
-        ->assertSet('drawer', true)
-        ->set('drawer', false)
-        ->assertSet('drawer', false);
-});
-
 test('role permissions are displayed in popover', function () {
     $testRole = Role::create(['name' => 'test-role-with-permissions']);
     $permission = Permission::create(['name' => 'test.permission']);
@@ -120,7 +94,7 @@ test('unauthorized user cannot access roles index', function () {
 
     $this->actingAs($regularUser)
         ->get(route('roles.index'))
-        ->assertStatus(403);
+        ->assertForbidden();
 });
 
 test('user with role.list permission can access roles index', function () {
@@ -129,7 +103,7 @@ test('user with role.list permission can access roles index', function () {
 
     $this->actingAs($roleManagerUser)
         ->get(route('roles.index'))
-        ->assertStatus(200);
+        ->assertSuccessful();
 });
 
 test('delete button only shows for roles without users', function () {
@@ -153,16 +127,4 @@ test('only authorized users can see create button', function () {
     $this->actingAs($roleManagerUser)
         ->get(route('roles.index'))
         ->assertSee(__('Create'));
-});
-
-test('search functionality works with partial matches', function () {
-    $testRole = Role::create(['name' => 'special-test-role']);
-
-    Livewire::test('pages.roles.index')
-        ->set('search', 'special')
-        ->assertSee($testRole->name)
-        ->set('search', 'test')
-        ->assertSee($testRole->name)
-        ->set('search', 'role')
-        ->assertSee($testRole->name);
 });

@@ -15,7 +15,7 @@ beforeEach(function () {
 test('users index page loads successfully', function () {
     $response = $this->get(route('users.index'));
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
     $response->assertSee(__('Users'));
 });
 

@@ -22,7 +22,7 @@ beforeEach(function () {
 test('users edit page loads successfully', function () {
     $response = $this->get(route('users.edit', $this->targetUser));
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
     $response->assertSee(__('Update') . ' - ' . $this->targetUser->name);
 });
 
@@ -51,14 +51,12 @@ test('user can be updated successfully', function () {
         ->toBe(UserStatus::INACTIVE);
 });
 
-test('user update validates required fields', function () {
+test('user update validates required fields', function (string $field, string $rule) {
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
-        ->set('name', '')
-        ->set('email', '')
+        ->set($field, '')
         ->call('save')
-        ->assertHasErrors(['name' => 'required'])
-        ->assertHasErrors(['email' => 'required']);
-});
+        ->assertHasErrors([$field => $rule]);
+})->with('required_fields');
 
 test('user update validates email format', function () {
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
@@ -70,32 +68,30 @@ test('user update validates email format', function () {
 test('user update validates email uniqueness except for current user', function () {
     $anotherUser = User::factory()->create(['email' => 'another@example.com']);
 
-    // Should fail when trying to use another user's email
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('email', 'another@example.com')
         ->call('save')
         ->assertHasErrors(['email' => 'unique']);
 
-    // Should pass when keeping the same email
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
         ->set('email', $this->targetUser->email)
         ->call('save')
         ->assertHasNoErrors(['email']);
 });
 
-test('user update validates name length', function () {
-    Livewire::test('pages.users.edit', ['user' => $this->targetUser])
-        ->set('name', str_repeat('a', 256))
-        ->call('save')
-        ->assertHasErrors(['name' => 'max']);
-});
+test('user update validates max length', function (string $field, int $maxLength) {
+    $value = $field === 'email'
+        ? str_repeat('a', $maxLength - 10) . '@example.com'
+        : str_repeat('a', $maxLength + 1);
 
-test('user update validates email length', function () {
     Livewire::test('pages.users.edit', ['user' => $this->targetUser])
-        ->set('email', str_repeat('a', 250) . '@example.com')
+        ->set($field, $value)
         ->call('save')
-        ->assertHasErrors(['email' => 'max']);
-});
+        ->assertHasErrors([$field => 'max']);
+})->with([
+    'name exceeds 255 chars' => ['name', 255],
+    'email exceeds 255 chars' => ['email', 255],
+]);
 
 test('avatar can be updated', function () {
     $file = UploadedFile::fake()->image('new-avatar.jpg');
@@ -180,14 +176,3 @@ test('user can update status', function () {
 
     expect($this->targetUser->status)->toBe(UserStatus::SUSPENDED);
 });
-
-test('user cannot be updated because of insufficient permissions', function () {
-    $this->user->removeRole('user-manager');
-
-    Livewire::test('pages.users.edit')
-        ->set('name', 'John Doe')
-        ->set('email', 'john@example.com')
-        ->set('status', UserStatus::ACTIVE->value)
-        ->call('save')
-        ->assertForbidden();
-})->skip('This test is not working because assertForbidden() is not working when using $stopPropagationOnFailure');

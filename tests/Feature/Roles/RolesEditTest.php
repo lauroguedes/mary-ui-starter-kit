@@ -146,8 +146,8 @@ test('unauthorized user cannot access roles edit page', function () {
 });
 
 test('user with role.update permission can access edit page', function () {
-    $roleManagerUser = User::factory()->create(['email' => 'rolemanager@admin.com']);
-    $roleManagerUser->assignRole('role-manager');
+    $roleManagerUser = User::factory()->active()->create(['email' => 'rolemanager@admin.com']);
+    $roleManagerUser->assignRole('role-manager', 'user');
 
     $this->actingAs($roleManagerUser)
         ->get(route('roles.edit', $this->testRole))

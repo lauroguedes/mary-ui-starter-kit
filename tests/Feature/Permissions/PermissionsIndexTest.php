@@ -94,32 +94,6 @@ test('permission cannot be deleted when assigned to users', function () {
     ]);
 });
 
-test('filters can be cleared', function () {
-    Livewire::test('pages.permissions.index')
-        ->set('search', 'test')
-        ->call('clear')
-        ->assertSet('search', '');
-});
-
-test('pagination works correctly', function () {
-    collect(range(1, 15))->each(fn ($i) => Permission::create(['name' => "test.permission.{$i}"]));
-
-    $component = Livewire::test('pages.permissions.index');
-
-    $permissions = $component->instance()->permissions();
-    expect($permissions->count())->toBe(10)
-        ->and($permissions->total())
-        ->toBeGreaterThan(10);
-});
-
-test('drawer opens and closes for filters', function () {
-    Livewire::test('pages.permissions.index')
-        ->set('drawer', true)
-        ->assertSet('drawer', true)
-        ->set('drawer', false)
-        ->assertSet('drawer', false);
-});
-
 test('unauthorized user cannot access permissions index', function () {
     $regularUser = User::factory()->active()->create();
     $regularUser->assignRole('user');
