@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 use App\Enums\UserStatus;
 use App\Models\User;
-use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+
+use function Pest\Livewire\livewire;
 
 /**
  * User Authorization Tests
@@ -30,7 +31,7 @@ test('user without role.assign permission cannot assign roles during creation', 
 
     $testRole = Role::create(['name' => 'test-role']);
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -50,7 +51,7 @@ test('user with role.assign permission can assign roles during creation', functi
 
     $testRole = Role::create(['name' => 'test-role']);
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -71,7 +72,7 @@ test('user without role.assign permission cannot modify roles during edit', func
     $targetUser = User::factory()->active()->create();
     $testRole = Role::create(['name' => 'test-role']);
 
-    Livewire::test('pages.users.edit', ['user' => $targetUser])
+    livewire('pages.users.edit', ['user' => $targetUser])
         ->set('rolesGiven', [$testRole->id])
         ->call('save')
         ->assertRedirect(route('users.index'));
@@ -89,7 +90,7 @@ test('user with role.assign permission can modify roles during edit', function (
     $targetUser = User::factory()->active()->create();
     $testRole = Role::create(['name' => 'test-role']);
 
-    Livewire::test('pages.users.edit', ['user' => $targetUser])
+    livewire('pages.users.edit', ['user' => $targetUser])
         ->set('rolesGiven', [$testRole->id])
         ->call('save')
         ->assertRedirect(route('users.index'));
@@ -110,7 +111,7 @@ test('user without permission.assign permission cannot assign permissions during
     $targetUser = User::factory()->active()->create();
     $testPermission = Permission::create(['name' => 'test.permission']);
 
-    Livewire::test('pages.users.edit', ['user' => $targetUser])
+    livewire('pages.users.edit', ['user' => $targetUser])
         ->set('permissionsGiven', [$testPermission->id])
         ->call('save')
         ->assertRedirect(route('users.index'));
@@ -127,7 +128,7 @@ test('user with permission.assign permission can assign permissions during edit'
     $targetUser = User::factory()->active()->create();
     $testPermission = Permission::create(['name' => 'test.permission']);
 
-    Livewire::test('pages.users.edit', ['user' => $targetUser])
+    livewire('pages.users.edit', ['user' => $targetUser])
         ->set('permissionsGiven', [$testPermission->id])
         ->call('save')
         ->assertRedirect(route('users.index'));
@@ -172,7 +173,7 @@ test('user without user.delete permission cannot delete users', function () {
 
     $targetUser = User::factory()->active()->create();
 
-    Livewire::test('pages.users.index')
+    livewire('pages.users.index')
         ->call('delete', $targetUser);
 
     $this->assertDatabaseHas('users', [
@@ -189,7 +190,7 @@ test('user cannot delete themselves from user index', function () {
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
 
-    Livewire::test('pages.users.index')
+    livewire('pages.users.index')
         ->call('delete', $superAdminUser);
 
     $this->assertDatabaseHas('users', [
@@ -218,13 +219,13 @@ test('users with different permission levels see different role options', functi
     $superAdminUser->assignRole('super-admin');
 
     $this->actingAs($adminUser);
-    $adminComponent = Livewire::test('pages.users.create');
+    $adminComponent = livewire('pages.users.create');
     $adminRoles = $adminComponent->instance()->roles();
     $adminRoleNames = $adminRoles->pluck('name')->toArray();
     expect($adminRoleNames)->not()->toContain('super-admin');
 
     $this->actingAs($superAdminUser);
-    $superAdminComponent = Livewire::test('pages.users.create');
+    $superAdminComponent = livewire('pages.users.create');
     $superAdminRoles = $superAdminComponent->instance()->roles();
     $superAdminRoleNames = $superAdminRoles->pluck('name')->toArray();
     expect($superAdminRoleNames)->toContain('super-admin');
@@ -235,7 +236,7 @@ test('authorization is checked on each save operation', function () {
     $userManagerUser->assignRole('user-manager');
     $this->actingAs($userManagerUser);
 
-    $component = Livewire::test('pages.users.create')
+    $component = livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value);
@@ -259,7 +260,7 @@ test('mixed permission scenarios work correctly', function () {
     $testRole = Role::create(['name' => 'test-role']);
     $testPermission = Permission::create(['name' => 'test.permission']);
 
-    Livewire::test('pages.users.edit', ['user' => $targetUser])
+    livewire('pages.users.edit', ['user' => $targetUser])
         ->set('rolesGiven', [$testRole->id])
         ->set('permissionsGiven', [$testPermission->id])
         ->call('save')
@@ -281,7 +282,7 @@ test('non-super-admin cannot assign super-admin role during user creation', func
     $adminUser->assignRole('admin');
     $this->actingAs($adminUser);
 
-    $component = Livewire::test('pages.users.create');
+    $component = livewire('pages.users.create');
     $roles = $component->instance()->roles();
     $roleNames = $roles->pluck('name')->toArray();
     expect($roleNames)->not()->toContain('super-admin');
@@ -294,7 +295,7 @@ test('super-admin can assign super-admin role during user creation', function ()
 
     $superAdminRole = Role::where('name', 'super-admin')->first();
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -313,7 +314,7 @@ test('non-super-admin cannot assign super-admin role during user edit', function
 
     $targetUser = User::factory()->active()->create();
 
-    $component = Livewire::test('pages.users.edit', ['user' => $targetUser]);
+    $component = livewire('pages.users.edit', ['user' => $targetUser]);
     $roles = $component->instance()->roles();
     $roleNames = $roles->pluck('name')->toArray();
     expect($roleNames)->not()->toContain('super-admin');
@@ -327,7 +328,7 @@ test('super-admin can assign super-admin role during user edit', function () {
     $targetUser = User::factory()->active()->create();
     $superAdminRole = Role::where('name', 'super-admin')->first();
 
-    Livewire::test('pages.users.edit', ['user' => $targetUser])
+    livewire('pages.users.edit', ['user' => $targetUser])
         ->set('rolesGiven', [$superAdminRole->id])
         ->call('save')
         ->assertRedirect(route('users.index'));
@@ -344,7 +345,7 @@ test('unauthorized users cannot delete super-admin users', function () {
     $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
     $superAdminUser->assignRole('super-admin');
 
-    Livewire::test('pages.users.index')
+    livewire('pages.users.index')
         ->call('delete', $superAdminUser);
 
     $this->assertDatabaseHas('users', [
@@ -360,7 +361,7 @@ test('super-admin can delete other super-admin users', function () {
     $superAdminUser2 = User::factory()->active()->create(['email' => 'superadmin2@admin.com']);
     $superAdminUser2->assignRole('super-admin');
 
-    Livewire::test('pages.users.index')
+    livewire('pages.users.index')
         ->call('delete', $superAdminUser2);
 
     $this->assertDatabaseMissing('users', [
@@ -373,7 +374,7 @@ test('super-admin users trying to delete themselves are redirected to profile', 
     $superAdminUser->assignRole('super-admin');
     $this->actingAs($superAdminUser);
 
-    Livewire::test('pages.users.index')
+    livewire('pages.users.index')
         ->call('delete', $superAdminUser)
         ->assertRedirectToRoute('settings.profile');
 

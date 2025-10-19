@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     $adminUser = User::factory()->active()->create(['email' => 'admin@admin.com']);
@@ -23,7 +24,7 @@ test('roles index displays roles in table', function () {
     Role::create(['name' => 'test-role'])
         ->givePermissionTo('user.view');
 
-    Livewire::test('pages.roles.index')
+    livewire('pages.roles.index')
         ->assertSee('super-admin')
         ->assertSee('admin')
         ->assertSee('test-role');
@@ -33,7 +34,7 @@ test('roles can be searched by name', function () {
     $managerRole = Role::create(['name' => 'content-manager']);
     $editorRole = Role::create(['name' => 'content-editor']);
 
-    Livewire::test('pages.roles.index')
+    livewire('pages.roles.index')
         ->set('search', 'manager')
         ->assertSee($managerRole->name)
         ->assertDontSee($editorRole->name);
@@ -43,7 +44,7 @@ test('roles can be sorted by columns', function () {
     $roleA = Role::create(['name' => 'alpha-role']);
     $roleB = Role::create(['name' => 'beta-role']);
 
-    Livewire::test('pages.roles.index')
+    livewire('pages.roles.index')
         ->set('sortBy', ['column' => 'name', 'direction' => 'desc'])
         ->assertSeeInOrder([$roleB->name, $roleA->name]);
 });
@@ -51,7 +52,7 @@ test('roles can be sorted by columns', function () {
 test('role can be deleted successfully when no users assigned', function () {
     $testRole = Role::create(['name' => 'deletable-role']);
 
-    Livewire::test('pages.roles.index')
+    livewire('pages.roles.index')
         ->call('delete', $testRole)
         ->assertSet('modal', false)
         ->assertSuccessful();
@@ -67,7 +68,7 @@ test('role cannot be deleted when users are assigned', function () {
     $testUser->assignRole($testRole);
 
     // The super-admin bypasses authorization but the business logic should still prevent deletion
-    Livewire::test('pages.roles.index')
+    livewire('pages.roles.index')
         ->call('delete', $testRole);
 
     // The role should still exist because it has users assigned
@@ -81,7 +82,7 @@ test('role permissions are displayed in popover', function () {
     $permission = Permission::create(['name' => 'test.permission']);
     $testRole->givePermissionTo($permission);
 
-    $component = Livewire::test('pages.roles.index');
+    $component = livewire('pages.roles.index');
     $html = $component->html();
 
     expect($html)->toContain('test-role-with-permissions')
@@ -113,7 +114,7 @@ test('delete button only shows for roles without users', function () {
     $testUser = User::factory()->active()->create();
     $testUser->assignRole($roleWithUsers);
 
-    $component = Livewire::test('pages.roles.index');
+    $component = livewire('pages.roles.index');
     $html = $component->html();
 
     expect($html)->toContain('role-with-users')

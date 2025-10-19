@@ -8,7 +8,8 @@ use App\Notifications\UserCreated;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Livewire;
+
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     $this->user = User::factory()->active()->create();
@@ -26,7 +27,7 @@ test('users create page loads successfully', function () {
 });
 
 test('user can be created successfully', function () {
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -42,7 +43,7 @@ test('user can be created successfully', function () {
 });
 
 test('user creation sends notification', function () {
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -54,13 +55,13 @@ test('user creation sends notification', function () {
 });
 
 test('user creation validates required fields', function (string $field, string $rule) {
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->call('save')
         ->assertHasErrors([$field => $rule]);
 })->with('required_fields');
 
 test('user creation validates email format', function () {
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'invalid-email')
         ->set('status', UserStatus::ACTIVE->value)
@@ -71,7 +72,7 @@ test('user creation validates email format', function () {
 test('user creation validates email uniqueness', function () {
     User::factory()->create(['email' => 'existing@example.com']);
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'existing@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -84,7 +85,7 @@ test('user creation validates max length', function (string $field, int $maxLeng
         ? str_repeat('a', $maxLength - 10) . '@example.com'
         : str_repeat('a', $maxLength + 1);
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', $field === 'name' ? $value : 'John Doe')
         ->set('email', $field === 'email' ? $value : 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -98,7 +99,7 @@ test('user creation validates max length', function (string $field, int $maxLeng
 test('avatar can be uploaded during user creation', function () {
     $file = UploadedFile::fake()->image('avatar.jpg');
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -115,7 +116,7 @@ test('avatar can be uploaded during user creation', function () {
 test('avatar upload validates file type', function () {
     $file = UploadedFile::fake()->create('document.pdf', 100);
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -127,7 +128,7 @@ test('avatar upload validates file type', function () {
 test('avatar upload validates file size', function () {
     $file = UploadedFile::fake()->image('avatar.jpg')->size(2048); // 2MB
 
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
@@ -137,19 +138,19 @@ test('avatar upload validates file size', function () {
 });
 
 test('default status is active', function () {
-    $component = Livewire::test('pages.users.create');
+    $component = livewire('pages.users.create');
 
     expect($component->get('status'))->toBe(UserStatus::ACTIVE->value);
 });
 
 test('status options are available', function () {
-    $component = Livewire::test('pages.users.create');
+    $component = livewire('pages.users.create');
 
     expect($component->get('statusOptions'))->toBe(UserStatus::all());
 });
 
 test('password is auto-generated and hashed', function () {
-    Livewire::test('pages.users.create')
+    livewire('pages.users.create')
         ->set('name', 'John Doe')
         ->set('email', 'john@example.com')
         ->set('status', UserStatus::ACTIVE->value)
