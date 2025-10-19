@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/Users/lauroguedes/Library/Application Support/Herd/bin/php84",
+            "args": [
+                "/Users/lauroguedes/apps/mary-ui-starter-kit/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}

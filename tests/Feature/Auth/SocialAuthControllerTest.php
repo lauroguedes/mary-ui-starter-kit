@@ -11,7 +11,7 @@ beforeEach(function () {
 test('redirect route exists and is accessible', function () {
     $response = $this->get("/oauth/{$this->provider->value}/redirect");
 
-    $response->assertStatus(302);
+    $response->assertRedirect();
 });
 
 test('callback route handles errors gracefully', function () {

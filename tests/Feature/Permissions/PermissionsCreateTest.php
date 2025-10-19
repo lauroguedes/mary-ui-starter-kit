@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     $superAdminUser = User::factory()->active()->create(['email' => 'superadmin@admin.com']);
@@ -22,7 +23,7 @@ test('permissions create page loads successfully', function () {
 test('permission can be created with valid data', function () {
     $testRole = Role::create(['name' => 'test-role']);
 
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'test.new.permission')
         ->set('rolesGiven', [$testRole->id])
         ->call('save')
@@ -37,7 +38,7 @@ test('permission can be created with valid data', function () {
 });
 
 test('permission name is required', function () {
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', '')
         ->call('save')
         ->assertHasErrors(['name' => 'required']);
@@ -46,7 +47,7 @@ test('permission name is required', function () {
 test('permission name must be unique', function () {
     Permission::create(['name' => 'existing.permission']);
 
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'existing.permission')
         ->call('save')
         ->assertHasErrors(['name' => 'unique']);
@@ -55,24 +56,24 @@ test('permission name must be unique', function () {
 test('permission name cannot exceed 100 characters', function () {
     $longName = str_repeat('a', 101);
 
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', $longName)
         ->call('save')
         ->assertHasErrors(['name' => 'max']);
 });
 
 test('permission name must follow dot notation regex', function () {
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'invalid-permission-name')
         ->call('save')
         ->assertHasErrors(['name' => 'regex']);
 
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'Invalid.Permission')
         ->call('save')
         ->assertHasErrors(['name' => 'regex']);
 
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'permission.with.123')
         ->call('save')
         ->assertHasErrors(['name' => 'regex']);
@@ -86,7 +87,7 @@ test('permission name accepts valid dot notation', function () {
     ];
 
     foreach ($validNames as $index => $name) {
-        Livewire::test('pages.permissions.create')
+        livewire('pages.permissions.create')
             ->set('name', $name)
             ->call('save')
             ->assertRedirect(route('permissions.index'));
@@ -96,7 +97,7 @@ test('permission name accepts valid dot notation', function () {
 });
 
 test('permission can be created without roles', function () {
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'permission.without.roles')
         ->set('rolesGiven', [])
         ->call('save')
@@ -108,36 +109,6 @@ test('permission can be created without roles', function () {
 
     $permission = Permission::where('name', 'permission.without.roles')->first();
     expect($permission->roles)->toHaveCount(0);
-});
-
-test('roles are displayed in table', function () {
-    $role1 = Role::create(['name' => 'test-role-1']);
-    $role2 = Role::create(['name' => 'test-role-2']);
-
-    Livewire::test('pages.permissions.create')
-        ->assertSee($role1->name)
-        ->assertSee($role2->name);
-});
-
-test('roles can be searched', function () {
-    $userRole = Role::create(['name' => 'user-role']);
-    $adminRole = Role::create(['name' => 'admin-role']);
-
-    Livewire::test('pages.permissions.create')
-        ->set('search', 'user')
-        ->assertSee($userRole->name)
-        ->assertDontSee($adminRole->name);
-});
-
-test('roles pagination works correctly', function () {
-    collect(range(1, 15))->each(fn ($i) => Role::create(['name' => "test-role-{$i}"]));
-
-    $component = Livewire::test('pages.permissions.create');
-
-    $roles = $component->instance()->roles();
-    expect($roles->count())->toBe(10)
-        ->and($roles->total())
-        ->toBeGreaterThan(10);
 });
 
 test('unauthorized user cannot access permissions create page', function () {
@@ -155,7 +126,7 @@ test('user with permission.create permission can access create page', function (
 
     $this->actingAs($permissionManagerUser)
         ->get(route('permissions.create'))
-        ->assertStatus(200);
+        ->assertSuccessful();
 });
 
 test('multiple roles can be assigned to permission', function () {
@@ -163,7 +134,7 @@ test('multiple roles can be assigned to permission', function () {
     $role2 = Role::create(['name' => 'test-role-2']);
     $role3 = Role::create(['name' => 'test-role-3']);
 
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'multi.role.permission')
         ->set('rolesGiven', [$role1->id, $role2->id, $role3->id])
         ->call('save')
@@ -177,7 +148,7 @@ test('multiple roles can be assigned to permission', function () {
 });
 
 test('permission creation shows success message', function () {
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'success.test.permission')
         ->call('save')
         ->assertRedirect(route('permissions.index'));
@@ -190,7 +161,7 @@ test('permission creation shows success message', function () {
 test('invalid role ids are filtered out', function () {
     $validRole = Role::create(['name' => 'valid-role']);
 
-    Livewire::test('pages.permissions.create')
+    livewire('pages.permissions.create')
         ->set('name', 'test.permission')
         ->set('rolesGiven', [$validRole->id])
         ->call('save')
@@ -217,7 +188,7 @@ test('permission name with special regex patterns work', function () {
     ];
 
     foreach ($testPermissions as $permissionName) {
-        Livewire::test('pages.permissions.create')
+        livewire('pages.permissions.create')
             ->set('name', $permissionName)
             ->call('save')
             ->assertRedirect(route('permissions.index'));

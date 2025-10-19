@@ -12,7 +12,7 @@ test('email verification screen can be rendered', function () {
 
     $response = $this->actingAs($user)->get('/verify-email');
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
 });
 
 test('email can be verified', function () {
