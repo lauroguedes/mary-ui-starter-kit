@@ -64,61 +64,6 @@ In the Assert phase, perform these assertions when applicable:
 ===
 
 <laravel-boost-guidelines>
-=== .ai/core rules ===
-
-## Mary UI Livewire Components - Guide
-
-### Overview
-Mary UI is a collection of gorgeous Laravel Blade UI components designed for Livewire 3, styled with daisyUI v5 and Tailwind CSS v4. It provides pre-built, responsive components that integrate seamlessly with Livewire, allowing you to build dynamic interfaces without writing JavaScript.
-
-### Component prefix tag
-The Mary UI components for this project use the prefix `x-mary-`:
-
-<code-snippet name="Component using prefix" lang="blade">
-    <x-mary-select
-        label="City"
-        wire:model="city_id"
-        icon="o-flag"
-        :options="$cities"
-    />
-</code-snippet>
-
-For all components, you must use the prefix `x-mary-` to avoid conflicts with other components.
-
-### Best Practices
-- Use Icons: Mary UI supports Blade Icons (https://blade-ui-kit.com) for Heroicons with prefixes like `o-` (outline) and `s-` (solid), and FontAwesome with prefixes like `fas.` (solid), `far.` (regular), or `fab.` (brands).
-
-<code-snippet name="Heroicons icon component" lang="blade">
-    <x-mary-icon name="o-envelope" />
-    <x-mary-icon name="s-envelope" />
-</code-snippet>
-
-<code-snippet name="FontAwesome icon component" lang="blade">
-    <x-mary-icon name="fas.cloud" />
-    <x-mary-icon name="far.circle-play" />
-    <x-mary-icon name="fab.facebook" />
-</code-snippet>
-
-- Responsive Design: Use Tailwind's responsive classes (e.g., hidden lg:table-cell)
-- Wire Model: Always use wire:model for reactive data binding
-- Slots: Leverage slots for actions, headers, and custom content
-- Spinners: Add spinner attribute to buttons for loading states
-
-### Resources
-- Documentation: https://mary-ui.com/
-- GitHub: https://github.com/robsontenorio/mary
-- Blade UI kit Icons: https://blade-ui-kit.com/blade-icons
-
-### Quick Tips
-- Search for components using ⌘ + G (or Ctrl + G) on the documentation site
-- All components are responsive by default
-- You can override styles inline using daisyUI v5 and Tailwind v4 classes
-- The package follows DRY principles - write less, achieve more
-
-### Daisy UI
-- Use the daisyUI library for styling components if you need more customization.
-- Use daisyUI MCP server to generate components that Mary UI haven't implemented yet.
-
 === foundation rules ===
 
 # Laravel Boost Guidelines
@@ -133,7 +78,6 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/prompts (PROMPTS) - v0
 - laravel/socialite (SOCIALITE) - v5
 - livewire/livewire (LIVEWIRE) - v4
-- livewire/volt (VOLT) - v1
 - laravel/mcp (MCP) - v0
 - laravel/pint (PINT) - v1
 - laravel/sail (SAIL) - v1
@@ -313,12 +257,141 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 === livewire/core rules ===
 
-## Livewire
+## Livewire v4
 
 - Use the `search-docs` tool to find exact version-specific documentation for how to write Livewire and Livewire tests.
-- Use the `php artisan make:livewire [Posts\CreatePost]` Artisan command to create new components.
 - State should live on the server, with the UI reflecting it.
 - All Livewire requests hit the Laravel backend; they're like regular HTTP requests. Always validate form data and run authorization checks in Livewire actions.
+
+## Livewire v4 Native Single-File Components (SFCs)
+
+This project uses Livewire v4's native single-file components (NOT Volt). SFCs allow PHP logic and Blade templates in one file using an anonymous class.
+
+### File Structure and Namespaces
+
+```
+resources/views/
+├── components/          # Reusable Blade components (standard Laravel)
+├── layouts/             # Layout files (namespace: layouts::)
+│   ├── app.blade.php
+│   ├── auth.blade.php
+│   ├── app/
+│   │   ├── header.blade.php
+│   │   └── sidebar.blade.php
+│   └── auth/
+│       ├── card.blade.php
+│       └── simple.blade.php
+└── pages/               # Page SFCs (namespace: pages::)
+    ├── auth/
+    │   ├── ⚡login.blade.php
+    │   └── ⚡register.blade.php
+    ├── settings/
+    │   ├── ⚡profile.blade.php
+    │   └── ⚡password.blade.php
+    └── users/
+        ├── ⚡index.blade.php
+        ├── ⚡create.blade.php
+        └── ⚡edit.blade.php
+```
+
+### SFC File Naming Convention
+- All SFC files use the ⚡ emoji prefix (e.g., `⚡profile.blade.php`)
+- This visually distinguishes interactive Livewire components from static Blade files
+
+### Creating New SFCs
+
+1. Create the file in `resources/views/pages/` with ⚡ prefix
+2. Use `Livewire\Component` (NOT `Livewire\Volt\Component`)
+3. Define an anonymous class extending Component
+
+<code-snippet name="Livewire v4 SFC Example" lang="php">
+<?php
+
+use Livewire\Component;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Validate;
+
+new #[Layout('layouts::app')] class extends Component {
+    #[Validate('required|string|max:255')]
+    public string $name = '';
+
+    public function mount(): void
+    {
+        $this->name = auth()->user()->name;
+    }
+
+    public function save(): void
+    {
+        $validated = $this->validate();
+        // Save logic...
+    }
+}; ?>
+
+<div>
+    <form wire:submit="save">
+        <x-mary-input wire:model="name" label="Name" />
+        <x-mary-button type="submit" label="Save" />
+    </form>
+</div>
+</code-snippet>
+
+### Routing with Route::livewire()
+
+Use `Route::livewire()` for SFC routes instead of standard Route methods:
+
+<code-snippet name="Livewire v4 Routing" lang="php">
+// routes/web.php
+Route::livewire('settings/profile', 'pages::settings.profile')
+    ->name('settings.profile')
+    ->middleware(['auth']);
+
+Route::livewire('users/{user}/edit', 'pages::users.edit')
+    ->name('users.edit');
+</code-snippet>
+
+### Layout Attribute
+
+Use the `#[Layout]` attribute to specify layouts with the `layouts::` namespace:
+
+<code-snippet name="Layout Attribute" lang="php">
+use Livewire\Attributes\Layout;
+
+new #[Layout('layouts::app')] class extends Component {
+    // ...
+}
+</code-snippet>
+
+### Rendering Child Components
+
+Use the `pages::` namespace when referencing SFC components:
+
+<code-snippet name="Rendering SFC Components" lang="blade">
+{{-- In Blade templates --}}
+<livewire:pages::settings.delete-user-form />
+
+{{-- With parameters --}}
+<livewire:pages::users.edit :user="$user" />
+</code-snippet>
+
+### Loading External Scripts with @assets
+
+Use the `@assets` directive to load external scripts/styles only when a component is rendered:
+
+<code-snippet name="Scoped Assets Loading" lang="blade">
+@assets
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+@endassets
+
+<div>
+    {{-- Component HTML --}}
+</div>
+</code-snippet>
+
+Benefits of `@assets`:
+- Scripts load only when the component is rendered
+- Scripts load once even with multiple component instances
+- Works properly with `wire:navigate` SPA navigation
 
 ## Livewire Best Practices
 - Livewire components require a single root element.
@@ -340,146 +413,206 @@ protected function isAccessible(User $user, ?string $path = null): bool
     public function updatedSearch() { $this->resetPage(); }
 </code-snippet>
 
-## Testing Livewire
+## Testing Livewire SFCs
 
-<code-snippet name="Example Livewire Component Test" lang="php">
-    Livewire::test(Counter::class)
-        ->assertSet('count', 0)
-        ->call('increment')
-        ->assertSet('count', 1)
-        ->assertSee(1)
-        ->assertStatus(200);
-</code-snippet>
+Use the `livewire()` helper from Pest with the `pages::` namespace:
 
-<code-snippet name="Testing Livewire Component Exists on Page" lang="php">
-    $this->get('/posts/create')
-    ->assertSeeLivewire(CreatePost::class);
-</code-snippet>
+<code-snippet name="Testing SFC with Pest livewire() helper" lang="php">
+use function Pest\Livewire\livewire;
 
-=== volt/core rules ===
-
-## Livewire Volt
-
-- This project uses Livewire Volt for interactivity within its pages. New pages requiring interactivity must also use Livewire Volt.
-- Make new Volt components using `php artisan make:volt [name] [--test] [--pest]`.
-- Volt is a class-based and functional API for Livewire that supports single-file components, allowing a component's PHP logic and Blade templates to coexist in the same file.
-- Livewire Volt allows PHP logic and Blade templates in one file. Components use the `@volt` directive.
-- You must check existing Volt components to determine if they're functional or class-based. If you can't detect that, ask the user which they prefer before writing a Volt component.
-
-### Volt Functional Component Example
-
-<code-snippet name="Volt Functional Component Example" lang="php">
-@volt
-<?php
-use function Livewire\Volt\{state, computed};
-
-state(['count' => 0]);
-
-$increment = fn () => $this->count++;
-$decrement = fn () => $this->count--;
-
-$double = computed(fn () => $this->count * 2);
-?>
-
-<div>
-    <h1>Count: {{ $count }}</h1>
-    <h2>Double: {{ $this->double }}</h2>
-    <button wire:click="increment">+</button>
-    <button wire:click="decrement">-</button>
-</div>
-@endvolt
-</code-snippet>
-
-### Volt Class Based Component Example
-To get started, define an anonymous class that extends Livewire\Volt\Component. Within the class, you may utilize all of the features of Livewire using traditional Livewire syntax:
-
-<code-snippet name="Volt Class-based Volt Component Example" lang="php">
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public $count = 0;
-
-    public function increment()
-    {
-        $this->count++;
-    }
-} ?>
-
-<div>
-    <h1>{{ $count }}</h1>
-    <button wire:click="increment">+</button>
-</div>
-</code-snippet>
-
-### Testing Volt & Volt Components
-- Use the existing directory for tests if it already exists. Otherwise, fallback to `tests/Feature/Volt`.
-
-<code-snippet name="Livewire Test Example" lang="php">
-use Livewire\Volt\Volt;
-
-test('counter increments', function () {
-    Volt::test('counter')
-        ->assertSee('Count: 0')
-        ->call('increment')
-        ->assertSee('Count: 1');
-});
-</code-snippet>
-
-<code-snippet name="Volt Component Test Using Pest" lang="php">
-declare(strict_types=1);
-
-use App\Models\{User, Product};
-use Livewire\Volt\Volt;
-
-test('product form creates product', function () {
+test('profile can be updated', function () {
     $user = User::factory()->create();
 
-    Volt::test('pages.products.create')
-        ->actingAs($user)
-        ->set('form.name', 'Test Product')
-        ->set('form.description', 'Test Description')
-        ->set('form.price', 99.99)
-        ->call('create')
+    $this->actingAs($user);
+
+    livewire('pages::settings.profile')
+        ->set('name', 'New Name')
+        ->call('updateProfileInformation')
         ->assertHasNoErrors();
 
-    expect(Product::where('name', 'Test Product')->exists())->toBeTrue();
+    expect($user->fresh()->name)->toBe('New Name');
 });
 </code-snippet>
 
-### Common Patterns
+<code-snippet name="Testing SFC Component Exists on Page" lang="php">
+test('profile page shows profile component', function () {
+    $user = User::factory()->create();
 
-<code-snippet name="CRUD With Volt" lang="php">
+    $this->actingAs($user)
+        ->get('/settings/profile')
+        ->assertSeeLivewire('pages::settings.profile');
+});
+</code-snippet>
+
+=== livewire/sfc-patterns ===
+
+## Livewire v4 SFC Common Patterns
+
+### CRUD Operations
+
+<code-snippet name="CRUD Index with Search and Pagination" lang="php">
 <?php
 
 use App\Models\Product;
-use function Livewire\Volt\{state, computed};
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Livewire\WithPagination;
 
-state(['editing' => null, 'search' => '']);
+new #[Layout('layouts::app')] class extends Component {
+    use WithPagination;
 
-$products = computed(fn() => Product::when($this->search,
-    fn($q) => $q->where('name', 'like', "%{$this->search}%")
-)->get());
+    public string $search = '';
 
-$edit = fn(Product $product) => $this->editing = $product->id;
-$delete = fn(Product $product) => $product->delete();
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
 
-?>
+    #[Computed]
+    public function products(): LengthAwarePaginator
+    {
+        return Product::query()
+            ->when($this->search, fn(Builder $q) => $q->where('name', 'like', "%{$this->search}%"))
+            ->paginate(10);
+    }
 
-<!-- HTML / UI Here -->
+    public function delete(Product $product): void
+    {
+        $this->authorize('delete', $product);
+        $product->delete();
+    }
+}; ?>
+
+<div>
+    <x-mary-input wire:model.live.debounce.300ms="search" placeholder="Search..." />
+    <x-mary-table :headers="$headers" :rows="$this->products" with-pagination />
+</div>
 </code-snippet>
 
-<code-snippet name="Real-Time Search With Volt" lang="php">
-    <flux:input
-        wire:model.live.debounce.300ms="search"
-        placeholder="Search..."
-    />
+### Form Handling with Validation
+
+<code-snippet name="Create Form with Validation" lang="php">
+<?php
+
+use App\Models\Product;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
+use Mary\Traits\Toast;
+
+new #[Layout('layouts::app')] class extends Component {
+    use Toast;
+
+    #[Validate('required|string|max:255')]
+    public string $name = '';
+
+    #[Validate('required|numeric|min:0')]
+    public float $price = 0;
+
+    public function save(): void
+    {
+        $this->authorize('create', Product::class);
+
+        $validated = $this->validate();
+
+        Product::create($validated);
+
+        $this->success('Product created!', redirectTo: route('products.index'));
+    }
+}; ?>
+
+<div>
+    <x-mary-form wire:submit="save">
+        <x-mary-input wire:model="name" label="Name" />
+        <x-mary-input wire:model="price" label="Price" type="number" step="0.01" />
+        <x-slot:actions>
+            <x-mary-button type="submit" label="Save" class="btn-primary" spinner="save" />
+        </x-slot:actions>
+    </x-mary-form>
+</div>
 </code-snippet>
 
-<code-snippet name="Loading States With Volt" lang="php">
-    <flux:button wire:click="save" wire:loading.attr="disabled">
-        <span wire:loading.remove>Save</span>
-        <span wire:loading>Saving...</span>
-    </flux:button>
+### Real-Time Search
+
+<code-snippet name="Real-Time Search Input" lang="blade">
+<x-mary-input
+    wire:model.live.debounce.300ms="search"
+    placeholder="Search..."
+    icon="o-magnifying-glass"
+    clearable
+/>
+</code-snippet>
+
+### Loading States
+
+<code-snippet name="Button with Loading State" lang="blade">
+<x-mary-button
+    wire:click="save"
+    label="Save"
+    icon="o-paper-airplane"
+    spinner="save"
+    class="btn-primary"
+/>
+</code-snippet>
+
+### Exception Handling in Components
+
+<code-snippet name="Authorization Exception Handling" lang="php">
+use Illuminate\Auth\Access\AuthorizationException;
+use Mary\Traits\Toast;
+
+new class extends Component {
+    use Toast;
+
+    public function exception(Throwable $e, $stopPropagation): void
+    {
+        if ($e instanceof AuthorizationException) {
+            $this->error($e->getMessage());
+            $stopPropagation();
+        }
+    }
+};
+</code-snippet>
+
+### File Uploads with Cropping
+
+<code-snippet name="File Upload with Image Cropping" lang="php">
+<?php
+
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\Attributes\Validate;
+
+new class extends Component {
+    use WithFileUploads;
+
+    #[Validate('nullable|image|max:1024')]
+    public mixed $avatar = null;
+
+    private function processUpload(array &$validated): void
+    {
+        if (!$this->avatar || !($this->avatar instanceof \Illuminate\Http\UploadedFile)) {
+            return;
+        }
+
+        $url = $this->avatar->store('avatars', 'public');
+        $validated['avatar'] = "/storage/{$url}";
+    }
+}; ?>
+
+@assets
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+@endassets
+
+<div>
+    <x-mary-file wire:model="avatar" accept="image/png, image/jpeg" crop-after-change>
+        <img src="{{ $currentAvatar }}" class="h-24 rounded-lg" />
+    </x-mary-file>
+</div>
 </code-snippet>
 
 === pint/core rules ===
