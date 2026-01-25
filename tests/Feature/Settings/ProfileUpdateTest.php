@@ -6,7 +6,8 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Volt\Volt;
+
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
     Storage::fake('public');
@@ -25,7 +26,7 @@ test('profile information can be updated', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', 'Test User')
         ->set('email', 'test@example.com')
         ->call('updateProfileInformation');
@@ -44,7 +45,7 @@ test('email verification status is unchanged when email address is unchanged', f
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', 'Test User')
         ->set('email', $user->email)
         ->call('updateProfileInformation');
@@ -59,7 +60,7 @@ test('user can delete their account', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.delete-user-form')
+    $response = livewire('pages::settings.delete-user-form')
         ->set('password', 'secret')
         ->call('deleteUser');
 
@@ -76,7 +77,7 @@ test('correct password must be provided to delete account', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.delete-user-form')
+    $response = livewire('pages::settings.delete-user-form')
         ->set('password', 'wrong-password')
         ->call('deleteUser');
 
@@ -92,7 +93,7 @@ test('avatar can be updated in profile', function () {
 
     $file = UploadedFile::fake()->image('new-avatar.jpg');
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', $user->name)
         ->set('email', $user->email)
         ->set('avatar', $file)
@@ -119,7 +120,7 @@ test('old avatar is deleted when new avatar is uploaded', function () {
     // Now upload a new avatar
     $newFile = UploadedFile::fake()->image('new-avatar.jpg');
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', $user->name)
         ->set('email', $user->email)
         ->set('avatar', $newFile)
@@ -142,7 +143,7 @@ test('avatar upload validates file type in profile', function () {
 
     $file = UploadedFile::fake()->create('document.pdf', 100);
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', $user->name)
         ->set('email', $user->email)
         ->set('avatar', $file)
@@ -158,7 +159,7 @@ test('avatar upload validates file size in profile', function () {
 
     $file = UploadedFile::fake()->image('large-avatar.jpg')->size(2048); // 2MB
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', $user->name)
         ->set('email', $user->email)
         ->set('avatar', $file)
@@ -173,7 +174,7 @@ test('profile can be updated without uploading new avatar', function () {
     $this->actingAs($user);
 
     // Update profile without setting avatar field (simulating form submission without file change)
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', 'Updated Name')
         ->set('email', 'updated@example.com')
         ->call('updateProfileInformation');
@@ -192,7 +193,7 @@ test('avatar field is optional in profile update', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', 'Test Name')
         ->set('email', 'test@example.com')
         ->set('avatar', null)
@@ -213,7 +214,7 @@ test('existing avatar is cleared when avatar field is set to null', function () 
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', 'Updated Name')
         ->set('email', 'updated@example.com')
         ->set('avatar', null)
@@ -235,7 +236,7 @@ test('user avatar is deleted from storage when account is deleted', function () 
 
     // First, upload an avatar
     $file = UploadedFile::fake()->image('user-avatar.jpg');
-    Volt::test('settings.profile')
+    livewire('pages::settings.profile')
         ->set('name', $user->name)
         ->set('email', $user->email)
         ->set('avatar', $file)
@@ -248,7 +249,7 @@ test('user avatar is deleted from storage when account is deleted', function () 
     Storage::disk('public')->assertExists($avatarPath);
 
     // Delete the user account
-    $response = Volt::test('settings.delete-user-form')
+    $response = livewire('pages::settings.delete-user-form')
         ->set('password', 'secret')
         ->call('deleteUser');
 
@@ -268,7 +269,7 @@ test('user without avatar can be deleted successfully', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.delete-user-form')
+    $response = livewire('pages::settings.delete-user-form')
         ->set('password', 'secret')
         ->call('deleteUser');
 
@@ -285,7 +286,7 @@ test('avatar deletion is skipped when user has no avatar during account deletion
     $this->actingAs($user);
 
     // This test ensures the deletion process doesn't fail when avatar is null
-    $response = Volt::test('settings.delete-user-form')
+    $response = livewire('pages::settings.delete-user-form')
         ->set('password', 'secret')
         ->call('deleteUser');
 
@@ -304,7 +305,7 @@ test('users without profile update permission cannot update profile', function (
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.profile')
+    $response = livewire('pages::settings.profile')
         ->set('name', 'Updated Name')
         ->set('email', 'updated@example.com')
         ->call('updateProfileInformation');
@@ -325,7 +326,7 @@ test('users without user delete permission cannot delete their account', functio
 
     $this->actingAs($user);
 
-    Volt::test('settings.delete-user-form')
+    livewire('pages::settings.delete-user-form')
         ->set('password', 'secret')
         ->call('deleteUser');
 

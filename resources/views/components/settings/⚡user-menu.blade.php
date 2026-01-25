@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Volt\Component;
+use Livewire\Component;
 use App\Livewire\Actions\Logout;
 use App\Models\User;
 use Livewire\Attributes\On;

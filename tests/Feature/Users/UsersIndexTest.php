@@ -23,7 +23,7 @@ test('users index page loads successfully', function () {
 test('users index displays users in table', function () {
     $users = User::factory()->count(3)->create();
 
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->assertSee($users[0]->name)
         ->assertSee($users[1]->name)
         ->assertSee($users[2]->name);
@@ -33,7 +33,7 @@ test('users can be searched by name', function () {
     $userJohn = User::factory()->create(['name' => 'John Doe']);
     $userJane = User::factory()->create(['name' => 'Jane Smith']);
 
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->set('search', 'John')
         ->assertSee($userJohn->name)
         ->assertDontSee($userJane->name);
@@ -43,7 +43,7 @@ test('users can be filtered by status', function () {
     $activeUser = User::factory()->create(['status' => UserStatus::ACTIVE]);
     $inactiveUser = User::factory()->create(['status' => UserStatus::INACTIVE]);
 
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->set('status', UserStatus::ACTIVE->value)
         ->assertSee($activeUser->name)
         ->assertDontSee($inactiveUser->name);
@@ -53,7 +53,7 @@ test('users can be sorted by columns', function () {
     $userA = User::factory()->create(['name' => 'Alice']);
     $userB = User::factory()->create(['name' => 'Bob']);
 
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->set('sortBy', ['column' => 'name', 'direction' => 'desc'])
         ->assertSeeInOrder([$userB->name, $userA->name]);
 });
@@ -61,7 +61,7 @@ test('users can be sorted by columns', function () {
 test('user can be deleted successfully', function () {
     $targetUser = User::factory()->active()->create();
 
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->call('delete', $targetUser)
         ->assertSet('modal', false)
         ->assertSuccessful();
@@ -75,7 +75,7 @@ test('user cannot delete themselves', function () {
     // Create another user so we can see the delete button for them
     $otherUser = User::factory()->active()->create();
 
-    $component = livewire('pages.users.index');
+    $component = livewire('pages::users.index');
 
     // The current user should not have a delete button in their actions
     $html = $component->html();
@@ -87,7 +87,7 @@ test('user cannot delete themselves', function () {
 });
 
 test('filters can be cleared', function () {
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->set('search', 'test')
         ->set('status', UserStatus::ACTIVE->value)
         ->call('clear')
@@ -98,7 +98,7 @@ test('filters can be cleared', function () {
 test('edit redirects to user edit page', function () {
     $targetUser = User::factory()->active()->create();
 
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->call('edit', $targetUser)
         ->assertRedirect(route('users.edit', ['user' => $targetUser->id]));
 });
@@ -106,7 +106,7 @@ test('edit redirects to user edit page', function () {
 test('pagination works correctly', function () {
     User::factory()->count(15)->create();
 
-    $component = livewire('pages.users.index');
+    $component = livewire('pages::users.index');
 
     // Should show 10 per page by default (plus the authenticated user = 11 total users, but paginated to 10)
     $users = $component->instance()->users();
@@ -116,7 +116,7 @@ test('pagination works correctly', function () {
 });
 
 test('drawer opens and closes for filters', function () {
-    livewire('pages.users.index')
+    livewire('pages::users.index')
         ->set('drawer', true)
         ->assertSet('drawer', true)
         ->set('drawer', false)

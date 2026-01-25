@@ -3,7 +3,7 @@
 use App\Models\User;
 use App\Enums\UserStatus;
 use Illuminate\Auth\Access\AuthorizationException;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use Mary\Traits\Toast;
 use Livewire\WithPagination;
 use Illuminate\Database\Eloquent\Builder;

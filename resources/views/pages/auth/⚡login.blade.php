@@ -10,10 +10,10 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use App\Enums\SocialiteProviders;
 
-new #[Layout('components.layouts.auth')] class extends Component {
+new #[Layout('layouts::auth')] class extends Component {
     #[Validate('required|string|email')]
     public string $email = '';
 

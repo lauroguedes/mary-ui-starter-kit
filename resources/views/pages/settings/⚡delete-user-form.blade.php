@@ -3,7 +3,7 @@
 use App\Livewire\Actions\Logout;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use Mary\Traits\Toast;
 
 new class extends Component {

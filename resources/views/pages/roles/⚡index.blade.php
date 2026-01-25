@@ -3,7 +3,7 @@
 use App\Traits\ClearsFilters;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
 use Illuminate\Database\Eloquent\Builder;

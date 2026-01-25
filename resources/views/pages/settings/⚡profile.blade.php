@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
-use Livewire\Volt\Component;
+use Livewire\Component;
 use Mary\Traits\Toast;
 
 new class extends Component {
@@ -157,7 +157,7 @@ new class extends Component {
         </form>
 
         @can('profile.delete')
-            <livewire:settings.delete-user-form/>
+            <livewire:pages::settings.delete-user-form/>
         @endcan
     </x-settings.layout>
 </section>

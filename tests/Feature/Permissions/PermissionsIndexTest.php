@@ -24,7 +24,7 @@ test('permissions index displays permissions in table', function () {
     Permission::create(['name' => 'permission.assign-test'])
         ->assignRole('admin');
 
-    livewire('pages.permissions.index')
+    livewire('pages::permissions.index')
         ->assertSee('dashboard.view')
         ->assertSee('permission.assign')
         ->assertSee('permission.assign-test');
@@ -34,7 +34,7 @@ test('permissions can be searched by name', function () {
     $userPermission = Permission::create(['name' => 'user.special']);
     $rolePermission = Permission::create(['name' => 'role.special']);
 
-    livewire('pages.permissions.index')
+    livewire('pages::permissions.index')
         ->set('search', 'user.special')
         ->assertSee($userPermission->name)
         ->assertDontSee($rolePermission->name);
@@ -44,7 +44,7 @@ test('permissions can be sorted by columns', function () {
     $permissionA = Permission::create(['name' => 'zzz.alpha']);
     $permissionB = Permission::create(['name' => 'zzz.beta']);
 
-    $component = livewire('pages.permissions.index')
+    $component = livewire('pages::permissions.index')
         ->set('sortBy', ['column' => 'name', 'direction' => 'desc']);
 
     // Verify that sorting is working by checking the data structure
@@ -55,7 +55,7 @@ test('permissions can be sorted by columns', function () {
 test('permission can be deleted successfully when not assigned', function () {
     $testPermission = Permission::create(['name' => 'deletable.permission']);
 
-    livewire('pages.permissions.index')
+    livewire('pages::permissions.index')
         ->call('delete', $testPermission)
         ->assertSet('modal', false)
         ->assertSuccessful();
@@ -71,7 +71,7 @@ test('permission cannot be deleted when assigned to roles', function () {
     $testRole->givePermissionTo($testPermission);
 
     // The super-admin bypasses authorization but the business logic should still prevent deletion
-    livewire('pages.permissions.index')
+    livewire('pages::permissions.index')
         ->call('delete', $testPermission);
 
     // The permission should still exist because it has roles assigned
@@ -86,7 +86,7 @@ test('permission cannot be deleted when assigned to users', function () {
     $testUser->givePermissionTo($testPermission);
 
     // The super-admin bypasses authorization but the business logic should still prevent deletion
-    livewire('pages.permissions.index')
+    livewire('pages::permissions.index')
         ->call('delete', $testPermission);
 
     // The permission should still exist because it has users assigned

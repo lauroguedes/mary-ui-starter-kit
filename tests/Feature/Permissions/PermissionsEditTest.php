@@ -22,7 +22,7 @@ test('permissions edit page loads successfully', function () {
 });
 
 test('permission edit page displays existing permission data', function () {
-    $component = livewire('pages.permissions.edit', ['permission' => $this->testPermission]);
+    $component = livewire('pages::permissions.edit', ['permission' => $this->testPermission]);
 
     $component->assertSet('name', $this->testPermission->name);
 });
@@ -30,7 +30,7 @@ test('permission edit page displays existing permission data', function () {
 test('permission can be updated with valid data', function () {
     $testRole = Role::create(['name' => 'test-role']);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', 'updated.permission.name')
         ->set('rolesGiven', [$testRole->id])
         ->call('save')
@@ -42,7 +42,7 @@ test('permission can be updated with valid data', function () {
 });
 
 test('permission name is required for update', function () {
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', '')
         ->call('save')
         ->assertHasErrors(['name' => 'required']);
@@ -51,7 +51,7 @@ test('permission name is required for update', function () {
 test('permission name must be unique excluding current permission', function () {
     Permission::create(['name' => 'existing.permission']);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', 'existing.permission')
         ->call('save')
         ->assertHasErrors(['name' => 'unique']);
@@ -61,7 +61,7 @@ test('permission can keep same name when updating', function () {
     $originalName = $this->testPermission->name;
     $testRole = Role::create(['name' => 'test-role']);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', $originalName)
         ->set('rolesGiven', [$testRole->id])
         ->call('save')
@@ -73,12 +73,12 @@ test('permission can keep same name when updating', function () {
 });
 
 test('permission name must follow dot notation regex', function () {
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', 'invalid-permission')
         ->call('save')
         ->assertHasErrors(['name' => 'regex']);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', 'Invalid.Permission')
         ->call('save')
         ->assertHasErrors(['name' => 'regex']);
@@ -87,7 +87,7 @@ test('permission name must follow dot notation regex', function () {
 test('permission name cannot exceed 100 characters', function () {
     $longName = str_repeat('a', 101);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', $longName)
         ->call('save')
         ->assertHasErrors(['name' => 'max']);
@@ -99,7 +99,7 @@ test('permission roles can be updated', function () {
 
     $role1->givePermissionTo($this->testPermission);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('rolesGiven', [$role2->id])
         ->call('save')
         ->assertRedirect(route('permissions.index'));
@@ -113,7 +113,7 @@ test('all roles can be removed from permission', function () {
     $testRole = Role::create(['name' => 'test-role']);
     $testRole->givePermissionTo($this->testPermission);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('rolesGiven', [])
         ->call('save')
         ->assertRedirect(route('permissions.index'));
@@ -128,7 +128,7 @@ test('existing roles are preselected', function () {
     $role1->givePermissionTo($this->testPermission);
     $role2->givePermissionTo($this->testPermission);
 
-    $component = livewire('pages.permissions.edit', ['permission' => $this->testPermission]);
+    $component = livewire('pages::permissions.edit', ['permission' => $this->testPermission]);
 
     expect($component->get('rolesGiven'))->toContain($role1->id)
         ->and($component->get('rolesGiven'))->toContain($role2->id)
@@ -139,7 +139,7 @@ test('roles can be searched during edit', function () {
     $userRole = Role::create(['name' => 'user-role']);
     $adminRole = Role::create(['name' => 'admin-role']);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('search', 'user')
         ->assertSee($userRole->name)
         ->assertDontSee($adminRole->name);
@@ -164,7 +164,7 @@ test('user with permission.update permission can access edit page', function () 
 });
 
 test('permission update shows success message', function () {
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('name', 'updated.permission')
         ->call('save')
         ->assertRedirect(route('permissions.index'));
@@ -176,7 +176,7 @@ test('permission update shows success message', function () {
 test('roles pagination works on edit page', function () {
     collect(range(1, 15))->each(fn ($i) => Role::create(['name' => "test-role-{$i}"]));
 
-    $component = livewire('pages.permissions.edit', ['permission' => $this->testPermission]);
+    $component = livewire('pages::permissions.edit', ['permission' => $this->testPermission]);
 
     $roles = $component->instance()->roles();
     expect($roles->count())->toBe(10)
@@ -191,7 +191,7 @@ test('multiple roles can be added and removed', function () {
 
     $existingRole->givePermissionTo($this->testPermission);
 
-    livewire('pages.permissions.edit', ['permission' => $this->testPermission])
+    livewire('pages::permissions.edit', ['permission' => $this->testPermission])
         ->set('rolesGiven', [$newRole1->id, $newRole2->id])
         ->call('save')
         ->assertRedirect(route('permissions.index'));
@@ -243,7 +243,7 @@ test('permission name validation works with various valid formats', function () 
     foreach ($validNames as $index => $permissionName) {
         $testPermission = Permission::create(['name' => "test.permission.{$index}"]);
 
-        livewire('pages.permissions.edit', ['permission' => $testPermission])
+        livewire('pages::permissions.edit', ['permission' => $testPermission])
             ->set('name', $permissionName)
             ->call('save')
             ->assertRedirect(route('permissions.index'));
