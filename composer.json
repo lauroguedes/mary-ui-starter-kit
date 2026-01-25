@@ -37,7 +37,7 @@
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.21",
         "laravel/tinker": "^2.10.1",
-        "livewire/livewire": "^3.6",
+        "livewire/livewire": "^4.0",
         "livewire/volt": "^1.7.0",
         "nunomaduro/essentials": "^0.1",
         "owenvoke/blade-fontawesome": "^2.9",
