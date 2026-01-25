@@ -115,6 +115,11 @@ new class extends Component {
     }
 }; ?>
 
+@assets
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+@endassets
+
 <section class="w-full">
     @include('partials.settings-heading')
 
@@ -161,9 +166,3 @@ new class extends Component {
         @endcan
     </x-settings.layout>
 </section>
-
-@push('scripts')
-    {{-- Cropper.js --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"/>
-@endpush

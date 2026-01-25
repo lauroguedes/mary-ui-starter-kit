@@ -50,9 +50,10 @@ new class extends Component {
         <x-mary-menu-item :title="__('Log out')" wire:click.stop="logout" spinner="logout" class="text-error"
             icon="o-power" />
     </x-mary-dropdown>
-    <style>
-        .dropdown {
-            width: 100%;
-        }
-    </style>
 </div>
+
+<style>
+    .dropdown {
+        width: 100%;
+    }
+</style>

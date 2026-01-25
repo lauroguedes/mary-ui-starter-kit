@@ -188,6 +188,11 @@ new class extends Component {
 
 }; ?>
 
+@assets
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+@endassets
+
 <x-pages.layout :page-title="__('Update') . ' - ' . $user->name">
     <x-slot:content>
         <div class="grid gap-5 lg:grid-cols-2">
@@ -281,8 +286,3 @@ new class extends Component {
     </x-slot:content>
 </x-pages.layout>
 
-@push('scripts')
-    {{-- Cropper.js --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"/>
-@endpush
