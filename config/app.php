@@ -129,4 +129,9 @@ return [
         'app_layout' => env('APP_LAYOUT', 'sidebar'),
         'login_layout' => env('LOGIN_LAYOUT', 'card'),
     ],
+
+    'demo' => [
+        'enabled' => (bool) env('DEMO_MODE', false),
+        'reset_schedule' => env('DEMO_RESET_SCHEDULE', 'hourly'),
+    ],
 ];

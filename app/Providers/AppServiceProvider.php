@@ -36,6 +36,8 @@ final class AppServiceProvider extends ServiceProvider
          * */
         Route::model('user', \App\Models\User::class);
 
-        Gate::before(fn ($user, $ability): ?bool => $user->hasRole('super-admin') ? true : null);
+        if (! config('app.demo.enabled')) {
+            Gate::before(fn ($user, $ability): ?bool => $user->hasRole('super-admin') ? true : null);
+        }
     }
 }

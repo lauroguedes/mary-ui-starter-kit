@@ -6,8 +6,8 @@ namespace Database\Seeders;
 
 use App\Enums\UserStatus;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 final class DatabaseSeeder extends Seeder
@@ -20,20 +20,25 @@ final class DatabaseSeeder extends Seeder
         // Seed roles and permissions first
         $this->call(RolesAndPermissionsSeeder::class);
 
-        // Create one user for each role
-        $roles = Role::whereIn('name', [
-            'super-admin',
-            'admin',
-            'user-manager',
-            'user',
-        ])->pluck('name');
+        // In demo mode, skip super-admin to prevent permission/role modifications
+        $roleNames = config('app.demo.enabled')
+            ? ['admin', 'user-manager', 'user']
+            : ['super-admin', 'admin', 'user-manager', 'user'];
+
+        $roles = Role::whereIn('name', $roleNames)->pluck('name');
 
         $roles->each(function (string $role): void {
-            $user = User::factory()->create([
+            $attributes = [
                 'name' => str($role)->replace('-', ' ')->ucfirst(),
                 'email' => $role . '@user.com',
                 'status' => UserStatus::ACTIVE,
-            ]);
+            ];
+
+            if ($role === 'admin' && config('app.demo.enabled')) {
+                $attributes['password'] = Hash::make(cache('demo-password', 'secret'));
+            }
+
+            $user = User::factory()->create($attributes);
 
             $user->assignRole($role);
         });
