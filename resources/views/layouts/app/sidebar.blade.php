@@ -48,6 +48,13 @@
 
         {{-- The `$slot` goes here --}}
         <x-slot:content class="flex flex-col min-h-screen">
+            @if(config('app.demo.enabled'))
+            <x-mary-alert
+                class="alert-warning alert-soft mb-3 font-black"
+                :title="__('The data will reset every 24 hours.')"
+                icon="o-exclamation-triangle"
+                dismissible />
+            @endif
             <div class="flex-1 flex flex-col items-stretch gap-2">
                 {{ $slot }}
             </div>
