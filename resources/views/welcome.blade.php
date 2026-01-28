@@ -54,13 +54,13 @@
         </div>
 
         {{-- Decorative --}}
-        <div class="relative flex aspect-video items-center justify-center overflow-hidden rounded-t-xl bg-primary/10 lg:aspect-auto lg:w-[380px] lg:rounded-t-none lg:rounded-e-xl">
+        <div class="relative flex aspect-video items-center justify-center overflow-hidden rounded-t-xl bg-primary/10 lg:aspect-auto lg:w-[380px] lg:rounded-tl-none lg:rounded-e-xl">
             <x-placeholder-pattern class="absolute inset-0 size-full stroke-primary/10" />
             <div class="relative flex flex-col items-center gap-3">
                 <x-app-logo-icon class="size-24 text-primary" />
                 <span class="text-lg font-semibold text-base-content">{{ config('app.name', 'Laravel') }}</span>
                 <x-mary-button
-                    label="Star on GitHub"
+                    label="Star me on Github"
                     link="https://github.com/lauroguedes/mary-ui-starter-kit"
                     external
                     icon="s-star"
