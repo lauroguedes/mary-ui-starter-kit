@@ -132,6 +132,7 @@ return [
 
     'demo' => [
         'enabled' => (bool) env('DEMO_MODE', false),
+        'password' => env('DEMO_PASSWORD'),
         'reset_schedule' => env('DEMO_RESET_SCHEDULE', 'hourly'),
     ],
 ];

@@ -78,17 +78,31 @@ describe('ResetDemoDataCommand', function () {
         expect(cache('demo-password'))->not->toBe('old-password');
     });
 
-    test('only admin user gets the rotated demo password', function () {
+    test('admin user gets the cached demo password when demo mode is enabled', function () {
         config()->set('app.demo.enabled', true);
+        config()->set('app.demo.password', null);
 
         $this->artisan('demo:reset')->assertSuccessful();
 
-        $rotatedPassword = cache('demo-password');
-
+        $cachedPassword = cache('demo-password');
         $adminUser = User::whereEmail('admin@user.com')->first();
         $regularUser = User::whereEmail('user@user.com')->first();
 
-        expect(Hash::check($rotatedPassword, $adminUser->password))->toBeTrue();
-        expect(Hash::check($rotatedPassword, $regularUser->password))->toBeFalse();
+        expect(Hash::check($cachedPassword, $adminUser->password))->toBeTrue();
+        expect(Hash::check('secret', $regularUser->password))->toBeTrue();
+    });
+
+    test('configured DEMO_PASSWORD is used for non-admin users', function () {
+        config()->set('app.demo.enabled', true);
+        config()->set('app.demo.password', 'my-fixed-password');
+
+        $this->artisan('demo:reset')->assertSuccessful();
+
+        $cachedPassword = cache('demo-password');
+        $adminUser = User::whereEmail('admin@user.com')->first();
+        $regularUser = User::whereEmail('user@user.com')->first();
+
+        expect(Hash::check($cachedPassword, $adminUser->password))->toBeTrue();
+        expect(Hash::check('my-fixed-password', $regularUser->password))->toBeTrue();
     });
 });
