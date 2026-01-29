@@ -26,6 +26,14 @@ final readonly class EnsureUserCanLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (config('app.demo.enabled') && $request->user()->hasRole('super-admin')) {
+            ($this->logout)();
+
+            throw ValidationException::withMessages([
+                'email' => __('Super-admin login is disabled in demo mode.'),
+            ]);
+        }
+
         if (
             $request->user()->status === UserStatus::SUSPENDED
             || $request->user()->cannot('user.login')

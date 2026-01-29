@@ -28,14 +28,14 @@ test('users edit page loads successfully', function () {
 });
 
 test('edit form is pre-filled with user data', function () {
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->assertSet('name', $this->targetUser->name)
         ->assertSet('email', $this->targetUser->email)
         ->assertSet('status', $this->targetUser->status->value);
 });
 
 test('user can be updated successfully', function () {
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('name', 'Updated Name')
         ->set('email', 'updated@example.com')
         ->set('status', UserStatus::INACTIVE->value)
@@ -53,14 +53,14 @@ test('user can be updated successfully', function () {
 });
 
 test('user update validates required fields', function (string $field, string $rule) {
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set($field, '')
         ->call('save')
         ->assertHasErrors([$field => $rule]);
 })->with('required_fields');
 
 test('user update validates email format', function () {
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('email', 'invalid-email')
         ->call('save')
         ->assertHasErrors(['email' => 'email']);
@@ -69,12 +69,12 @@ test('user update validates email format', function () {
 test('user update validates email uniqueness except for current user', function () {
     $anotherUser = User::factory()->create(['email' => 'another@example.com']);
 
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('email', 'another@example.com')
         ->call('save')
         ->assertHasErrors(['email' => 'unique']);
 
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('email', $this->targetUser->email)
         ->call('save')
         ->assertHasNoErrors(['email']);
@@ -85,7 +85,7 @@ test('user update validates max length', function (string $field, int $maxLength
         ? str_repeat('a', $maxLength - 10) . '@example.com'
         : str_repeat('a', $maxLength + 1);
 
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set($field, $value)
         ->call('save')
         ->assertHasErrors([$field => 'max']);
@@ -97,7 +97,7 @@ test('user update validates max length', function (string $field, int $maxLength
 test('avatar can be updated', function () {
     $file = UploadedFile::fake()->image('new-avatar.jpg');
 
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('avatar', $file)
         ->call('save')
         ->assertHasNoErrors();
@@ -117,7 +117,7 @@ test('old avatar is deleted when new one is uploaded', function () {
     // Now upload a new avatar
     $newFile = UploadedFile::fake()->image('new-avatar.jpg');
 
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('avatar', $newFile)
         ->call('save');
 
@@ -132,7 +132,7 @@ test('old avatar is deleted when new one is uploaded', function () {
 test('avatar upload validates file type', function () {
     $file = UploadedFile::fake()->create('document.pdf', 100);
 
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('avatar', $file)
         ->call('save')
         ->assertHasErrors(['avatar' => 'image']);
@@ -141,14 +141,14 @@ test('avatar upload validates file type', function () {
 test('avatar upload validates file size', function () {
     $file = UploadedFile::fake()->image('avatar.jpg')->size(2048); // 2MB
 
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('avatar', $file)
         ->call('save')
         ->assertHasErrors(['avatar' => 'max']);
 });
 
 test('status options are available', function () {
-    $component = livewire('pages.users.edit', ['user' => $this->targetUser]);
+    $component = livewire('pages::users.edit', ['user' => $this->targetUser]);
 
     expect($component->get('statusOptions'))->toBe(UserStatus::all());
 });
@@ -168,7 +168,7 @@ test('user status is displayed correctly in indicator', function () {
 });
 
 test('user can update status', function () {
-    livewire('pages.users.edit', ['user' => $this->targetUser])
+    livewire('pages::users.edit', ['user' => $this->targetUser])
         ->set('status', UserStatus::SUSPENDED->value)
         ->call('save')
         ->assertHasNoErrors();

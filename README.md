@@ -2,13 +2,13 @@
 
 <div align="center">
 
-A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** and **Mary UI**. Build beautiful web applications with a complete authentication system, user management, and developer-friendly tooling.
+A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and **Mary UI**. Build beautiful web applications with a complete authentication system, user management, and developer-friendly tooling.
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-red?style=flat&logo=laravel)](https://laravel.com)
-[![Livewire](https://img.shields.io/badge/Livewire-3.x-purple?style=flat)](https://livewire.laravel.com)
+[![Livewire](https://img.shields.io/badge/Livewire-4.x-purple?style=flat)](https://livewire.laravel.com)
 [![Mary UI](https://img.shields.io/badge/Mary_UI-2.x-blue?style=flat)](https://mary-ui.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
---
+---
 [![Packagist Version](https://img.shields.io/packagist/v/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 
@@ -21,9 +21,9 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 ## ✨ Features
 
 ### 🎨 **Frontend Stack**
-- **Livewire 3.x** with **Volt** for reactive single-file components
+- **Livewire 4.x** for reactive components with improved performance
 - **Mary UI 2.x** - Beautiful, accessible UI components
-- **Tailwind CSS 4.x** + **DaisyUI** for styling
+- **Tailwind CSS 4.x** + **DaisyUI v5** for styling
 - **Blade Hero and Fontawesome** icons integration
 - **Vite** for lightning-fast asset bundling
 
@@ -49,6 +49,14 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 - **Extensible architecture** for adding new OAuth providers
 - **Secure token handling** and user data synchronization
 
+### 🎭 **Demo Mode**
+- **Built-in demo mode** for showcasing your application
+- **Scheduled data reset** to maintain clean demo environment
+- **Configurable demo password** or auto-generated random password on each reset
+- **Login protection** prevents password changes in demo mode
+- **Visual indicator** alerts users when demo mode is active
+- **Configurable reset schedule** (hourly, daily, etc.)
+
 ### 🏗️ **Architecture & Developer Experience**
 - **Laravel 12.x** with PHP 8.2+ support
 - **SQLite** database by default (easy local setup)
@@ -62,6 +70,7 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire Volt** a
 - Complete test coverage for authentication flows
 - User management CRUD operations testing
 - Roles and Permissions management CRUD operations testing
+- Demo mode functionality testing
 - File upload and avatar management testing
 - Form validation and error handling
 - Database cleanup and file storage testing
@@ -157,12 +166,17 @@ Run the comprehensive test suite:
 
 ## 🔧 Customization
 
-Key environment variables for customization. Change the `APP_LAYOUT` to `sidebar` or `header` and `LOGIN_LAYOUT` to `card`, `simple`, or `split`:
+Key environment variables for customization:
 
 ```env
 # Appearance settings
-APP_LAYOUT=
-LOGIN_LAYOUT=
+APP_LAYOUT=sidebar      # Options: sidebar, header
+LOGIN_LAYOUT=card       # Options: card, simple, split
+
+# Demo mode settings
+DEMO_MODE=false         # Enable demo mode for showcasing the app
+DEMO_PASSWORD=          # Fixed password for all demo users (random if not set)
+DEMO_RESET_SCHEDULE=hourly  # Options: hourly, daily, weekly
 ```
 
 ## 🤝 Contributing
@@ -197,6 +211,7 @@ We maintain high code quality standards:
 ## 📋 Roadmap
 
 - [x] **Role-based permissions system** ✅
+- [x] **Demo mode for showcasing** ✅
 - [ ] **Advanced Log and Audit**
 - [ ] **Multi-tenant support**
 - [ ] **Advanced notification system**

@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Livewire\Volt\Volt as LivewireVolt;
+
+use function Pest\Livewire\livewire;
 
 test('login screen can be rendered')
     ->get('/login')
@@ -12,7 +13,7 @@ test('login screen can be rendered')
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
 
-    LivewireVolt::test('auth.login')
+    livewire('pages::auth.login')
         ->set('email', $user->email)
         ->set('password', 'secret')
         ->call('login')
@@ -25,7 +26,7 @@ test('users can authenticate using the login screen', function () {
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    LivewireVolt::test('auth.login')
+    livewire('pages::auth.login')
         ->set('email', $user->email)
         ->set('password', 'wrong-password')
         ->call('login')
@@ -48,7 +49,7 @@ test('users without login permission cannot authenticate', function () {
     $user = User::factory()->create();
     $user->removeRole('user');
 
-    LivewireVolt::test('auth.login')
+    livewire('pages::auth.login')
         ->set('email', $user->email)
         ->set('password', 'secret')
         ->call('login')
@@ -66,7 +67,7 @@ test('users without dashboard view permission are redirected to profile', functi
     $user->removeRole('user');
     $user->givePermissionTo('user.login');
 
-    LivewireVolt::test('auth.login')
+    livewire('pages::auth.login')
         ->set('email', $user->email)
         ->set('password', 'secret')
         ->call('login')

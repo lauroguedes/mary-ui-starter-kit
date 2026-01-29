@@ -14,9 +14,11 @@ use Illuminate\Support\Str;
 final class UserFactory extends Factory
 {
     /**
-     * The current password being used by the factory.
+     * Cached password hashes keyed by plain password.
+     *
+     * @var array<string, string>
      */
-    private static ?string $password = null;
+    private static array $passwords = [];
 
     /**
      * Define the model's default state.
@@ -25,13 +27,15 @@ final class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $plainPassword = $this->getDefaultPassword();
+
         return [
             'avatar' => null,
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'status' => fake()->randomElement(\App\Enums\UserStatus::cases())->value,
             'email_verified_at' => now(),
-            'password' => self::$password ??= Hash::make('secret'),
+            'password' => self::$passwords[$plainPassword] ??= Hash::make($plainPassword),
             'remember_token' => Str::random(10),
         ];
     }
@@ -74,5 +78,14 @@ final class UserFactory extends Factory
         return $this->state(fn (array $attributes): array => [
             'status' => \App\Enums\UserStatus::SUSPENDED,
         ]);
+    }
+
+    private function getDefaultPassword(): string
+    {
+        if (! config('app.demo.enabled')) {
+            return 'secret';
+        }
+
+        return config('app.demo.password') ?: 'secret';
     }
 }

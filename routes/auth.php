@@ -6,19 +6,18 @@ use App\Enums\SocialiteProviders;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
 
 Route::middleware('guest')->group(function () {
-    Volt::route('login', 'auth.login')
+    Route::livewire('login', 'pages::auth.login')
         ->name('login');
 
-    Volt::route('register', 'auth.register')
+    Route::livewire('register', 'pages::auth.register')
         ->name('register');
 
-    Volt::route('forgot-password', 'auth.forgot-password')
+    Route::livewire('forgot-password', 'pages::auth.forgot-password')
         ->name('password.request');
 
-    Volt::route('reset-password/{token}', 'auth.reset-password')
+    Route::livewire('reset-password/{token}', 'pages::auth.reset-password')
         ->name('password.reset');
 
     // Socialite OAuth Routes
@@ -31,7 +30,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Volt::route('verify-email', 'auth.verify-email')
+    Route::livewire('verify-email', 'pages::auth.verify-email')
         ->can('user.login')
         ->name('verification.notice');
 
@@ -40,7 +39,7 @@ Route::middleware('auth')->group(function () {
         ->can('user.login')
         ->name('verification.verify');
 
-    Volt::route('confirm-password', 'auth.confirm-password')
+    Route::livewire('confirm-password', 'pages::auth.confirm-password')
         ->can('user.login')
         ->name('password.confirm');
 });
