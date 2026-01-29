@@ -31,6 +31,10 @@ new #[Layout('layouts::auth')] class extends Component {
 
         event(new Registered(($user = User::create($validated))));
 
+        if (config('app.demo.enabled') && ! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+
         Auth::login($user);
 
         $this->redirectIntended(route('dashboard', absolute: false), navigate: true);

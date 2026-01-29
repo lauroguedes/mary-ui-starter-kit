@@ -8,7 +8,7 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and 
 [![Livewire](https://img.shields.io/badge/Livewire-4.x-purple?style=flat)](https://livewire.laravel.com)
 [![Mary UI](https://img.shields.io/badge/Mary_UI-2.x-blue?style=flat)](https://mary-ui.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
---
+---
 [![Packagist Version](https://img.shields.io/packagist/v/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 
