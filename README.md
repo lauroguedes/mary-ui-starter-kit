@@ -11,7 +11,7 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and 
 ---
 [![Packagist Version](https://img.shields.io/packagist/v/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
-
+[![Laravel Forge Site Deployment Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fforge.laravel.com%2Fsite-badges%2F9657bd09-8c7c-4219-ab01-ba07f6679c8a&style=flat)](https://forge.laravel.com/lauro-guedes-q58/graceful-silence-fzg/3022898)
 </br>
 
 ![demo_screenshot](https://github.com/user-attachments/assets/6005b127-2d3f-4c7e-a4fc-2dfc257faafb)
