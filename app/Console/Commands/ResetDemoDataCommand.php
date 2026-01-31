@@ -29,7 +29,6 @@ final class ResetDemoDataCommand extends Command
 
         $newPassword = Str::random(12);
         Cache::put('demo-password', $newPassword);
-        $this->info("Demo password rotated: {$newPassword}");
 
         Artisan::call('down');
         $this->info('Application is now in maintenance mode.');
