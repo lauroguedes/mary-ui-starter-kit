@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
+use Rector\TypeDeclaration\Rector\ClassMethod\NarrowObjectReturnTypeRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -13,7 +13,11 @@ return RectorConfig::configure()
         __DIR__ . '/public',
     ])
     ->withSkip([
-        AddOverrideAttributeToOverriddenMethodsRector::class,
+        // The provider factory must keep returning the abstract type: narrowing it to
+        // the single current implementation breaks as soon as a second case is added.
+        NarrowObjectReturnTypeRector::class => [
+            __DIR__ . '/app/Enums/SocialiteProviders.php',
+        ],
     ])
     ->withPreparedSets(
         deadCode: true,
@@ -21,6 +25,5 @@ return RectorConfig::configure()
         typeDeclarations: true,
         privatization: true,
         earlyReturn: true,
-        strictBooleans: true,
     )
     ->withPhpSets();

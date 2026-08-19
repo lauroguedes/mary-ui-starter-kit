@@ -1,0 +1,31 @@
+{
+    "timings": {
+        "Tests\\Feature\\Auth\\AuthenticationTest": 0.7446,
+        "Tests\\Feature\\Auth\\DemoModeAuthenticationTest": 0.8377,
+        "Tests\\Feature\\Auth\\EmailVerificationTest": 0.2833,
+        "Tests\\Feature\\Auth\\PasswordConfirmationTest": 0.2795,
+        "Tests\\Feature\\Auth\\PasswordResetTest": 0.4597,
+        "Tests\\Feature\\Auth\\RegistrationTest": 0.3542,
+        "Tests\\Feature\\Auth\\SocialAuthControllerTest": 0.3791,
+        "Tests\\Feature\\Console\\ResetDemoDataCommandTest": 1.4038,
+        "Tests\\Feature\\DashboardTest": 0.1915,
+        "Tests\\Feature\\Middleware\\EnsureUserCanLoginTest": 0.4632,
+        "Tests\\Feature\\Permissions\\PermissionsCreateTest": 2.1272,
+        "Tests\\Feature\\Permissions\\PermissionsEditTest": 2.8663,
+        "Tests\\Feature\\Permissions\\PermissionsIndexTest": 1.7892,
+        "Tests\\Feature\\Roles\\RolesCreateTest": 1.4844,
+        "Tests\\Feature\\Roles\\RolesEditTest": 2.343,
+        "Tests\\Feature\\Roles\\RolesIndexTest": 1.8077,
+        "Tests\\Feature\\Settings\\PasswordUpdateTest": 0.4413,
+        "Tests\\Feature\\Settings\\ProfileUpdateTest": 2.2467,
+        "Tests\\Feature\\StackVersionsTest": 0.4267,
+        "Tests\\Feature\\Users\\UsersAuthorizationTest": 3.1513,
+        "Tests\\Feature\\Users\\UsersCreateTest": 1.9252,
+        "Tests\\Feature\\Users\\UsersEditTest": 2.6162,
+        "Tests\\Feature\\Users\\UsersIndexTest": 1.5135,
+        "Tests\\Feature\\WelcomePageTest": 0.336,
+        "Tests\\Unit\\Services\\Socialite\\GoogleProviderTest": 0.9935
+    },
+    "checksum": "4554fe45e203e1c8f975378af891e0d7",
+    "updated_at": "2026-08-19T18:52:22+00:00"
+}

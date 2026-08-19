@@ -59,8 +59,8 @@ We love feature suggestions! Before submitting:
 
 5. **Test Your Changes**
    ```bash
-   # Run all tests
-   ./vendor/bin/pest
+   # Run all tests (parallel)
+   composer test
    
    # Check code style
    ./vendor/bin/pint --test
@@ -170,8 +170,8 @@ When creating a pull request, include:
 
 ### Requirements
 
-- PHP 8.2+
-- Node.js 18+
+- PHP 8.4+
+- Node.js 22+
 - Composer
 - Git
 
@@ -181,8 +181,8 @@ When creating a pull request, include:
 # Development server with hot reload
 composer run dev
 
-# Run tests
-./vendor/bin/pest
+# Run tests (parallel)
+composer test
 
 # Format code
 ./vendor/bin/pint

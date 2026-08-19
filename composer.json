@@ -33,29 +33,29 @@
     },
     "license": "MIT",
     "require": {
-        "php": "^8.3",
-        "laravel/framework": "^12.0",
-        "laravel/socialite": "^5.21",
-        "laravel/tinker": "^2.10.1",
+        "php": "^8.4",
+        "laravel/framework": "^13.0",
+        "laravel/socialite": "^5.30",
+        "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.0",
-        "nunomaduro/essentials": "^0.1",
-        "owenvoke/blade-fontawesome": "^2.9",
+        "nunomaduro/essentials": "^1.2",
+        "owenvoke/blade-fontawesome": "^3.1",
         "robsontenorio/mary": "^2.0",
-        "spatie/laravel-permission": "^6.21",
-        "fakerphp/faker": "^1.23"
+        "spatie/laravel-permission": "^8.3",
+        "fakerphp/faker": "^1.24"
     },
     "require-dev": {
-        "laradumps/laradumps": "^4.0",
+        "laradumps/laradumps": "^5.4",
         "laravel/boost": "^2.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.18",
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-faker": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "pestphp/pest-plugin-livewire": "^4.0",
+        "pestphp/pest": "^5.0",
+        "pestphp/pest-plugin-faker": "^5.0",
+        "pestphp/pest-plugin-laravel": "^5.0",
+        "pestphp/pest-plugin-livewire": "^5.0",
         "rector/rector": "^2.0"
     },
     "autoload": {
@@ -85,6 +85,21 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi",
+            "@php vendor/bin/pest --parallel"
+        ],
+        "test:tia": [
+            "@php artisan config:clear --ansi",
+            "@php vendor/bin/pest --parallel --tia"
+        ],
+        "test:coverage": [
+            "@php artisan config:clear --ansi",
+            "@php vendor/bin/pest --parallel --coverage --min=80"
+        ],
+        "test:shards": [
+            "@php vendor/bin/pest --update-shards"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
