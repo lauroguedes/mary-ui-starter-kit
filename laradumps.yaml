@@ -9,6 +9,8 @@ app:
 config:
   sleep: 0
   macos_auto_launch: false
+  grouped_dumps: false
+  color_in_screen: false
 observers:
   auto_invoke_app: false
   enabled_in_testing: false
@@ -24,6 +26,8 @@ observers:
   scheduled_commands: false
   gate: true
   cache: false
+  brain: false
+  profiler: false
 xdebug:
   client_host: 0.0.0.0
   client_port: 9003
@@ -41,13 +45,25 @@ logs:
   notice: true
   vendor: true
   deprecated_message: true
+  boost_info: false
 slow_queries:
   threshold_in_ms: 500
-queries:
-  only_duplicated: false
-  select: true
-  insert: true
-  update: true
-  delete: true
 extra:
   context: false
+queries:
+  explain: false
+profiler:
+  auto_middleware: false
+  max_entries: 300
+  xhprof: true
+  capture:
+    app: true
+    events: true
+    queries: true
+    eloquent: true
+    views: true
+    controller: true
+    http: true
+    cache: true
+    jobs: true
+    method: true

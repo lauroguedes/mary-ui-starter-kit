@@ -59,6 +59,7 @@
             <div class="relative flex flex-col items-center gap-3">
                 <x-app-logo-icon class="size-24 text-primary" />
                 <span class="text-lg font-semibold text-base-content">{{ config('app.name', 'Laravel') }}</span>
+                <x-stack-versions class="max-w-[280px]" />
                 <x-mary-button
                     label="Star me on Github"
                     link="https://github.com/lauroguedes/mary-ui-starter-kit"

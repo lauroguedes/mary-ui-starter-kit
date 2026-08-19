@@ -13,10 +13,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.2, 8.3, 8.4]
-        laravel: [12.*]
+        php: [8.4, 8.5]
+        laravel: [13.*]
+        shard: [1, 2]
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }}
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - shard ${{ matrix.shard }}
 
     steps:
     - uses: actions/checkout@v4
@@ -47,7 +48,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '22'
         cache: 'npm'
 
     - name: Install NPM dependencies
@@ -61,11 +62,55 @@ jobs:
         mkdir -p database
         touch database/database.sqlite
 
+    # Shards are time-balanced from tests/.pest/shards.json. Refresh that file
+    # with `composer test:shards` whenever the suite's timings drift.
     - name: Execute tests (Unit and Feature tests) via Pest
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
-      run: ./vendor/bin/pest --coverage --min=80
+      run: ./vendor/bin/pest --parallel --shard=${{ matrix.shard }}/2
+
+  coverage:
+    runs-on: ubuntu-latest
+
+    name: Coverage
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.5
+        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+        coverage: pcov
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-interaction
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install NPM dependencies
+      run: npm install
+
+    - name: Build assets
+      run: npm run build
+
+    - name: Create database
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    # Runs the whole suite unsharded so the --min threshold stays meaningful.
+    - name: Execute tests with coverage
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: ./vendor/bin/pest --parallel --coverage --min=80
 
   code-quality:
     runs-on: ubuntu-latest
@@ -78,7 +123,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 8.2
+        php-version: 8.4
         extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
         coverage: none
 

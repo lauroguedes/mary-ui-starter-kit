@@ -4,9 +4,11 @@
 
 A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and **Mary UI**. Build beautiful web applications with a complete authentication system, user management, and developer-friendly tooling.
 
-[![Laravel](https://img.shields.io/badge/Laravel-12.x-red?style=flat&logo=laravel)](https://laravel.com)
+[![Laravel](https://img.shields.io/badge/Laravel-13.x-red?style=flat&logo=laravel)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.4+-777bb4?style=flat&logo=php&logoColor=white)](https://php.net)
 [![Livewire](https://img.shields.io/badge/Livewire-4.x-purple?style=flat)](https://livewire.laravel.com)
 [![Mary UI](https://img.shields.io/badge/Mary_UI-2.x-blue?style=flat)](https://mary-ui.com)
+[![Pest](https://img.shields.io/badge/Pest-5.x-8b5cf6?style=flat)](https://pestphp.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 ---
 [![Packagist Version](https://img.shields.io/packagist/v/lauroguedes/mary-ui-starter-kit?style=flat)](https://packagist.org/packages/lauroguedes/mary-ui-starter-kit)
@@ -24,8 +26,9 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and 
 - **Livewire 4.x** for reactive components with improved performance
 - **Mary UI 2.x** - Beautiful, accessible UI components
 - **Tailwind CSS 4.x** + **DaisyUI v5** for styling
-- **Blade Hero and Fontawesome** icons integration
-- **Vite** for lightning-fast asset bundling
+- **Blade Heroicons and Font Awesome 7** icons integration
+- **Vite 8** for lightning-fast asset bundling
+- **Live version badges** on the welcome page, read from the running app and `composer.lock`
 
 ### 🔐 **Authentication & User Management**
 - Complete authentication system (login, registration, password reset)
@@ -58,9 +61,9 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and 
 - **Configurable reset schedule** (hourly, daily, etc.)
 
 ### 🏗️ **Architecture & Developer Experience**
-- **Laravel 12.x** with PHP 8.2+ support
+- **Laravel 13.x** with PHP 8.4+ support
 - **SQLite** database by default (easy local setup)
-- **Pest testing framework** with 80+ comprehensive tests
+- **Pest 5 testing framework** with 230+ comprehensive tests, running in parallel
 - **Code quality tools**: Pint (formatting), Rector (refactoring)
 - **Debugging tools**: LaraDumps, Laravel Pail
 - **Development workflow** with Concurrently for multi-process dev server
@@ -84,8 +87,8 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **PHP 8.2+**
-- **Node.js 18+**
+- **PHP 8.4+** (Laravel 13 needs 8.3+, Pest 5 raises the floor to 8.4)
+- **Node.js 22+**
 - **Composer**
 - **SQLite** (included with PHP)
 
@@ -154,15 +157,39 @@ This runs:
 
 ## 🧪 Testing
 
-Run the comprehensive test suite:
+The suite runs on **Pest 5** and is parallel-safe, which takes a full run from ~40s down to ~9s.
 
 ```bash
-# Run all tests
-./vendor/bin/pest
+# Run the whole suite in parallel (the default)
+composer test
 
-# Run with coverage
-./vendor/bin/pest --coverage
+# Rerun only what recent changes touched (Test Impact Analysis)
+composer test:tia
+
+# Enforce the 80% coverage gate
+composer test:coverage
+
+# Refresh the time-balanced shard timings after adding or removing tests
+composer test:shards
 ```
+
+Or call Pest directly:
+
+```bash
+./vendor/bin/pest --parallel
+./vendor/bin/pest --shard=1/2 --parallel
+```
+
+### Notes on the Pest 5 features
+
+- **Parallel** is the default. Anything that writes to shared state outside the
+  database must stay process-local — that is why `phpunit.xml` sets
+  `APP_MAINTENANCE_DRIVER=array`, so `demo:reset` calling `artisan down` cannot
+  put *other* test processes into maintenance mode.
+- **Tia** (`--tia`) needs a coverage driver (`pcov` or Xdebug). Without one Pest
+  prints a notice and runs the full suite instead.
+- **Time-balanced sharding** reads `tests/.pest/shards.json`, which is committed
+  so CI shards stay stable. CI runs two shards per PHP version.
 
 ## 🔧 Customization
 
@@ -188,7 +215,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes and add tests
-4. Run the test suite: `./vendor/bin/pest`
+4. Run the test suite: `composer test`
 5. Commit your changes: `git commit -m 'Add amazing feature'`
 6. Push to the branch: `git push origin feature/amazing-feature`
 7. Open a Pull Request
@@ -205,7 +232,7 @@ We maintain high code quality standards:
 ./vendor/bin/rector
 
 # Run tests
-./vendor/bin/pest
+composer test
 ```
 
 ## 📋 Roadmap
