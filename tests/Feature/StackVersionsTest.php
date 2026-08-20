@@ -23,12 +23,27 @@ test('stack versions reports the installed package versions', function () {
         ->and($versions['Pest'])->toBe(mb_ltrim((string) InstalledVersions::getPrettyVersion('pestphp/pest'), 'v'));
 });
 
-test('every reported version is a bare dotted number', function () {
+test('every reported version is a bare dotted number or a branch reference', function () {
     $versions = app(StackVersions::class)->all();
 
     foreach ($versions as $label => $version) {
-        expect($version)->toMatch('/^\d+(\.\d+)*$/', "{$label} should be a bare version number");
+        expect($version)->toMatch(
+            '/^(\d+(\.\d+)*|dev-.+)$/',
+            "{$label} should be a bare version number or a dev branch reference"
+        );
     }
+});
+
+test('branch references survive normalization instead of being reduced to digits', function () {
+    $service = app(StackVersions::class);
+    $method = new ReflectionMethod(StackVersions::class, 'normalize');
+    $normalize = fn (string $version): string => $method->invoke($service, $version);
+
+    expect($normalize('dev-main'))->toBe('dev-main')
+        ->and($normalize('dev-2.x'))->toBe('dev-2.x')
+        ->and($normalize('v4.4.1'))->toBe('4.4.1')
+        ->and($normalize('13.26.1-dev'))->toBe('13.26.1')
+        ->and($normalize('8.5.8 (cli)'))->toBe('8.5.8');
 });
 
 test('stack versions are resolved once and served from cache', function () {

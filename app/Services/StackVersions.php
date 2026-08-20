@@ -78,9 +78,18 @@ final class StackVersions
 
     /**
      * Reduce "v4.4.1", "13.26.1-dev" or "8.5.8 (cli)" to "13.26.1".
+     *
+     * Path and VCS installs report a branch reference instead of a number, such
+     * as "dev-main" when a package is symlinked for local development. Those are
+     * returned untouched: showing the branch makes the local checkout obvious,
+     * and digit extraction would turn "dev-2.x" into a misleading "2".
      */
     private function normalize(string $version): string
     {
+        if (preg_match('/^v?\d/', $version) !== 1) {
+            return $version;
+        }
+
         preg_match('/\d+(\.\d+)*/', $version, $matches);
 
         return $matches[0] ?? mb_ltrim($version, 'v');
