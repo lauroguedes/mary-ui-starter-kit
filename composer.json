@@ -34,6 +34,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "fakerphp/faker": "^1.24",
         "laravel/framework": "^13.0",
         "laravel/socialite": "^5.30",
         "laravel/tinker": "^3.0",
@@ -41,8 +42,7 @@
         "nunomaduro/essentials": "^1.2",
         "owenvoke/blade-fontawesome": "^3.1",
         "robsontenorio/mary": "^2.0",
-        "spatie/laravel-permission": "^8.3",
-        "fakerphp/faker": "^1.24"
+        "spatie/laravel-permission": "^8.3"
     },
     "require-dev": {
         "laradumps/laradumps": "^5.4",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9906671d5c88ed415f657a4c0a1f8652",
+    "content-hash": "0482b2cbe8f1b2846b532c4a57e1e616",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -4415,16 +4415,16 @@
         },
         {
             "name": "robsontenorio/mary",
-            "version": "2.9.9",
+            "version": "2.9.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/robsontenorio/mary.git",
-                "reference": "d02c03f54e16d28288cf26c15f33a8c18debd33e"
+                "reference": "072f43636fa71f7d2a1fb40ec76ad503ed3505cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/robsontenorio/mary/zipball/d02c03f54e16d28288cf26c15f33a8c18debd33e",
-                "reference": "d02c03f54e16d28288cf26c15f33a8c18debd33e",
+                "url": "https://api.github.com/repos/robsontenorio/mary/zipball/072f43636fa71f7d2a1fb40ec76ad503ed3505cb",
+                "reference": "072f43636fa71f7d2a1fb40ec76ad503ed3505cb",
                 "shasum": ""
             },
             "require": {
@@ -4489,7 +4489,7 @@
             ],
             "support": {
                 "issues": "https://github.com/robsontenorio/mary/issues",
-                "source": "https://github.com/robsontenorio/mary/tree/2.9.9"
+                "source": "https://github.com/robsontenorio/mary/tree/2.9.10"
             },
             "funding": [
                 {
@@ -4497,7 +4497,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-29T22:01:59+00:00"
+            "time": "2026-09-03T13:18:49+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",
