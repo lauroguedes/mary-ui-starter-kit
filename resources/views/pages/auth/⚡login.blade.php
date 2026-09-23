@@ -24,9 +24,11 @@ new #[Layout('layouts::auth')] class extends Component {
 
     public function mount(): void
     {
-        if (config('app.demo.enabled')) {
-            $this->email = 'admin@user.com';
-            $this->password = cache('demo-password', 'secret');
+        $credentials = \LauroGuedes\DemoMode\Facades\Demo::credentials();
+
+        if ($credentials !== null) {
+            $this->email = $credentials['email'];
+            $this->password = $credentials['password'];
         }
     }
 
@@ -125,10 +127,11 @@ new #[Layout('layouts::auth')] class extends Component {
                 <x-mary-button :label="__('Sign up')" :link="route('register')"
                                class="btn-link link-accent link-hover pl-0"/>
             </div>
-            @if (config('app.demo.enabled'))
+            @demo
                 <div class="divider"></div>
                 <p class="text-sm text-base-content/60">{{ __('Social login is disabled in demo mode.') }}</p>
-            @else
+            @enddemo
+            @notdemo
                 <div class="divider">OR</div>
                 <a href="{{ route('oauth.redirect', ['provider' => SocialiteProviders::GOOGLE]) }}"
                    class="btn w-full bg-white hover:opacity-90 text-black border-[#e5e5e5]">
@@ -144,7 +147,7 @@ new #[Layout('layouts::auth')] class extends Component {
                     </svg>
                     {{ __('Login with Google') }}
                 </a>
-            @endif
+            @endnotdemo
         </div>
     @endif
 </div>

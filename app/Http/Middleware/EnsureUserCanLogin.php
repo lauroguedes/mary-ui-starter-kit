@@ -9,6 +9,7 @@ use App\Livewire\Actions\Logout;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use LauroGuedes\DemoMode\Facades\Demo;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class EnsureUserCanLogin
@@ -26,7 +27,13 @@ final readonly class EnsureUserCanLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (config('app.demo.enabled') && $request->user()->hasRole('super-admin')) {
+        /*
+         * Checked on every request, not only at sign-in, which is why this stays
+         * here rather than moving to the package's BlockPrivilegedAccounts
+         * restriction: that one listens on Login, so a session opened before the
+         * flag went on would survive it.
+         */
+        if (Demo::enabled() && $request->user()->hasRole('super-admin')) {
             ($this->logout)();
 
             throw ValidationException::withMessages([

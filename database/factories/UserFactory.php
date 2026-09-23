@@ -80,12 +80,16 @@ final class UserFactory extends Factory
         ]);
     }
 
+    /**
+     * The password every generated user shares.
+     *
+     * Not demo-aware any more. The demo publishes one account and rotates only
+     * that one, which is what makes the published credentials stop working after
+     * a reset; giving the other fifty a configurable password made a second
+     * secret to keep and rotated none of them.
+     */
     private function getDefaultPassword(): string
     {
-        if (! config('app.demo.enabled')) {
-            return 'secret';
-        }
-
-        return config('app.demo.password') ?: 'secret';
+        return 'secret';
     }
 }

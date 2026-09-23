@@ -8,6 +8,7 @@ use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use LauroGuedes\DemoMode\Facades\Demo;
 use Spatie\Permission\Models\Role;
 
 final class DatabaseSeeder extends Seeder
@@ -20,8 +21,8 @@ final class DatabaseSeeder extends Seeder
         // Seed roles and permissions first
         $this->call(RolesAndPermissionsSeeder::class);
 
-        // In demo mode, skip super-admin to prevent permission/role modifications
-        $roleNames = config('app.demo.enabled')
+        // On a demo, skip super-admin to prevent permission/role modifications
+        $roleNames = Demo::enabled()
             ? ['admin', 'user-manager', 'user']
             : ['super-admin', 'admin', 'user-manager', 'user'];
 
@@ -34,8 +35,16 @@ final class DatabaseSeeder extends Seeder
                 'status' => UserStatus::ACTIVE,
             ];
 
-            if ($role === 'admin' && config('app.demo.enabled')) {
-                $attributes['password'] = Hash::make(cache('demo-password', 'secret'));
+            /*
+             * The admin is the account the demo publishes, so it takes the
+             * password the reset staged a moment ago rather than the shared one.
+             * Null outside a reset — running db:seed on its own leaves it with
+             * the factory's password, which is what a local checkout wants.
+             */
+            $published = Demo::passwordFor($role . '@user.com');
+
+            if (is_string($published)) {
+                $attributes['password'] = Hash::make($published);
             }
 
             $user = User::factory()->create($attributes);

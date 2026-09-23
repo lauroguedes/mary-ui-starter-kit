@@ -53,12 +53,14 @@ A **modern, production-ready Laravel starter kit** featuring **Livewire 4** and 
 - **Secure token handling** and user data synchronization
 
 ### 🎭 **Demo Mode**
-- **Built-in demo mode** for showcasing your application
-- **Scheduled data reset** to maintain clean demo environment
-- **Configurable demo password** or auto-generated random password on each reset
-- **Login protection** prevents password changes in demo mode
-- **Visual indicator** alerts users when demo mode is active
-- **Configurable reset schedule** (hourly, daily, etc.)
+Powered by [lauroguedes/laravel-demo-mode](https://github.com/lauroguedes/laravel-demo-mode).
+- **Scheduled data reset** on any cron expression, or `hourly`/`daily`/`weekly`/`monthly`
+- **Rotating published password** for the admin account, filled into the login form
+- **The published account cannot be edited**, so one visitor cannot lock out the next
+- **Super-admin cannot sign in** and gets no gate bypass
+- **`demo:doctor`** audits the configuration and exits non-zero on anything that would
+  destroy data or publish a secret
+- **Visual indicator** that counts down from the schedule the scheduler actually runs
 
 ### 🏗️ **Architecture & Developer Experience**
 - **Laravel 13.x** with PHP 8.4+ support
@@ -200,11 +202,17 @@ Key environment variables for customization:
 APP_LAYOUT=sidebar      # Options: sidebar, header
 LOGIN_LAYOUT=card       # Options: card, simple, split
 
-# Demo mode settings
-DEMO_MODE=false         # Enable demo mode for showcasing the app
-DEMO_PASSWORD=          # Fixed password for all demo users (random if not set)
-DEMO_RESET_SCHEDULE=hourly  # Options: hourly, daily, weekly
+# Demo mode settings — see config/demo.php for every key, documented inline
+DEMO_MODE=false             # Turn this installation into a public demonstration
+DEMO_RESET_SCHEDULE=hourly  # A cron expression, or hourly/daily/weekly/monthly
+DEMO_EMAIL=admin@user.com   # The account whose password is published and rotated
+DEMO_CREDENTIALS_STORE=file # Where that password is kept: file, cache or null
 ```
+
+> [!WARNING]
+> `DEMO_MODE=true` allows `demo:reset` to drop the database. Run
+> `php artisan demo:doctor` before the first scheduled reset, and never turn it on
+> for an installation holding anything you want to keep.
 
 ## 🤝 Contributing
 

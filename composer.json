@@ -38,6 +38,7 @@
         "laravel/framework": "^13.0",
         "laravel/socialite": "^5.30",
         "laravel/tinker": "^3.0",
+        "lauroguedes/laravel-demo-mode": "^1.0",
         "livewire/livewire": "^4.0",
         "nunomaduro/essentials": "^1.2",
         "owenvoke/blade-fontawesome": "^3.1",
@@ -121,5 +122,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [{
+        "name": "laravel-demo-mode",
+        "type": "vcs",
+        "url": "https://github.com/lauroguedes/laravel-demo-mode"
+    }]
 }

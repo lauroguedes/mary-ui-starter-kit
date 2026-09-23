@@ -8,6 +8,7 @@ use App\Enums\SocialiteProviders;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use LauroGuedes\DemoMode\Facades\Demo;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -36,8 +37,12 @@ final class AppServiceProvider extends ServiceProvider
          * */
         Route::model('user', \App\Models\User::class);
 
-        if (! config('app.demo.enabled')) {
-            Gate::before(fn ($user, $ability): ?bool => $user->hasRole('super-admin') ? true : null);
-        }
+        /*
+         * A demo is administered by whoever walked in, so nobody gets a blanket
+         * pass on every ability.
+         */
+        Demo::unless(fn (): mixed => Gate::before(
+            fn ($user, $ability): ?bool => $user->hasRole('super-admin') ? true : null,
+        ));
     }
 }

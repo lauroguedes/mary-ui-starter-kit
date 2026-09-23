@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0482b2cbe8f1b2846b532c4a57e1e616",
+    "content-hash": "c437c96815ef77f68b2731d1b2190bc5",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -2060,6 +2060,127 @@
                 "source": "https://github.com/laravel/tinker/tree/v3.0.2"
             },
             "time": "2026-03-17T14:54:13+00:00"
+        },
+        {
+            "name": "lauroguedes/laravel-demo-mode",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lauroguedes/laravel-demo-mode.git",
+                "reference": "14d23c04a4ee39142c38266d91fa39c8f9b3a81c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lauroguedes/laravel-demo-mode/zipball/14d23c04a4ee39142c38266d91fa39c8f9b3a81c",
+                "reference": "14d23c04a4ee39142c38266d91fa39c8f9b3a81c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^13.0",
+                "illuminate/contracts": "^13.0",
+                "illuminate/database": "^13.0",
+                "illuminate/process": "^13.0",
+                "illuminate/support": "^13.0",
+                "php": "^8.3",
+                "symfony/process": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.12",
+                "laravel/pint": "^1.32",
+                "orchestra/testbench": "^11.2",
+                "pestphp/pest": "^5.2",
+                "pestphp/pest-plugin-laravel": "^5.0",
+                "pestphp/pest-plugin-type-coverage": "^5.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "rector/rector": "^2.6",
+                "spatie/laravel-db-snapshots": "^2.10"
+            },
+            "suggest": {
+                "spatie/laravel-db-snapshots": "Required for the snapshot reset strategy (^2.0)"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LauroGuedes\\DemoMode\\DemoModeServiceProvider"
+                    ],
+                    "aliases": {
+                        "Demo": "LauroGuedes\\DemoMode\\Facades\\Demo"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LauroGuedes\\DemoMode\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "LauroGuedes\\DemoMode\\Tests\\": "tests/",
+                    "Workbench\\App\\": "workbench/app/",
+                    "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@prepare"
+                ],
+                "prepare": [
+                    "@php vendor/bin/testbench package:discover --ansi"
+                ],
+                "lint": [
+                    "@php vendor/bin/pint --parallel",
+                    "@php vendor/bin/rector"
+                ],
+                "test:lint": [
+                    "@php vendor/bin/pint --parallel --test",
+                    "@php vendor/bin/rector --dry-run"
+                ],
+                "test:types": [
+                    "@php vendor/bin/phpstan analyse --memory-limit=1G"
+                ],
+                "test:type-coverage": [
+                    "@php vendor/bin/pest --type-coverage --min=100"
+                ],
+                "test:unit": [
+                    "@php vendor/bin/pest"
+                ],
+                "test:coverage": [
+                    "@php vendor/bin/pest --coverage"
+                ],
+                "test": [
+                    "@test:lint",
+                    "@test:types",
+                    "@test:type-coverage",
+                    "@test:unit"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lauro Guedes",
+                    "email": "laurowguedes@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Turn a Laravel installation into a public playground: seeded data, scheduled resets, rotating credentials, and a belt of restrictions that keeps a stranger from abusing the server.",
+            "homepage": "https://github.com/lauroguedes/laravel-demo-mode",
+            "keywords": [
+                "demo",
+                "demo-mode",
+                "laravel",
+                "playground",
+                "sandbox",
+                "starter-kit"
+            ],
+            "support": {
+                "source": "https://github.com/lauroguedes/laravel-demo-mode/tree/v1.0.2",
+                "issues": "https://github.com/lauroguedes/laravel-demo-mode/issues"
+            },
+            "time": "2026-09-23T20:36:28+00:00"
         },
         {
             "name": "league/commonmark",
