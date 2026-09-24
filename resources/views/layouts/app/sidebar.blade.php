@@ -50,8 +50,12 @@
         <x-slot:content class="flex flex-col min-h-screen">
             {{-- Renders nothing when this is not a demo, and counts down from the
                  schedule the scheduler actually runs. The message it replaced said
-                 24 hours while DEMO_RESET_SCHEDULE defaulted to hourly. --}}
-            <x-demo-banner class="alert-warning alert-soft mb-3 font-black" />
+                 24 hours while DEMO_RESET_SCHEDULE defaulted to hourly.
+
+                 No daisyUI classes: the bar styles itself inside a shadow root,
+                 and what is passed here only leaks in as inherited properties —
+                 "font-black" rendered it at weight 900. --}}
+            <x-demo-banner />
             <div class="flex-1 flex flex-col items-stretch gap-2">
                 {{ $slot }}
             </div>

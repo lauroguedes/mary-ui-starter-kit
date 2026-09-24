@@ -359,7 +359,25 @@ return [
 
         'enabled' => true,
 
+        /*
+         | 'pill' is the package's own floating bar, rendered inside a shadow
+         | root so daisyUI's theme cannot reach it. 'bare' is semantic markup
+         | wearing the class names from "classes" below.
+         */
+        'style' => 'pill',
+
         'variant' => 'warning',
+
+        'label' => 'Demo',
+
+        'cta' => [
+            'label' => 'Deploy your own',
+            'url' => 'https://github.com/lauroguedes/mary-ui-starter-kit',
+        ],
+
+        'reset_button' => true,
+
+        'asset_route' => '/demo-mode/bar.js',
 
         'dismissible' => true,
 
@@ -370,7 +388,7 @@ return [
          */
         'message' => null,
 
-        'position' => 'top',
+        'position' => 'bottom',
 
         /*
          | Class names by variant, so the common case is one line here rather

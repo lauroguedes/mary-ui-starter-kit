@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c437c96815ef77f68b2731d1b2190bc5",
+    "content-hash": "c3a5dca4b5407b93fad3ea9d52e64dd0",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -2063,16 +2063,16 @@
         },
         {
             "name": "lauroguedes/laravel-demo-mode",
-            "version": "v1.0.2",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lauroguedes/laravel-demo-mode.git",
-                "reference": "14d23c04a4ee39142c38266d91fa39c8f9b3a81c"
+                "reference": "d1b53954ffee1e3482df9a1194950be0dd6d9ff7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lauroguedes/laravel-demo-mode/zipball/14d23c04a4ee39142c38266d91fa39c8f9b3a81c",
-                "reference": "14d23c04a4ee39142c38266d91fa39c8f9b3a81c",
+                "url": "https://api.github.com/repos/lauroguedes/laravel-demo-mode/zipball/d1b53954ffee1e3482df9a1194950be0dd6d9ff7",
+                "reference": "d1b53954ffee1e3482df9a1194950be0dd6d9ff7",
                 "shasum": ""
             },
             "require": {
@@ -2177,10 +2177,10 @@
                 "starter-kit"
             ],
             "support": {
-                "source": "https://github.com/lauroguedes/laravel-demo-mode/tree/v1.0.2",
+                "source": "https://github.com/lauroguedes/laravel-demo-mode/tree/v1.1.0",
                 "issues": "https://github.com/lauroguedes/laravel-demo-mode/issues"
             },
-            "time": "2026-09-23T20:36:28+00:00"
+            "time": "2026-09-24T12:19:01+00:00"
         },
         {
             "name": "league/commonmark",
