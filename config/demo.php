@@ -357,29 +357,58 @@ return [
 
     'banner' => [
 
-        'enabled' => true,
+        /*
+         | Everything the visitor can see about the notice reads from the
+         | environment, so this demo can be dressed without a deployment.
+         |
+         | DEMO_BANNER=false               turn the notice off entirely
+         */
+        'enabled' => (bool) env('DEMO_BANNER', true),
 
         /*
+         | DEMO_BANNER_STYLE: pill | bare
+         |
          | 'pill' is the package's own floating bar, rendered inside a shadow
-         | root so daisyUI's theme cannot reach it. 'bare' is semantic markup
-         | wearing the class names from "classes" below.
+         | root so daisyUI's theme cannot reach it. 'bare' is semantic markup wearing the
+         | class names from "classes" below.
          */
-        'style' => 'pill',
+        'style' => env('DEMO_BANNER_STYLE', 'pill'),
 
-        'variant' => 'warning',
+        /*
+         | DEMO_BANNER_VARIANT: warning | danger | info | success | neutral
+         */
+        'variant' => env('DEMO_BANNER_VARIANT', 'warning'),
 
-        'label' => 'Demo',
+        /*
+         | DEMO_BANNER_LABEL: any short word, or empty for no badge
+         */
+        'label' => env('DEMO_BANNER_LABEL', 'Demo'),
 
+        /*
+         | DEMO_BANNER_CTA_URL / DEMO_BANNER_CTA_LABEL
+         */
         'cta' => [
-            'label' => 'Deploy your own',
-            'url' => 'https://github.com/lauroguedes/mary-ui-starter-kit',
+            'label' => env('DEMO_BANNER_CTA_LABEL', 'Deploy your own'),
+            'url' => env('DEMO_BANNER_CTA_URL', 'https://github.com/lauroguedes/mary-ui-starter-kit'),
         ],
 
-        'reset_button' => true,
+        /*
+         | DEMO_BANNER_RESET_BUTTON: true | false
+         |
+         | Only ever shown when "on_demand" below is enabled, and it asks before
+         | it does anything.
+         */
+        'reset_button' => (bool) env('DEMO_BANNER_RESET_BUTTON', true),
 
         'asset_route' => '/demo-mode/bar.js',
 
-        'dismissible' => true,
+        /*
+         | DEMO_BANNER_DISMISSIBLE: true | false
+         |
+         | Closing it lasts for that page and nothing longer — a reload brings it
+         | back, on purpose.
+         */
+        'dismissible' => (bool) env('DEMO_BANNER_DISMISSIBLE', true),
 
         /*
          | Null uses the translation, with the time until the next reset worked
@@ -388,7 +417,10 @@ return [
          */
         'message' => null,
 
-        'position' => 'bottom',
+        /*
+         | DEMO_BANNER_POSITION: top | bottom
+         */
+        'position' => env('DEMO_BANNER_POSITION', 'bottom'),
 
         /*
          | Class names by variant, so the common case is one line here rather
@@ -452,6 +484,15 @@ return [
 
         'name' => 'demo.reset',
 
+        /*
+         | DEMO_ON_DEMAND_SCOPE: auto | sandbox | everything
+         |
+         | 'auto' clears the visitor's own rows on a scoped demo and rebuilds
+         | everything otherwise. This demo shares its data, so the button
+         | rebuilds — which is why the cooldown below matters.
+         */
+        'scope' => env('DEMO_ON_DEMAND_SCOPE', 'auto'),
+
         'middleware' => ['web'],
 
         /*
@@ -459,6 +500,9 @@ return [
          | it: attempts, then minutes.
          */
         'throttle' => ['attempts' => 1, 'minutes' => 60],
+
+        /* The looser limit for clearing your own sandbox, on a scoped demo. */
+        'sandbox_throttle' => ['attempts' => 10, 'minutes' => 1],
 
         /*
          | How the throttle counts a visitor: 'ip', 'session' or 'global'.
@@ -551,6 +595,12 @@ return [
          | When to prune. Registered by the package, like the reset schedule.
          */
         'prune' => '*/15 * * * *',
+
+        /*
+         | Whether pruning also deletes the rows that belonged to the sandbox.
+         | On, because the alternative is rows no visitor can reach.
+         */
+        'prune_rows' => (bool) env('DEMO_SANDBOX_PRUNE_ROWS', true),
 
     ],
 
