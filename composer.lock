@@ -2063,16 +2063,16 @@
         },
         {
             "name": "lauroguedes/laravel-demo-mode",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lauroguedes/laravel-demo-mode.git",
-                "reference": "5f75ce5c3f717caf753754dc1438be6112655fdb"
+                "reference": "f293d491e1b2bf826fe4b155388961f134b175e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lauroguedes/laravel-demo-mode/zipball/5f75ce5c3f717caf753754dc1438be6112655fdb",
-                "reference": "5f75ce5c3f717caf753754dc1438be6112655fdb",
+                "url": "https://api.github.com/repos/lauroguedes/laravel-demo-mode/zipball/f293d491e1b2bf826fe4b155388961f134b175e0",
+                "reference": "f293d491e1b2bf826fe4b155388961f134b175e0",
                 "shasum": ""
             },
             "require": {
@@ -2177,10 +2177,10 @@
                 "starter-kit"
             ],
             "support": {
-                "source": "https://github.com/lauroguedes/laravel-demo-mode/tree/v1.3.0",
+                "source": "https://github.com/lauroguedes/laravel-demo-mode/tree/v1.3.1",
                 "issues": "https://github.com/lauroguedes/laravel-demo-mode/issues"
             },
-            "time": "2026-09-24T18:04:00+00:00"
+            "time": "2026-09-24T19:26:39+00:00"
         },
         {
             "name": "league/commonmark",
