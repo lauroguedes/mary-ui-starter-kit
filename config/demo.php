@@ -588,7 +588,7 @@ return [
          | fails silently.
          */
         'models' => [
-            // \App\Models\Post::class,
+            App\Models\User::class,
         ],
 
         /*

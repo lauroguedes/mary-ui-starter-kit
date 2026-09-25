@@ -61,6 +61,8 @@ Powered by [lauroguedes/laravel-demo-mode](https://github.com/lauroguedes/larave
 - **`demo:doctor`** audits the configuration and exits non-zero on anything that would
   destroy data or publish a secret
 - **Visual indicator** that counts down from the schedule the scheduler actually runs
+- **Per-visitor isolation** on the Users screen — each visitor sees the seeded
+  accounts plus the ones they made, and a button that clears only their own
 
 ### 🏗️ **Architecture & Developer Experience**
 - **Laravel 13.x** with PHP 8.4+ support
@@ -207,12 +209,37 @@ DEMO_MODE=false             # Turn this installation into a public demonstration
 DEMO_RESET_SCHEDULE=hourly  # A cron expression, or hourly/daily/weekly/monthly
 DEMO_EMAIL=admin@user.com   # The account whose password is published and rotated
 DEMO_CREDENTIALS_STORE=file # Where that password is kept: file, cache or null
+DEMO_SANDBOX=scoped         # shared | scoped — see "Per-visitor isolation" below
 ```
 
 > [!WARNING]
 > `DEMO_MODE=true` allows `demo:reset` to drop the database. Run
 > `php artisan demo:doctor` before the first scheduled reset, and never turn it on
 > for an installation holding anything you want to keep.
+
+#### Per-visitor isolation
+
+With `DEMO_SANDBOX=scoped`, each visitor gets the fifty-three seeded accounts plus
+whatever they create. The Users screen is a list everybody adds to, which is the
+one case where a shared demo falls apart — the first visitor's test accounts are
+the second visitor's clutter — so `App\Models\User` carries the package's
+`BelongsToSandbox` trait and a nullable `demo_sandbox_id` column.
+
+The identifier lives in the session. Rows the seeder made carry none, so they
+belong to everybody, which is what keeps the demo populated. The bar's reset
+button then reads **Clear what you created** and deletes only that visitor's rows;
+the scheduled reset still rebuilds the whole thing.
+
+Roles and permissions stay shared on purpose: they are part of what the kit
+demonstrates, not something a visitor should fork. Two other things follow from
+sandboxing the authentication model — `unique:users,email` is query-builder
+validation and sees every sandbox, so two visitors cannot register the same
+address, and logging out does not end a sandbox (the reset button is how a visitor
+gets a clean slate).
+
+Set `DEMO_SANDBOX=shared` to turn all of it off; the trait and the column then do
+nothing at all. `demo:doctor` warns if the models stay marked while the driver
+does not agree.
 
 ## 🤝 Contributing
 
