@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use LauroGuedes\DemoMode\Facades\Demo;
 
 use function Pest\Livewire\livewire;
 
 describe('Demo Mode Authentication', function () {
     test('super-admin cannot access protected routes in demo mode', function () {
-        config()->set('app.demo.enabled', true);
+        config()->set('demo.enabled', true);
 
         $superAdmin = User::factory()->active()->create(['email' => 'super-admin@test.com']);
         $superAdmin->assignRole('super-admin');
@@ -24,7 +26,7 @@ describe('Demo Mode Authentication', function () {
     });
 
     test('super-admin can login when demo mode is disabled', function () {
-        config()->set('app.demo.enabled', false);
+        config()->set('demo.enabled', false);
 
         $superAdmin = User::factory()->active()->create(['email' => 'super-admin@test.com']);
         $superAdmin->assignRole('super-admin');
@@ -38,7 +40,7 @@ describe('Demo Mode Authentication', function () {
     });
 
     test('admin can login in demo mode', function () {
-        config()->set('app.demo.enabled', true);
+        config()->set('demo.enabled', true);
 
         $adminUser = User::factory()->active()->create(['email' => 'admin@test.com']);
         $adminUser->assignRole('admin');
@@ -52,7 +54,7 @@ describe('Demo Mode Authentication', function () {
     });
 
     test('gate bypass is disabled for super-admin in demo mode', function () {
-        config()->set('app.demo.enabled', true);
+        config()->set('demo.enabled', true);
 
         // Re-boot the service provider to pick up the config change
         app()->register(App\Providers\AppServiceProvider::class, true);
@@ -67,18 +69,20 @@ describe('Demo Mode Authentication', function () {
         expect($result)->toBeFalse();
     });
 
-    test('login form pre-fills admin credentials in demo mode', function () {
-        config()->set('app.demo.enabled', true);
-        cache()->put('demo-password', 'demo-test-pass');
+    test('login form pre-fills the published credentials in demo mode', function () {
+        config()->set('demo.enabled', true);
+
+        Storage::fake('local');
+        $published = collect(Demo::rotate())->firstWhere('primary', true);
 
         $component = livewire('pages::auth.login');
 
-        expect($component->get('email'))->toBe('admin@user.com');
-        expect($component->get('password'))->toBe('demo-test-pass');
+        expect($component->get('email'))->toBe('admin@user.com')
+            ->and($component->get('password'))->toBe($published['password']);
     });
 
     test('login form does not pre-fill credentials when demo mode is disabled', function () {
-        config()->set('app.demo.enabled', false);
+        config()->set('demo.enabled', false);
 
         $component = livewire('pages::auth.login');
 
@@ -87,7 +91,7 @@ describe('Demo Mode Authentication', function () {
     });
 
     test('google login button is hidden and message is shown in demo mode', function () {
-        config()->set('app.demo.enabled', true);
+        config()->set('demo.enabled', true);
 
         $this->get('/login')
             ->assertSuccessful()
@@ -96,7 +100,7 @@ describe('Demo Mode Authentication', function () {
     });
 
     test('google login button is visible when demo mode is disabled', function () {
-        config()->set('app.demo.enabled', false);
+        config()->set('demo.enabled', false);
 
         $this->get('/login')
             ->assertSuccessful()
@@ -104,7 +108,7 @@ describe('Demo Mode Authentication', function () {
     });
 
     test('gate bypass is active for super-admin when demo mode is disabled', function () {
-        config()->set('app.demo.enabled', false);
+        config()->set('demo.enabled', false);
 
         // Re-boot the service provider to pick up the config change
         app()->register(App\Providers\AppServiceProvider::class, true);

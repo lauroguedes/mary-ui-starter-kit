@@ -117,11 +117,14 @@ return [
     | framework will prevent commands that could potentially
     | destroy data from being run in your application.
     |
-    | Enabled by default.
+    | Enabled by default, and on a demo too. lauroguedes/laravel-demo-mode lifts
+    | the prohibition around the one command that has to drop tables and puts it
+    | straight back, so a demo no longer has to leave migrate:fresh available to
+    | anything else with a terminal.
     |
     */
 
-    NunoMaduro\Essentials\Configurables\ProhibitDestructiveCommands::class => ! config('app.demo.enabled'),
+    NunoMaduro\Essentials\Configurables\ProhibitDestructiveCommands::class => true,
 
     /*
     |--------------------------------------------------------------------------

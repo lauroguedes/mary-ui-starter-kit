@@ -48,13 +48,14 @@
 
         {{-- The `$slot` goes here --}}
         <x-slot:content class="flex flex-col min-h-screen">
-            @if(config('app.demo.enabled'))
-            <x-mary-alert
-                class="alert-warning alert-soft mb-3 font-black"
-                :title="__('The data will reset every 24 hours.')"
-                icon="o-exclamation-triangle"
-                dismissible />
-            @endif
+            {{-- Renders nothing when this is not a demo, and counts down from the
+                 schedule the scheduler actually runs. The message it replaced said
+                 24 hours while DEMO_RESET_SCHEDULE defaulted to hourly.
+
+                 No daisyUI classes: the bar styles itself inside a shadow root,
+                 and what is passed here only leaks in as inherited properties —
+                 "font-black" rendered it at weight 900. --}}
+            <x-demo-banner />
             <div class="flex-1 flex flex-col items-stretch gap-2">
                 {{ $slot }}
             </div>

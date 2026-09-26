@@ -31,7 +31,7 @@ new #[Layout('layouts::auth')] class extends Component {
 
         event(new Registered(($user = User::create($validated))));
 
-        if (config('app.demo.enabled') && ! $user->hasVerifiedEmail()) {
+        if (\LauroGuedes\DemoMode\Facades\Demo::enabled() && ! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
 
