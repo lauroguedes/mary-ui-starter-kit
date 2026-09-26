@@ -2076,16 +2076,16 @@
         },
         {
             "name": "lauroguedes/laravel-demo-mode",
-            "version": "v1.6.0",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lauroguedes/laravel-demo-mode.git",
-                "reference": "bc4a66731be00065a0afc6ab2134959bff2c2bdd"
+                "reference": "c72c272edd6ce7789d50baa5010ee79ae8a83d9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lauroguedes/laravel-demo-mode/zipball/bc4a66731be00065a0afc6ab2134959bff2c2bdd",
-                "reference": "bc4a66731be00065a0afc6ab2134959bff2c2bdd",
+                "url": "https://api.github.com/repos/lauroguedes/laravel-demo-mode/zipball/c72c272edd6ce7789d50baa5010ee79ae8a83d9d",
+                "reference": "c72c272edd6ce7789d50baa5010ee79ae8a83d9d",
                 "shasum": ""
             },
             "require": {
@@ -2161,7 +2161,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2026-09-26T11:28:01+00:00"
+            "time": "2026-09-26T13:17:42+00:00"
         },
         {
             "name": "league/commonmark",
